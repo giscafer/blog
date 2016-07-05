@@ -1,7 +1,7 @@
 # Summary
-This is the summary of my book.
+前端手册目录
 
-* [序言](README.md)
+
 * [CSS编码规范](css-style-guide.md)
 * [HTML编码规范](html-style-guide.md)
 	* [HEAD](./html/head.md)
