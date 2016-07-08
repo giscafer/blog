@@ -14,7 +14,7 @@
  7. [学习指导篇][7]
  8. [前端优化][8]
  9. [其他][9]
- 9. [更多知识点见issues](https://github.com/giscafer/front-end-manual/issues/2)
+ 9. [更多知识点见issues](https://github.com/giscafer/front-end-manual/issues/)
 
 目录不全，请阅读[在线版](https://giscafer.gitbooks.io/front-end-manual/content/)
 
