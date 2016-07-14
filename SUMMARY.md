@@ -14,6 +14,7 @@
 	* [非编程类书籍推荐](./recommended_books/what-non-programming-books-should-programmers-read.md)
 	* [免费的计算机编程类中文书籍](./recommended_books/free-programming-books.md)
 * [学习指导&资源篇](study-guide.md)
+    * [前端开发指南](https://github.com/icepy/Front-End-Develop-Guide)
     * [Web Developer 成长路线图](./study_guide/000-Developer.md)
     * [前端StuQ技能图谱](./study_guide/002-WebStuQ.md)
     * [前端资源汇总](./study_guide/003-front-end-tutorial.md)
