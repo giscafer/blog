@@ -29,6 +29,12 @@
 
 [Google Chrome Dev Tool使用教程][100]
 
+[网站性能优化 之 Chrome DevTools（一）][http://www.jianshu.com/p/471950517b07]
+
+[网站性能优化 之 Chrome DevTools（二）][http://www.jianshu.com/p/b8cdcd9bfad8]
+
+[网站性能优化 之 Chrome DevTools（三）][http://www.jianshu.com/p/504bde348956]
+
 [Firefox Firebug Tool 使用教程][1]
 
 Internet Explorer 9 调式教程（临时没找到好的教程，自行去了解，作为FED，不管你多么不喜欢IE，你都必须熟悉IE，因为IE是主流浏览器之一）
