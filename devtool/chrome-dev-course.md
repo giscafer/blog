@@ -126,23 +126,23 @@ Google Chrome除了简洁、快速，现在的Chrome的插件也非常的丰富�
 注3：本文参考[《Chrome浏览器超强调试工具》文章][19]进行重新截图和修改。
 
 
-  [1]: https://raw.githubusercontent.com/ForestarFED/FED-SPEC/master/img/devtool/open1.png
-  [2]: https://raw.githubusercontent.com/ForestarFED/FED-SPEC/master/img/devtool/open2.png
-  [3]: https://raw.githubusercontent.com/ForestarFED/FED-SPEC/master/img/devtool/elements1.png
-  [4]: https://raw.githubusercontent.com/ForestarFED/FED-SPEC/master/img/devtool/elements2.png
-  [5]: https://raw.githubusercontent.com/ForestarFED/FED-SPEC/master/img/devtool/elements3.png
-  [6]: https://raw.githubusercontent.com/ForestarFED/FED-SPEC/master/img/devtool/elements4.png
-  [7]: https://raw.githubusercontent.com/ForestarFED/FED-SPEC/master/img/devtool/elements5.png
-  [8]: https://raw.githubusercontent.com/ForestarFED/FED-SPEC/master/img/devtool/elements6.png
-  [9]: https://raw.githubusercontent.com/ForestarFED/FED-SPEC/master/img/devtool/network1.png
-  [10]: https://raw.githubusercontent.com/ForestarFED/FED-SPEC/master/img/devtool/sources1.png
-  [11]: https://raw.githubusercontent.com/ForestarFED/FED-SPEC/master/img/devtool/sources2.png
-  [12]: https://raw.githubusercontent.com/ForestarFED/FED-SPEC/master/img/devtool/timeline1.png
-  [13]: https://raw.githubusercontent.com/ForestarFED/FED-SPEC/master/img/devtool/profile1.png
-  [14]: https://raw.githubusercontent.com/ForestarFED/FED-SPEC/master/img/devtool/audit1.png
-  [15]: https://raw.githubusercontent.com/ForestarFED/FED-SPEC/master/img/devtool/audit2.png
-  [16]: https://raw.githubusercontent.com/ForestarFED/FED-SPEC/master/img/devtool/console1.png
-  [17]: https://raw.githubusercontent.com/ForestarFED/FED-SPEC/master/img/devtool/console2.png
-  [18]: https://raw.githubusercontent.com/ForestarFED/FED-SPEC/master/img/devtool/phone1.png
+  [1]: https://raw.githubusercontent.com/giscafer/front-end-manual/master/img/devtool/open1.png
+  [2]: https://raw.githubusercontent.com/giscafer/front-end-manual/master/img/devtool/open2.png
+  [3]: https://raw.githubusercontent.com/giscafer/front-end-manual/master/img/devtool/elements1.png
+  [4]: https://raw.githubusercontent.com/giscafer/front-end-manual/master/img/devtool/elements2.png
+  [5]: https://raw.githubusercontent.com/giscafer/front-end-manual/master/img/devtool/elements3.png
+  [6]: https://raw.githubusercontent.com/giscafer/front-end-manual/master/img/devtool/elements4.png
+  [7]: https://raw.githubusercontent.com/giscafer/front-end-manual/master/img/devtool/elements5.png
+  [8]: https://raw.githubusercontent.com/giscafer/front-end-manual/master/img/devtool/elements6.png
+  [9]: https://raw.githubusercontent.com/giscafer/front-end-manual/master/img/devtool/network1.png
+  [10]: https://raw.githubusercontent.com/giscafer/front-end-manual/master/img/devtool/sources1.png
+  [11]: https://raw.githubusercontent.com/giscafer/front-end-manual/master/img/devtool/sources2.png
+  [12]: https://raw.githubusercontent.com/giscafer/front-end-manual/master/img/devtool/timeline1.png
+  [13]: https://raw.githubusercontent.com/giscafer/front-end-manual/master/img/devtool/profile1.png
+  [14]: https://raw.githubusercontent.com/giscafer/front-end-manual/master/img/devtool/audit1.png
+  [15]: https://raw.githubusercontent.com/giscafer/front-end-manual/master/img/devtool/audit2.png
+  [16]: https://raw.githubusercontent.com/giscafer/front-end-manual/master/img/devtool/console1.png
+  [17]: https://raw.githubusercontent.com/giscafer/front-end-manual/master/img/devtool/console2.png
+  [18]: https://raw.githubusercontent.com/giscafer/front-end-manual/master/img/devtool/phone1.png
   [19]: http://shaozhuqing.com/?p=2085
   

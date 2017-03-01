@@ -22,7 +22,7 @@ CSS指层叠样式表 (Cascading Style Sheets)，是网页样式语言。任何�
 
 ![单独创建CSS文件][3]
 
-  [3]: https://raw.githubusercontent.com/ForestarFED/FED-SPEC/master/img/css/01.png
+  [3]: https://raw.githubusercontent.com/giscafer/front-end-manual/master/img/css/01.png
   
 ### 2.2 缩进
 **[建议]** 使用`4`个空格做为一个缩进层级，不允许使用`2`个空格 或`tab`字符。
