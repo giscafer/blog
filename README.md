@@ -30,6 +30,16 @@
 *整理人列表：[contibutors](https://github.com/giscafer/front-end-manual/graphs/contributors)*
 
 
+**欢迎关注微信公众号：giscafer**
+
+![微信公众号giscafer](./img/qrcode_for_giscafer.jpg)
+
+---
+
+> [giscafer.com](http://giscafer.com) &nbsp;&middot;&nbsp;
+> GitHub [@giscafer](https://github.com/giscafer) &nbsp;&middot;&nbsp;
+> Weibo [@Nickbing Lao](https://weibo.com/laohoubin)
+
   [1]: css-style-guide.md
   [2]: html-style-guide.md
   [3]: javascript-style-guide.md
