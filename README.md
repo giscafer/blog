@@ -14,11 +14,13 @@
  7. [学习指导篇][7]
  8. [前端优化][8]
  9. [其他][9]
+ 9. [国外英文技术学习好站点](./study_guide/websiteMap.md)
  9. [更多知识点见issues](https://github.com/giscafer/front-end-manual/issues/)
 
 目录不全，请阅读[在线版](https://giscafer.gitbooks.io/front-end-manual/content/)
 
 下载离线版：[pdf](https://www.gitbook.com/download/pdf/book/giscafer/front-end-manual)、[epub](https://www.gitbook.com/download/epub/book/giscafer/front-end-manual)、[mobi](https://www.gitbook.com/download/mobi/book/giscafer/front-end-manual)
+
 
 
 ---
