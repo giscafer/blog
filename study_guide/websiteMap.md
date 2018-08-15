@@ -25,6 +25,7 @@ Fork from [y-translation](https://github.com/yued-fe/y-translation)
 |名称 |活跃度 | 原创度 | 维护者|其他|
 | ----- | ----- | ------ |----- |------|
 |[Medium](http://medium.com)|★★★★★|★★★★★| # |技术类的文章质量很高|
+|[DZone](https://dzone.com/web-development-programming-tutorials-tools-news)|★★★★★|★★★★★| # |DZone 的Web Dev|
 |[Smashing Magazine](http://www.smashingmagazine.com/)|★★★★★|★★★★★| # |业界权威，web 设计很赞|
 |[Tuts](http://hub.tutsplus.com/)|★★★★★|★★★★★| - |国外知名开发者网站|
 |[DeveloperDrive](http://www.developerdrive.com/)|★★★★★|★★★★★| - |优质前端技术信息|
