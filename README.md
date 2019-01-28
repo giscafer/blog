@@ -32,7 +32,13 @@
 *整理人列表：[contibutors](https://github.com/giscafer/front-end-manual/graphs/contributors)*
 
 
-**欢迎关注微信公众号：giscafer**
+**前端小助手**
+
+早报、周刊等学习资源
+
+![前端小助手](https://user-images.githubusercontent.com/8676711/51597092-633a3e80-1f35-11e9-9042-adde594b52c7.jpg)
+
+**个人微信公众号**
 
 ![微信公众号giscafer](./img/qrcode_for_giscafer.jpg)
 
