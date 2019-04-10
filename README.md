@@ -1,7 +1,7 @@
 
 # front-end-manual
 
-本工程改为博客使用了，不再维护个人的博客[blog.giscafer.com](http://blog.giscafer.com) ，平时学习总结会 issues 的方式记录，详情见 
+本工程改为博客使用了，不再维护个人的博客 [blog.giscafer.com](http://blog.giscafer.com) ，平时学习总结的文章会以 issues 的方式记录，详情见 
 
 [issues列表](https://github.com/giscafer/front-end-manual/issues)
 
@@ -30,7 +30,7 @@
 
 ### 前端小助手
 
-微信小程序，聚合早报、周刊等学习资源
+个人开发的微信小程序，聚合早报、周刊等学习资源
 
 ![前端小助手](https://user-images.githubusercontent.com/8676711/51597092-633a3e80-1f35-11e9-9042-adde594b52c7.jpg)
 
