@@ -1,26 +1,33 @@
-
 # front-end-manual
 
-本工程改为博客使用了，不再维护个人的博客 [blog.giscafer.com](http://blog.giscafer.com) ，平时学习总结的文章会以 issues 的方式记录，详情见 
+本工程改为博客使用了，不再维护个人的博客 [blog.giscafer.com](http://blog.giscafer.com) ，平时学习总结的文章会以 issues 的方式记录
 
-[issues列表](https://github.com/giscafer/front-end-manual/issues)
+## 文章内容
 
+- [Awesome Articles List](https://github.com/giscafer/front-end-manual/issues/22)
+- [前端团队工程化记录](https://github.com/giscafer/front-end-manual/issues/26)
+- [微前端 Micro-Frontend](https://github.com/giscafer/front-end-manual/issues/20)
+- [前端编译学习资源参考](https://github.com/giscafer/front-end-manual/issues/21)
+- [Koa 与 Express 对比](https://github.com/giscafer/front-end-manual/issues/23)
+- [基于 GitLab CI 的前端工程 CI/CD 实践 ](https://github.com/giscafer/front-end-manual/issues/27)
+
+更多见 [issues 列表](https://github.com/giscafer/front-end-manual/issues)
 
 ## 前端手册
 
 很早之前整理的内容，有些资源都值得看看的：
 
- 1. [CSS编码规范][1]
- 2. [HTML编码规范][2]
- 3. [JavaScript编码规范][3]
- 4. [其他规范][4]
- 5. [开发工具的使用][5]
- 6. [好书推荐篇][6]
- 7. [学习指导篇][7]
- 8. [前端优化][8]
- 9. [其他][9]
- 9. [国外英文技术学习好站点](./study_guide/websiteMap.md)
- 9. [更多知识点见issues](https://github.com/giscafer/front-end-manual/issues/)
+1.  [CSS 编码规范][1]
+2.  [HTML 编码规范][2]
+3.  [JavaScript 编码规范][3]
+4.  [其他规范][4]
+5.  [开发工具的使用][5]
+6.  [好书推荐篇][6]
+7.  [学习指导篇][7]
+8.  [前端优化][8]
+9.  [其他][9]
+10. [国外英文技术学习好站点](./study_guide/websiteMap.md)
+11. [更多知识点见 issues](https://github.com/giscafer/front-end-manual/issues/)
 
 目录不全，请阅读[在线版](https://giscafer.gitbooks.io/front-end-manual/content/)
 
@@ -44,12 +51,12 @@
 > GitHub [@giscafer](https://github.com/giscafer) &nbsp;&middot;&nbsp;
 > Weibo [@Nickbing Lao](https://weibo.com/laohoubin)
 
-  [1]: css-style-guide.md
-  [2]: html-style-guide.md
-  [3]: javascript-style-guide.md
-  [4]: other-style-guide.md
-  [5]: ./devtool/dev-tool-intro.md
-  [6]: recommended-books.md
-  [7]: study-guide.md
-  [8]: web-performance-optimization.md
-  [9]: ./other_tech/http-api-design.md
+[1]: css-style-guide.md
+[2]: html-style-guide.md
+[3]: javascript-style-guide.md
+[4]: other-style-guide.md
+[5]: ./devtool/dev-tool-intro.md
+[6]: recommended-books.md
+[7]: study-guide.md
+[8]: web-performance-optimization.md
+[9]: ./other_tech/http-api-design.md
