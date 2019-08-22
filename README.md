@@ -33,17 +33,21 @@
 
 下载离线版：[pdf](https://www.gitbook.com/download/pdf/book/giscafer/front-end-manual)、[epub](https://www.gitbook.com/download/epub/book/giscafer/front-end-manual)、[mobi](https://www.gitbook.com/download/mobi/book/giscafer/front-end-manual)
 
-## 其他
-
-### 前端小助手
+##  前端小助手
 
 个人开发的微信小程序，聚合早报、周刊等学习资源
 
 ![前端小助手](https://user-images.githubusercontent.com/8676711/51597092-633a3e80-1f35-11e9-9042-adde594b52c7.jpg)
 
-### 个人微信公众号
+##  微信公众号
+
+### giscafer
 
 ![微信公众号giscafer](./img/qrcode_for_giscafer.jpg)
+
+### 大前端洞见
+
+![FE-Insights](http://ww1.sinaimg.cn/large/940e68eegy1g68ydvk3wvj20k008cjsg.jpg)
 
 ---
 
