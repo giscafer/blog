@@ -5,7 +5,7 @@
 ## 文章内容
 
 - [Awesome Articles List](https://github.com/giscafer/front-end-manual/issues/22) :boom: :boom: 
-- [前端团队工程化记录](https://github.com/giscafer/front-end-manual/issues/26)
+- [前端团队工程化记录](https://github.com/giscafer/front-end-manual/issues/26) :boom: 
 - [微前端 Micro-Frontend](https://github.com/giscafer/front-end-manual/issues/20)
 - [前端编译学习资源参考](https://github.com/giscafer/front-end-manual/issues/21)
 - [Koa 与 Express 对比](https://github.com/giscafer/front-end-manual/issues/23)
@@ -41,11 +41,14 @@
 * 学习路线 ⛳️ 
     * [Roadmaps for Web Developers](https://github.com/kamranahmedse/developer-roadmap)
     * [Full Stack Web Development](https://github.com/bmorelli25/Become-A-Full-Stack-Web-Developer)
-    * [Roadmap to becoming a React developer](https://github.com/adam-golab/react-developer-roadmap)
     * [Deep Learning Papers Reading Roadmap](https://github.com/floodsung/Deep-Learning-Papers-Reading-Roadmap)
-    * [Roadmap to becoming a Go developer ](https://github.com/Alikhll/golang-developer-roadmap)
     * [Roadmap to becoming an iOS developer](https://github.com/BohdanOrlov/iOS-Developer-Roadmap)
     * [Android Developer Roadmap](https://github.com/mobile-roadmap/android-developer-roadmap)
+    * [Roadmap to becoming a Go developer ](https://github.com/Alikhll/golang-developer-roadmap)
+    * [Angular Developer Roadmap](https://github.com/sulco/angular-developer-roadmap)
+    * [Vue Developer Roadmap](https://github.com/flaviocopes/vue-developer-roadmap)
+    * [Roadmap to becoming a React developer](https://github.com/adam-golab/react-developer-roadmap)
+    
 * [前端优化](web-performance-optimization.md)
 	* [性能优化篇一](./performance_optimization/web_performance_optimization01.md)
 	* [性能优化资源列表(en)](./performance_optimization/awesome-wpo-list.md)
