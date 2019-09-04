@@ -17,19 +17,37 @@
 
 很早之前整理的内容，有些资源都值得看看的：
 
-1.  [CSS 编码规范][1]
-2.  [HTML 编码规范][2]
-3.  [JavaScript 编码规范][3]
-4.  [其他规范][4]
-5.  [开发工具的使用][5]
-6.  [好书推荐篇][6]
-7.  [学习指导篇][7]
-8.  [前端优化][8]
-9.  [其他][9]
-10. [国外英文技术学习好站点](./study_guide/websiteMap.md)
-11. [更多知识点见 issues](https://github.com/giscafer/front-end-manual/issues/)
+# Summary
+前端手册目录
 
-目录不全，请阅读[在线版](https://giscafer.gitbooks.io/front-end-manual/content/)
+
+* [CSS编码规范](css-style-guide.md)
+* [HTML编码规范](html-style-guide.md)
+	* [HEAD](./html/head.md)
+* [JavaScript编码规范](javascript-style-guide.md)
+* [其他规范](other-style-guide.md)
+* [开发工具的使用](./devtool/dev-tool-intro.md)
+    * [Chrome Dev Tool使用教程](./devtool/chrome-dev-course.md)
+    * [Github与git的使用](./devtool/awesome-github.md)
+* [好书推荐篇](recommended-books.md)
+	* [非编程类书籍推荐](./recommended_books/what-non-programming-books-should-programmers-read.md)
+	* [免费的计算机编程类中文书籍](./recommended_books/free-programming-books.md)
+* [学习指导&资源篇](study-guide.md)
+    * [前端开发指南](https://github.com/icepy/Front-End-Develop-Guide)
+    * [Web Developer 成长路线图](./study_guide/000-Developer.md)
+    * [前端StuQ技能图谱](./study_guide/002-WebStuQ.md)
+    * [前端资源汇总](./study_guide/003-front-end-tutorial.md)
+    * [JavaScript资源大全](./study_guide/004-awesome-javascript-cn.md)
+* [前端优化](web-performance-optimization.md)
+	* [性能优化篇一](./performance_optimization/web_performance_optimization01.md)
+	* [性能优化资源列表(en)](./performance_optimization/awesome-wpo-list.md)
+* [其他干货](./other_tech/)
+    * [HTTP API 设计指南](./other_tech/http-api-design.md)
+	* [完美判断IE各版本](./other_tech/the-best-method-to-detect-browser.md)
+  
+:book: [更多文章总结记录见 issues](https://github.com/giscafer/front-end-manual/issues/)
+
+请阅读[在线版](https://giscafer.gitbooks.io/front-end-manual/content/)(不含issues)
 
 下载离线版：[pdf](https://www.gitbook.com/download/pdf/book/giscafer/front-end-manual)、[epub](https://www.gitbook.com/download/epub/book/giscafer/front-end-manual)、[mobi](https://www.gitbook.com/download/mobi/book/giscafer/front-end-manual)
 
