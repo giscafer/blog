@@ -53,7 +53,7 @@ Java Web项目开发的话，`MyEclipse（eclipse）`当然算是优先选用的
  
  - [WebStorm][3]前端神器，你想要的任何效果他都有，不过比较重，电脑配置好的或者是不想安装插件的，可以用这个。
  
- - Visual Studio Code (Node.js的话推荐，2015年新出来，需要完善)
+ - Visual Studio Code (Node.js的话推荐，微软出品并开源，越来越好)
 
 等其他类似的前端代码编辑器，看个人习惯和喜好。
 

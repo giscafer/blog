@@ -5,11 +5,11 @@
         
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <title>完美判断IE各版本 | front-end-manual</title>
+        <title>完美判断IE各版本 | 前端开发手册</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="generator" content="GitBook 2.6.6">
-        
+        <meta name="author" content="giscafer">
         
         <meta name="HandheldFriendly" content="true"/>
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
@@ -19,6 +19,10 @@
         <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
         
     <link rel="stylesheet" href="../gitbook/style.css">
+    
+        
+        <link rel="stylesheet" href="../gitbook/plugins/gitbook-plugin-splitter/splitter.css">
+        
     
         
         <link rel="stylesheet" href="../gitbook/plugins/gitbook-plugin-highlight/website.css">
@@ -51,7 +55,7 @@
         data-chapter-title="完美判断IE各版本"
         data-filepath="other_tech/the-best-method-to-detect-browser.md"
         data-basepath=".."
-        data-revision="Tue Aug 02 2016 10:11:10 GMT+0800 (中国标准时间)"
+        data-revision="Wed Mar 01 2017 17:33:10 GMT+0800 (中国标准时间)"
         data-innerlanguage="">
     
 
@@ -61,8 +65,15 @@
             
             
             
+                
+                <li>
+                    <a href="http://giscafer.com" target="blank" class="custom-link">giscafer博客</a>
+                </li>
+            
             
 
+            
+            <li class="divider"></li>
             
 
             
@@ -476,7 +487,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href="../" >front-end-manual</a>
+        <a href="../" >前端开发手册</a>
     </h1>
 </div>
 
@@ -554,9 +565,9 @@
 <p>&#x6700;&#x540E;&#x4F9D;&#x6B21;&#x8D34;&#x4E0B;&#x5728;&#x5404;&#x5927;&#x6D4F;&#x89C8;&#x5668;&#x91CC;&#x6D4B;&#x8BD5;&#x4EE3;&#x7801;&#x7684;&#x622A;&#x56FE;&#x3002;</p>
 <pre><code class="lang-javascript">alert(<span class="hljs-string">&apos;ie6:&apos;</span> + isIE(<span class="hljs-number">6</span>) + <span class="hljs-string">&apos;\n&apos;</span> + <span class="hljs-string">&apos;ie7:&apos;</span> + isIE(<span class="hljs-number">7</span>) + <span class="hljs-string">&apos;\n&apos;</span> + <span class="hljs-string">&apos;ie8:&apos;</span> + isIE(<span class="hljs-number">8</span>) + <span class="hljs-string">&apos;\n&apos;</span> + <span class="hljs-string">&apos;ie9:&apos;</span> + isIE(<span class="hljs-number">9</span>) + <span class="hljs-string">&apos;\n&apos;</span> + <span class="hljs-string">&apos;ie:&apos;</span> + isIE())
 </code></pre>
-<p><img src="https://raw.githubusercontent.com/ForestarFED/FED-SPEC/master/img/other_tech/ie-identity1.png" alt="">
-<img src="https://raw.githubusercontent.com/ForestarFED/FED-SPEC/master/img/other_tech/ie-identity2.png" alt=""></p>
-<p>PS&#xFF1A;&#x8FD9;&#x6837;&#x6027;&#x611F;&#x7684;&#x5199;&#x6CD5;&#x8BA9;&#x5176;&#x4ED6;&#x53C8;&#x8981;&#x68C0;&#x6D4B;userAgent&#x53C8;&#x8981;&#x5339;&#x914D;&#x7248;&#x672C;&#x53F7;&#x7684;&#x65B9;&#x6CD5;&#x9EEF;&#x7136;&#x5931;&#x8272;&#x3002;</p>
+<p><img src="https://raw.githubusercontent.com/giscafer/front-end-manual/master/img/other_tech/ie-identity1.png" alt="">
+<img src="https://raw.githubusercontent.com/giscafer/front-end-manual/master/img/other_tech/ie-identity2.png" alt=""></p>
+<p>PS&#xFF1A;&#x6B64;&#x65B9;&#x6CD5;&#x4EC5;&#x9002;&#x5408;IE9&#x53CA;&#x4EE5;&#x4E0B;&#x7248;&#x672C;&#x6D4F;&#x89C8;&#x5668;&#xFF0C;IE10+&#x4EE5;&#x540E;&#x4E0D;&#x652F;&#x6301;[if IE]&#x68C0;&#x67E5;&#x3002;</p>
 <p>collect from <a href="https://github.com/nioteam/jquery-plugins/issues/12" target="_blank">jquery-plugins</a></p>
 
                     
@@ -578,6 +589,14 @@
 <script src="../gitbook/app.js"></script>
 
     
+    <script src="../gitbook/plugins/gitbook-plugin-github/plugin.js"></script>
+    
+
+    
+    <script src="../gitbook/plugins/gitbook-plugin-splitter/splitter.js"></script>
+    
+
+    
     <script src="../gitbook/plugins/gitbook-plugin-search/lunr.min.js"></script>
     
 
@@ -595,7 +614,7 @@
 
 <script>
 require(["gitbook"], function(gitbook) {
-    var config = {"highlight":{},"search":{"maxIndexSize":1000000},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2}};
+    var config = {"github":{"url":"https://github.com/giscafer/front-end-manual"},"splitter":{},"highlight":{},"search":{"maxIndexSize":1000000},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2}};
     gitbook.start(config);
 });
 </script>

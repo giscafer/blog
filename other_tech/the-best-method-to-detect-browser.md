@@ -79,10 +79,12 @@ var ie  = isIE()
 ```javascript
 alert('ie6:' + isIE(6) + '\n' + 'ie7:' + isIE(7) + '\n' + 'ie8:' + isIE(8) + '\n' + 'ie9:' + isIE(9) + '\n' + 'ie:' + isIE())
 ```
-![](https://raw.githubusercontent.com/ForestarFED/FED-SPEC/master/img/other_tech/ie-identity1.png)
-![](https://raw.githubusercontent.com/ForestarFED/FED-SPEC/master/img/other_tech/ie-identity2.png)
+![](https://raw.githubusercontent.com/giscafer/front-end-manual/master/img/other_tech/ie-identity1.png)
+![](https://raw.githubusercontent.com/giscafer/front-end-manual/master/img/other_tech/ie-identity2.png)
 
-PS：这样性感的写法让其他又要检测userAgent又要匹配版本号的方法黯然失色。
+
+
+PS：此方法仅适合IE9及以下版本浏览器，IE10+以后不支持[if IE]检查。
 
 
 collect from [jquery-plugins](https://github.com/nioteam/jquery-plugins/issues/12)

@@ -1,0 +1,16 @@
+{
+    "title": "前端开发手册",
+    "author": "giscafer",
+    "description": "记录前端开发资源和教程、学习指导等",
+    "plugins": ["github", "splitter"],
+    "pluginsConfig": {
+        "github": {
+            "url": "https://github.com/giscafer/front-end-manual"
+        }
+    },
+    "links": {
+        "sidebar": {
+            "giscafer博客": "http://giscafer.com"
+        }
+    }
+}
