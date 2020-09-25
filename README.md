@@ -1,4 +1,4 @@
-# front-end-manual
+# blog
 
 本工程改为博客使用了，不再维护个人的博客 [blog.giscafer.com](http://blog.giscafer.com) ，平时学习总结的文章会以 issues 的方式记录
 
@@ -13,11 +13,11 @@
 
 更多见 [issues 列表](https://github.com/giscafer/front-end-manual/issues)
 
-## 前端手册
+
+### 前端手册
 
 很早之前整理的内容，有些资源都值得看看的：
 
-# Summary
 前端手册目录
 
 
@@ -62,11 +62,6 @@
 
 下载离线版：[pdf](https://www.gitbook.com/download/pdf/book/giscafer/front-end-manual)、[epub](https://www.gitbook.com/download/epub/book/giscafer/front-end-manual)、[mobi](https://www.gitbook.com/download/mobi/book/giscafer/front-end-manual)
 
-##  前端小助手
-
-个人开发的微信小程序，聚合早报、周刊等学习资源
-
-![前端小助手](https://user-images.githubusercontent.com/8676711/51597092-633a3e80-1f35-11e9-9042-adde594b52c7.jpg)
 
 ##  微信公众号
 
