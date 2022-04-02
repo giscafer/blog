@@ -1,0 +1,768 @@
+---
+  title: 剖析 Promise 
+  publishedAt: 2020-02-04 13:41:25
+  summary: 剖析 Promise 
+  tags: ["JavaScript","源码学习"]
+---
+
+之前在使用 `Promise` 时最多可能就是 new 一个对象出来，然后使用 `then`，`Promise.all` ，`Promise.resove` 等这些，清楚 `Promise` 具备的几个状态，但可能很少如深入剖析熟悉 Promise 的实现，所以本文其实也是我深入学习 `Promise` 做的整理。
+
+# 从概念和 API 了解 Promise
+
+##  （一）、背景动机
+
+ `Promise` 初始动机就是为了解决 JavaScript 回调地狱的问题，我们来看，在没有 `Promise` 时，我们是如何通过 `callback` 来处理异步函数问题的。
+
+```js
+function readJSON(filename, callback){
+  fs.readFile(filename, 'utf8', function (err, res){
+    if (err) return callback(err);
+    callback(null, JSON.parse(res));
+  });
+}
+```
+上边的写法有以下问题：
+
+- 函数中额外的 `callback` 参数带给我们的疑问：输入值是什么，和返回值是什么
+- 它不按原始的控制流运行
+- `JSON.parse(res)` 抛出异常无法处理
+
+我们需要处理 `JSON.parse` 的异常，并且还要担心 `callback` 函数的异常，所以我们就有了糟糕的处理错误的代码：
+
+```js
+function readJSON(filename, callback){
+  fs.readFile(filename, 'utf8', function (err, res){
+    if (err) return callback(err);
+    try {
+      res = JSON.parse(res);
+    } catch (ex) {
+      return callback(ex);
+    }
+    callback(null, res);
+  });
+}
+```
+除了糟糕的异常处理代码外，`callback` 回调的参数也是约定多余了。我们需要记住callback的第一个参数是异常原因，第二个是成功结果。 Promises 帮助我们比较自然的处理异常错误，书写更简洁的代码而不是通过 `callback` 这种参数。
+
+## （二）、什么是 promise?
+
+promises 的核心理念是，`promise` 代表着异步操作的结果值。`promise` 有三种不同的状态：
+
+- `pending` : promise的初始值
+- `fulfillled` : promise 操作成功的状态
+- `rejected` : promise 操作失败的状态
+
+一旦 promise 从 pending 转变到 `fulfilled` 或者 `rejected`，它就是永久不可变的了。
+
+ ## （三）、构造一个 promise
+
+使用 `new Promise` 的方式去构建一个 promise 。 通过传入一个真正处理逻辑的还是函数，该函数有两个参数并且会立即执行，第一个参数 是fulfills promise 的函数，第二个参数是 rejects promise 的函数。一旦操作完成，就会调用对应的函数。
+
+重写上面的 `readFile` 函数：
+```js
+function readFile(filename, enc){
+  return new Promise(function (fulfill, reject){
+    fs.readFile(filename, enc, function (err, res){
+      if (err) reject(err);
+      else fulfill(res);
+    });
+  });
+}
+```
+
+## （四）、等待一个 promise 执行完成 
+
+使用 `promise.done` 来等待一个 promise 完成，重写`readJSON` 函数：
+
+```js
+function readJSON(filename){
+  return new Promise(function (fulfill, reject){
+    readFile(filename, 'utf8').done(function (res){
+      try {
+        fulfill(JSON.parse(res));
+      } catch (ex) {
+        reject(ex);
+      }
+    }, reject);
+  });
+}
+```
+这段代码里，已经不存在 `callback` 这样的奇怪额外的回调参数，**但是还存在很多异常处理的代码。（思考如何优化这段代码到更精简的程度）**
+
+
+## （五）、转换和链式 Transformation / Chaining
+
+`.then` 是可以链式的方式编程的，简单的讲，`.then` 和 `.done` 的区别和 `.map` 与` .forEach` 类似，换一种说法， 使用 `.then` 就是你打算用promise返回的结果去处理任何逻辑，而 `.done` 则是你不计划处理结果result。
+
+现在，简单重写一下原始的列子：
+
+```js
+function readJSON(filename){
+  return readFile(filename, 'utf8').then(function (res){
+    return JSON.parse(res);
+  });
+}
+```
+由于 `JSON.parse` 是一个函数，我们可以改写成：
+
+```js
+
+function readJSON(filename){
+  return readFile(filename, 'utf8').then(JSON.parse);
+}
+```
+
+## （六）、API 参考 API Reference
+
+
+### Promise.resolve(value)
+
+返回一个 resolved 值为 `value ` 的 promise。
+
+如果 `value` 类似为promise，讲会执行此 promise 并得到 resolved 结果作为返回 promise 的 resolved 值。这对用来转换其他函数或库创建的 promise 很有用处。
+
+#### Example
+
+```js
+Promise.resolve("Success").then(function(value) {
+  console.log(value); // "Success"
+}, function(value) {
+  // not called
+});
+var p = Promise.resolve([1,2,3]);
+p.then(function(v) {
+  console.log(v[0]); // 1
+});
+var original = Promise.resolve(true);
+var cast = Promise.resolve(original);
+cast.then(function(v) {
+  console.log(v); // true
+});
+```
+
+#### Polyfill
+
+代码执行环境如果不支持则简单实现：
+
+```js
+Promise.resolve = function (value) {
+  return new Promise(function (resolve) {
+    resolve(value);
+  });
+};
+```
+
+
+### Promise.reject(value)
+
+返回与给定的 promise 被拒绝的理由。
+
+#### Example
+
+```js
+Promise.reject(new Error("fail")).then(function(error) {
+  // not called
+}, function(error) {
+  console.log(error); // Stacktrace
+});
+```
+
+#### Polyfill
+
+代码执行环境如果不支持则简单实现：
+
+```js
+Promise.reject = function (value) {
+  return new Promise(function (resolve, reject) {
+    reject(value);
+  });
+};
+```
+
+
+### Promise.all(iterable)
+
+函数返回一个 Promise ，函数执行后会等待在 iterable 数组中的所有 promises 完成 fulfilled 状态时，返回一个数组结果，该数组元素一一对应每个promise 的结果值。
+
+#### Example 
+
+```js
+var promise = Promise.resolve(3);
+Promise.all([true, promise]).then(values => {
+  console.log(values); // [true, 3]
+});
+```
+
+#### Polyfill
+
+若执行环境不支持Promise.all，可以通过polyfill实现，实现1:
+
+```js
+Promise.all = function (arr) {
+  // TODO: this polyfill only supports array-likes
+  //       it should support all iterables
+  var args = Array.prototype.slice.call(arr);
+
+  return new Promise(function (resolve, reject) {
+    if (args.length === 0) return resolve([]);
+    var remaining = args.length;
+    function res(i, val) {
+      if (val && (typeof val === 'object' || typeof val === 'function')) {
+        var then = val.then;
+        if (typeof then === 'function') {
+          var p = new Promise(then.bind(val));
+          p.then(function (val) {
+            res(i, val);
+          }, reject);
+          return;
+        }
+      }
+      args[i] = val;
+      if (--remaining === 0) {
+        resolve(args);
+      }
+    }
+    for (var i = 0; i < args.length; i++) {
+      res(i, args[i]);
+    }
+  });
+};
+```
+
+实现2：
+
+```js
+Promise.all = function (promises) {
+  var accumulator = [];
+  var ready = Promise.resolve(null);
+
+  promises.forEach(function (promise, ndx) {
+    ready = ready.then(function () {
+      return promise;
+    }).then(function (value) {
+      accumulator[ndx] = value;
+    });
+  });
+
+  return ready.then(function () { return accumulator; });
+}
+```
+
+### Promise.race(iterable)
+
+返回一个 promise，当 `iterable` 有一个 promise 状态为 `resolved` 或 `rejected`，就立马返回。
+
+#### Example
+
+```js
+var p1 = new Promise(function(resolve, reject) {
+  setTimeout(resolve, 500, "one");
+});
+var p2 = new Promise(function(resolve, reject) {
+  setTimeout(resolve, 100, "two");
+});
+
+Promise.race([p1, p2]).then(function(value) {
+  console.log(value); // "two"
+  // Both resolve, but p2 is faster
+});
+
+var p3 = new Promise(function(resolve, reject) {
+  setTimeout(resolve, 100, "three");
+});
+var p4 = new Promise(function(resolve, reject) {
+  setTimeout(reject, 500, "four");
+});
+
+Promise.race([p3, p4]).then(function(value) {
+  console.log(value); // "three"
+  // p3 is faster, so it resolves
+}, function(reason) {
+  // Not called
+});
+
+var p5 = new Promise(function(resolve, reject) {
+  setTimeout(resolve, 500, "five");
+});
+var p6 = new Promise(function(resolve, reject) {
+  setTimeout(reject, 100, "six");
+});
+
+Promise.race([p5, p6]).then(function(value) {
+  // Not called
+}, function(reason) {
+  console.log(reason); // "six"
+  // p6 is faster, so it rejects
+});
+```
+
+#### Polyfill
+
+```js
+Promise.race = function (values) {
+  // TODO: this polyfill only supports array-likes
+  //       it should support all iterables
+  return new Promise(function (resolve, reject) {
+    values.forEach(function(value){
+      Promise.resolve(value).then(resolve, reject);
+    });
+  });
+};
+
+```
+
+### Promise.prototype.catch(onRejected)
+
+等价于调用 `Promise.prototype.then(undefined, onRejected)`。
+
+#### Example
+
+```js
+var p1 = new Promise(function(resolve, reject) {
+  resolve("Success");
+});
+
+p1.then(function(value) {
+  console.log(value); // "Success!"
+  throw "oh, no!";
+}).catch(function(e) {
+  console.log(e); // "oh, no!"
+});
+
+p1.then(function(value) {
+  console.log(value); // "Success!"
+  throw "oh, no!";
+}).then(undefined, function(e) {
+  console.log(e); // "oh, no!"
+});
+```
+
+#### Polyfill
+
+```js
+Promise.prototype['catch'] = function (onRejected) {
+  return this.then(null, onRejected);
+};
+
+```
+
+
+### Promise.prototype.done(onFulfilled, onRejected)  @non-standard
+
+**尚未标准化**
+
+```js
+var Promise = require('promise');
+var p = Promise.resolve('foo');
+
+p.done(function (value) {
+  console.log(value); // "foo"
+});
+
+p.done(function (value) {
+  throw new Error('Ooops!'); // thrown in next tick
+});
+```
+
+#### Polyfill
+
+```js
+Promise.prototype.done = function (onFulfilled, onRejected) {
+  var self = arguments.length ? this.then.apply(this, arguments) : this
+  self.then(null, function (err) {
+    setTimeout(function () {
+      throw err
+    }, 0)
+  })
+}
+```
+
+
+### Promise.prototype.then(onFulfilled, onRejected)
+
+和 .done 不同的是，.then 会返回一个promise
+
+#### Example 
+
+```js
+var p1 = new Promise(function(resolve, reject) {
+  resolve("Success!");
+  // or
+  // reject ("Error!");
+});
+
+p1.then(function(value) {
+  console.log(value); // Success!
+}, function(reason) {
+  console.log(reason); // Error!
+});
+
+var p2 = new Promise(function(resolve, reject) {
+  resolve(1);
+});
+
+p2.then(function(value) {
+  console.log(value); // 1
+  return value + 1;
+}).then(function(value) {
+  console.log(value); // 2
+});
+```
+
+### Promise.prototype.finally(onResolved) @non-standard
+
+`finally()` 方法返回一个 Promise。在 promise 结束时，无论结果是 fulfilled 或者是 rejected，都会执行指定的回调函数。这为在`Promise`是否成功完成后都需要执行的代码提供了一种方式。
+这避免了同样的语句需要在`then()`和`catch()`中各写一次的情况。
+
+
+```js
+var Promise = require('promise');
+var p = Promise.resolve('foo');
+var disposed = false;
+p.then(function (value) {
+  if (Math.random() < 0.5) throw new Error('oops!');
+  else return value;
+}).finally(function () {
+  disposed = true; // always called
+}).then(function (value) {
+  console.log(value); // => "foo"
+}, function (err) {
+  console.log(err); // => oops!
+});
+```
+
+
+#### Polyfill
+
+```js
+Promise.prototype['finally'] = function (f) {
+  return this.then(function (value) {
+    return Promise.resolve(f()).then(function () {
+      return value;
+    });
+  }, function (err) {
+    return Promise.resolve(f()).then(function () {
+      throw err;
+    });
+  });
+}
+```
+
+# 最佳实践
+
+详细见：https://www.promisejs.org/patterns/
+
+
+# 从源码搞懂 Promise 实现机制
+
+源码库为[then/promise](https://github.com/then/promise)
+
+## 构建
+
+从 `package.json` 可以看到，promise 库的构建入口为 `build.js` 文件，我们执行构建后，也发现多创建了三个目录 `lib、setimmediate、domains` ，相关目录的代码文件变动都和 `asap` 这个模块有关系。
+
+![image](https://user-images.githubusercontent.com/8676711/73755510-15d7ea80-47a1-11ea-81ed-5f1f9145991b.png)
+
+可以看到，这里出来混淆代码之外，还将 `asap/raw` 模块分别换成了 `asap` 和 `setImmediate`
+
+那这个 `asap/raw` 和 `asap` 还有 `setimmediate` 的区别是什么呢？
+
+> 共同点，都是立即对参数中的函数进行异步调用
+> 不同点:
+> - asap 比 setimmediate 调用更快，而且调用的时候会阻止其他事件的处理 (默认)。
+> - asap/raw 和 asap 运行的原理一样，但不处理运行抛出的异常 (换来更多效率), 同时也支持不同域的事件绑定。https://www.npmjs.com/package/asap
+> - setimmediate 为JS自带的，但它是在当前所有I/O事件完成后去调用，速度上没有ASAP快。
+> 
+
+所以 Promise 有额外的 `promise/domains` (支持domain) 和 `promise/setimmediate` (支持自定义setimmediate) 供调用。
+
+## 代码
+
+核心代码是 `core.js`，所以这里只贴出这里的解析。
+
+```js
+'use strict';
+
+var asap = require('asap/raw');
+
+function noop() {}
+
+// States:
+//
+// 0 - pending
+// 1 - fulfilled with _value
+// 2 - rejected with _value
+// 3 - adopted the state of another promise, _value
+//
+// once the state is no longer pending (0) it is immutable
+
+// All `_` prefixed properties will be reduced to `_{random number}`
+//// build的时候会把所有的预定义的属性转变为 `_{随机数}的形式做混淆，不鼓励直接使用他们，看build.js中的fixup混淆函数就懂了
+// at build time to obfuscate them and discourage their use.
+// We don't use symbols or Object.defineProperty to fully hide them
+// because the performance isn't good enough.
+
+
+// to avoid using try/catch inside critical functions, we
+// extract them to here.
+var LAST_ERROR = null;  // 记录最新错误
+var IS_ERROR = {}; // 错误标记符，什么值都可行，能作为唯一识别参考即可
+
+// 获取then方法
+function getThen(obj) {
+  try {
+    return obj.then;
+  } catch (ex) {
+    LAST_ERROR = ex;
+    return IS_ERROR;
+  }
+}
+// 执行函数fn，并传入参数a，这里目的是做好统一的异常错误处理
+function tryCallOne(fn, a) {
+  try {
+    return fn(a); // 返回执行结果值
+  } catch (ex) {
+    LAST_ERROR = ex;
+    return IS_ERROR; // 返回异常
+  }
+}
+
+// 执行fn函数并传入参数，目的一样是统一处理好异常
+function tryCallTwo(fn, a, b) {
+  try {
+    fn(a, b); // 无返回
+  } catch (ex) {
+    LAST_ERROR = ex;
+    return IS_ERROR; // 有异常则返回异常
+  }
+}
+
+module.exports = Promise;
+
+// Promise 构造器
+function Promise(fn) {
+  if (typeof this !== 'object') {
+    throw new TypeError('Promises must be constructed via new');
+  }
+  if (typeof fn !== 'function') {
+    throw new TypeError('Promise constructor\'s argument is not a function');
+  }
+  // 初始化状态等字段
+  this._deferredState = 0;
+  this._state = 0;
+  this._value = null;
+  this._deferreds = null;
+  // noop是作为某种情况的控制，不需要再执行 doResolve（传入空函数直接返回）
+  if (fn === noop) return;
+  // 开始正常流程处理
+  doResolve(fn, this);
+}
+Promise._onHandle = null;
+Promise._onReject = null;
+Promise._noop = noop;
+
+// 原型链方法 then 
+Promise.prototype.then = function(onFulfilled, onRejected) {
+  // 如果this不是Promise 实例，则重新创建一个新的promise
+  if (this.constructor !== Promise) {
+    return safeThen(this, onFulfilled, onRejected);
+  }
+  // 创建一个空回调逻辑promise对象，用来创建 Handler
+  var res = new Promise(noop);
+  handle(this, new Handler(onFulfilled, onRejected, res));
+  return res;
+};
+
+// safeThen 的作用是当调用 then 的时候环境 this 已经不是 Promise 的情况下能够继续安全执行 then
+function safeThen(self, onFulfilled, onRejected) {
+  return new self.constructor(function (resolve, reject) {
+    var res = new Promise(noop);
+    res.then(resolve, reject);
+    handle(self, new Handler(onFulfilled, onRejected, res));
+  });
+}
+/**
+ * 处理器函数，根据state的值来决定要做的事情
+ * @param {*} self 
+ * @param {*} deferred 
+ */
+function handle(self, deferred) {
+  // 当我们 resolve 接收到得是一个 promise 或 thenable 对象时，我们进入到 handle 后，会进入while循环，
+  // 直到 self 指向接收到的 promise，以接收到的 promise 的结果为标准
+  while (self._state === 3) {
+    self = self._value;
+  }
+  if (Promise._onHandle) { // 外部如果定义了 _onHandle的话这里处理一下
+    Promise._onHandle(self);
+  }
+  if (self._state === 0) {
+    // 在接收到的 promise 的 state===0 阶段我们会将原始 promise 中拿到得 onFulfilled 以及 onRejected 回调方法（包含在deferred对象中），
+    // 添加到接收到的 promise 的 _deferreds 中，然后return
+    if (self._deferredState === 0) {
+      self._deferredState = 1;
+      self._deferreds = deferred;
+      return;
+    }
+    if (self._deferredState === 1) {
+      self._deferredState = 2; // 这里的1，2不像_state的意义，仅仅是作为记录_deferreds的个数，然后在finale里边用到
+      self._deferreds = [self._deferreds, deferred];
+      return;
+    }
+    self._deferreds.push(deferred);
+    return;
+  }
+  // finale 函数进来的都不为0直接走这里了
+  handleResolved(self, deferred);
+}
+
+/**
+ * 这个函数执行完，promise 的执行过程就完成了
+ * @param {*} deferred 这里的deffered中的promise是在then的时候创建的空promise，什么都不会执行（直接进入 finale 无handle情况)
+ */
+function handleResolved(self, deferred) {
+  // 异步回调
+  asap(function() {
+    var cb = self._state === 1 ? deferred.onFulfilled : deferred.onRejected;
+
+    // 对应的回调为空时处理逻辑
+    if (cb === null) {
+      if (self._state === 1) {
+        resolve(deferred.promise, self._value);
+      } else {
+        reject(deferred.promise, self._value);
+      }
+      return;
+    }
+    // 回调不为空，执行回调逻辑
+    var ret = tryCallOne(cb, self._value);
+    // cb执行结果与异常处理
+    if (ret === IS_ERROR) {
+      reject(deferred.promise, LAST_ERROR);
+    } else {
+      resolve(deferred.promise, ret);
+    }
+  });
+}
+
+function resolve(self, newValue) {
+  // 这里依照标准的promise执行程序
+  // Promise Resolution Procedure: https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure
+  if (newValue === self) {
+    // 一个Promise的解决结果不能是自身，不然会出现循环处理的情况
+    return reject(
+      self,
+      new TypeError('A promise cannot be resolved with itself.')
+    );
+  }
+  // 值存在并且类型为对象或者函数时
+  if (
+    newValue &&
+    (typeof newValue === 'object' || typeof newValue === 'function')
+  ) {
+     // 是否存在then函数
+    var then = getThen(newValue);
+    // 这里处理的是获取then的时候异常情况
+    if (then === IS_ERROR) {
+      return reject(self, LAST_ERROR);
+    }
+    // 结果是promise 对象，则状态跟着这个promise走
+    if (
+      then === self.then &&
+      newValue instanceof Promise
+    ) {
+      self._state = 3; // 3表示结果还是promise的情况
+      self._value = newValue;
+      finale(self);
+      return;
+    } else if (typeof then === 'function') {
+      // 如果结果是一个包含then函数的对象（thenable），则继续走doResolve(基于then函数）
+      doResolve(then.bind(newValue), self);
+      return;
+    }
+  }
+  // newValue没什么特殊的，正常逻辑
+  self._state = 1; // fulfilled 状态
+  self._value = newValue;
+  finale(self);
+}
+
+function reject(self, newValue) {
+  self._state = 2;
+  self._value = newValue;
+  if (Promise._onReject) {
+    Promise._onReject(self, newValue);
+  }
+  finale(self);
+}
+
+/**
+ * 可以总结出在三种情况下调用了finale：
+ * 1、_state=3，等待其他promise的结果时
+ * 2、_state=1，完成的时候
+ * 3、_state=2，reject的时候
+ * 
+ * 所以，只有在 promise 结束或者依赖其他 promise 的时候，才会进入finale.
+ * 功能：该函数主要为了取出之前放入的deffereds，调用handle，走finale逻辑时_state都非0，所以进入handle时，直接走了handleResolved
+ */
+function finale(self) {
+  if (self._deferredState === 1) { // 单deffered处理逻辑
+    handle(self, self._deferreds);
+    self._deferreds = null;
+  } 
+  if (self._deferredState === 2) { // 多deffered处理多级
+    for (var i = 0; i < self._deferreds.length; i++) {
+      handle(self, self._deferreds[i]);
+    }
+    self._deferreds = null;
+  }
+}
+
+// Handler 类构造器，仅是包装 onFulfilled, onRejected, promise到一个实例上，deferred
+function Handler(onFulfilled, onRejected, promise){
+  this.onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : null;
+  this.onRejected = typeof onRejected === 'function' ? onRejected : null;
+  this.promise = promise;
+}
+
+/**
+ * Take a potentially misbehaving resolver function and make sure
+ * onFulfilled and onRejected are only called once.
+ *
+ * Makes no guarantees about asynchrony.
+ * 
+ */
+function doResolve(fn, promise) {
+  var done = false;
+  // 同步的直接调用传入的函数，将两个function作为fn的参数传入，也就是外部new Promise时编写的 resolve 和 reject
+  var res = tryCallTwo(fn, function (value) {
+    if (done) return;
+    done = true;
+    // 处理 resolve 逻辑
+    resolve(promise, value);
+  }, function (reason) {
+    if (done) return;
+    done = true;
+    // 处理 reject 逻辑
+    reject(promise, reason);
+  });
+  // 如果fn执行出现异常则直接reject
+  if (!done && res === IS_ERROR) {
+    done = true;
+    reject(promise, LAST_ERROR);
+  }
+}
+
+/* Promise执行流程总结：
+
+- 创建 Promise (new Promise)
+- 设置需要执行的函数 (外部的resolve,reject)
+- 设置完成的回调 (then调用后，通过handle处理deffered)
+- 开始执行函数 (finale)
+- 根据执行结果选择回调 （handleResolved） */
+
+```
+
+
+
+---
+欢迎交流和指出问题[@giscafer](https://github.com/giscafer)

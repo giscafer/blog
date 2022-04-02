@@ -1,0 +1,226 @@
+---
+  title: 抽象类与接口
+  publishedAt: 2020-09-27 17:33:09
+  summary: 抽象类与接口
+  tags: ["设计模式"]
+---
+
+> 文章是学习 `《设计模式之美》- 王争` 的总结
+
+## 1 引言
+
+面向对象编程中，抽象类和接口是经常被用到的语法概念，也是面向对象四大特性，和很多设计模式、设计思想、设计原则编程实现的基础。比如使用接口来实现面向对象的抽象特性、多态特性和基于接口而非实现的设计原则，使用抽象类来实现面向对象的继承特性和模板设计模式等。
+
+
+## 2 概述
+
+### 什么是抽象类和接口？
+
+抽象类其实就是一种特殊的不能被实例化的类，只能被子类继承，继承关系是一种 `is-a` 的关系。接口时一种 `has-a` 关系，表示具有某些功能，还可以叫为协议（contract）。
+
+#### 抽象类
+
+- 抽象类**不允许被实例化**，只能被继承。
+- 抽象类可以包含属性和方法。方法可以包含代码是吸纳，也可以不包含代码实现。不包含代码实现的方法叫**抽象方法**。
+- 子类继承抽象类，必须实现抽象类中的所有抽象方法。
+
+TypeScript 和 Java 一样使用关键词 `abstract` 来定义抽象类，举例：
+
+```ts
+/**
+ * 抽象类
+ */
+abstract class Logger {
+  private name: string;
+  private enabled: boolean;
+
+  constructor(name: string, enabled: boolean) {
+    this.name = name;
+    this.enabled = enabled;
+  }
+  public log(message: string): void {
+    if (!this.enabled) {
+      return;
+    }
+    this.doLog(message);
+  }
+  protected abstract doLog(message: string): void;
+}
+
+// 抽象类子类，输出到日记文件
+// Non-abstract class 'FileLogger' does not implement inherited abstract member 'doLog' from class 'Logger'.ts(2515)
+class FileLogger extends Logger {}
+
+```
+
+
+
+#### 接口
+
+- 接口不能包含属性（成员变量）。
+- 接口只能声明方法，方法不能包含代码实现。
+- 类实现接口的时候，必须实现接口中声明的所有方法。
+
+下面看一下 TypeScript 的接口例子代码：
+
+```ts
+// 模拟代码，定义类型
+interface RpcRequest {}
+
+// Filter 接口
+interface Filter {
+  doFilter(req: RpcRequest): void;
+}
+
+// 接口实现：鉴权过滤器
+class AuthencationFilter implements Filter {
+  doFilter(req: RpcRequest): void {
+    // 省略逻辑
+  }
+}
+
+// 接口实现：限流过滤器
+class RateLimitFilter implements Filter {
+  doFilter(req: RpcRequest): void {
+    // 省略逻辑
+  }
+}
+
+// 过滤器使用 demo
+class Applicaption {
+  private filters: Array<Filter> = [];
+  public handleRpcRequest(req: RpcRequest) {
+    try {
+      for (const filter of this.filters) {
+        filter.doFilter(req);
+      }
+    } catch (error) {
+      // 省略
+    }
+  }
+}
+```
+
+
+
+### 抽象类和接口能解决什么编程问题？
+
+#### 抽象类能够解决什么编程问题？
+
+抽象类不能实例化，需要子类去继承，所以，抽象类的存在就是为了类继承来使用的，而类继承更多是为了代码复用而生，故认为抽象类是为了更好的解决代码复用问题。
+
+一般的类继承不是也可以解决代码复用的问题了吗？是的，但是会存在一些约束性的问题。假设上面 的抽象类  `Logger` 是普通的类，一样有 `doLog` 方法，但子类继承 `Logger` 时，没有强制让子类去重写父类的`doLog` 方法，这时候就达不到我们要的多态效果了。此外，`Logger` 类还可以被直接实例化，这时候new 出来的实例调用的 `doLog` 方法是空的。
+
+而抽象类就可以很优雅的解决这样的继承问题。
+
+#### 接口可以解决什么编程问题？
+
+接口时对行为的一种抽象，相当于一组协议或者契约，你可以联想类比一下 API 接口，调用者只关注抽象的接口，不需要了解具体的实现，具体的实现代码对调用者透明。接口实现了约定和实现相分离，降低代码间的耦合性，提供代码的可扩展性。
+
+
+
+### 基于接口而非实现编程
+
+应用“基于接口而非实现编程”的原则，可以将接口和实现相分离，封装不稳定的实现，暴露稳定的接口。上游系统面向接口而非实现编程，不依赖不稳定的实现细节，这样当发生变化的时候，上游系统的代码基本上不需要做改动，以此来降低耦合性，提供扩展性。
+
+> 越抽象、越顶层、越脱离具体某一实现的设计，越能提高代码的灵活性，越能应对未来的需求变化。好的代码设计，不仅能应对当下的需求，而且在将来需求发生变化的时候，仍然能够在不破坏原有代码设计的情况下灵活应对。
+
+先看一下 `AliyunImageStore` 类
+
+```ts
+/**
+ * 图片存储
+ */
+class AliyunImageStore {
+  public createBucketIfNotExisting(bucketName: string): void {
+    // bucket创建逻辑
+  }
+  public generateAccessToken(): string {
+    // 根据 accesskey、secrectkey 生成 access token
+    const accessToken = '';
+    return accessToken;
+  }
+  public uploadToAliyun(
+    image: Blob,
+    bucketName: string,
+    accessToken: string
+  ): string {
+    // 上传图片到阿里云，返回图片url
+    const url = '';
+    return url;
+  }
+
+  public downloadFromAliyun(url: string, accessToken: string) {
+    // 从阿里云下载图片
+  }
+}
+
+```
+
+
+
+上边代码没有遵从“基于接口而非实现原则” ：
+
+- 函数命名暴露了实现细节，比如 `uploadToAliyun()`就不符合要求，应该抽象命名为 `upload()`。
+- 封装具体的实现细节。
+- 为实现类定义抽象的接口。具体的实现类都依赖统一的接口定义，遵从一致的上传功能协议。使用者依赖接口，而不是具体的实现类来编程。
+
+重构代码后：
+
+```ts
+// 重构
+interface ImageStore {
+  update(image: Blob, bucketName: string): string;
+  download(url: string): Blob;
+}
+
+class AliyunImageStore implements ImageStore {
+  update(image: Blob, bucketName: string): string {
+    this.createBucketIfNotExisting(bucketName);
+    const accessToken: string = this.generateAccessToken();
+    // 上传到阿里云得到图片url
+    return '';
+  }
+  download(url: string): Blob {
+    const accessToken: string = this.generateAccessToken();
+    // 从阿里云下载图片……
+    return;
+  }
+
+  public createBucketIfNotExisting(bucketName: string): void {
+    // bucket创建逻辑
+  }
+  public generateAccessToken(): string {
+    // 根据 accesskey、secrectkey 生成 access token
+    const accessToken = '';
+    return accessToken;
+  }
+}
+
+class PrivateImageStorae implements ImageStore {
+  update(image: Blob, bucketName: string): string {
+    this.createBucketIfNotExisting(bucketName);
+    // 上传到私有云，返回图片url……
+    return;
+  }
+  download(url: string): Blob {
+    // 从私有云下载图片……
+    return;
+  }
+  public createBucketIfNotExisting(bucketName: string): void {
+    // bucket创建逻辑
+  }
+}
+```
+
+
+
+### 多用组合少用继承
+
+继承主要有三个作用：`is-a` 关系表示、支持多态、代码复用。这三个特性都可以通过组合、接口、委托三个技术手段来达成。利用组合可以解决层次过深、过复杂的继承关系影响代码可维护性的问题。
+
+
+
+## 3 总结
+
+抽象类和接口，都是面向对象编程中是实现面向对象编程四大特性的基础。但在编程中，需要合理的分析设计与抽象，使用最佳的方案来实现代码，最终的目的还是为了代码的易读性、易扩展、易维护等。只有清除的了解抽象类和接口的区别，以及使用场景，才能更好的运用。也是设计模式、设计原则中的重要基础。

@@ -1,0 +1,153 @@
+---
+  title: 浏览器中 JavaScript 的执行机制
+  publishedAt: 2020-02-22 13:58:26
+  summary: 浏览器中 JavaScript 的执行机制
+  tags: ["JavaScript","Review"]
+---
+
+# 浏览器中 JavaScript 的执行机制
+
+- 变量提升
+- 调用栈
+- 作用域链
+- 闭包
+- this
+
+## 变量提升
+
+实际上变量和函数声明在代码里的位置是不会变的，而且是在编译阶段被 JavaScript 引擎放入内存中，一段 JavaScript 代码在执行之前需要被 JavaScript 引擎编译，编译完成之后，才会进入执行阶段。大致流程为：**JavaScript 代码片段** ——> **编译阶段** ——> **执行阶段—>**。
+
+**编译阶段**，每段执行代码会分为两部分，第一部分为变量提升部分的代码，第二部分为执行部分的代码。经过编译后，生成**执行上下文（Execution context）和 可执行代码**。
+
+![image](https://user-images.githubusercontent.com/8676711/75086121-8cc7fe00-556b-11ea-81ac-533651bb95ef.png)
+
+**执行上下文** 是 JavaScript 执行一段代码时的运行环境，比如调用一个函数，就会进入函数的执行上下文，从而确定该函数执行期间用到的如 this、变量、对象以及函数等。
+
+执行上下文由 **变量环境（Variable Environment）** 和 **词法环境（Lexical Environment）**对象 组成，变量环境保存了代码中变量提升的内容，包括 `var` 定义和 `function` 定义的变量。而词法环境保存 `let` 和 `const` 定义块级作用域的变量。
+
+![变量查找过程](https://user-images.githubusercontent.com/8676711/75086161-f516df80-556b-11ea-9393-5273b3c4e634.png)
+
+块级作用域就是通过词法环境的栈结构来实现的，而变量提升是通过变量环境来实现，通过这两者的结合，JavaScript 引擎也就同时支持了变量提升和块级作用域了
+
+变量查找过程：沿着词法环境的栈顶向下查询，如果在词法环境中的某个块中查找到了，就直接返回给 JavaScript 引擎，如果没有查找到，那么继续在变量环境中查找。
+
+变量声明提升补充：
+
+- var的创建和初始化被提升，赋值不会被提升。
+
+- let的创建被提升，初始化和赋值不会被提升。
+
+- function的创建、初始化和赋值均会被提升。
+
+
+
+## 调用栈
+
+**调用栈**是用来管理函数调用关系的一种数据结构。在函数调用的时候，JavaScript 引擎会创建函数**执行上下文**，而全局代码下又有一个**全局执行上下文**，这些执行上下文会使用一种叫**栈**的数据结果来管理。
+
+所以 JavaScript 的**调用栈**，其实就是 **执行上下文栈** 。举例代码执行，入栈如图所示：
+
+```js
+var a = 2
+function add(b,c){
+  return b+c
+}
+function addAll(b,c){
+var d = 10
+result = add(b,c)
+return  a+result+d
+}
+addAll(3,6)
+```
+
+![执行 add 函数时的调用栈](https://user-images.githubusercontent.com/8676711/75086295-90f51b00-556d-11ea-9deb-b040031cc405.png)
+
+调用栈既然是一种数据结构，所以是存在大小的，超出了栈大小就会出现**栈溢出**报错，比如斐波那契数列，执行10000次，超过了最大栈调用大小（Maximum call stack size exceeded）。
+
+```js
+function Fibonacci2 (n , ac1 = 1 , ac2 = 1) {
+  if( n <= 1 ) {return ac2};
+
+  return Fibonacci2 (n - 1, ac2, ac1 + ac2);
+}
+Fibonacci2(10000) // Maximum call stack size exceeded
+```
+
+该函数是递归的，虽然只有一种函数调用，但是还是会一直创建执行上下文压入调用栈中，导致超过最大调用栈大小报错，可以通过 Chrome 调式看到 Call Stack 的情况
+
+![image](https://user-images.githubusercontent.com/8676711/75086392-a3238900-556e-11ea-8221-bf65055baf4d.png)
+
+总结：
+
+- 每调用一个函数，JavaScript 引擎会为其创建执行上下文，并把该执行上下文压入调用栈，然后 JavaScript 引擎开始执行函数代码。
+- 如果在一个函数 A 中调用了另外一个函数 B，那么 JavaScript 引擎会为 B 函数创建执行上下文，并将 B 函数的执行上下文压入栈顶。
+- 当前函数执行完毕后，JavaScript 引擎会将该函数的执行上下文弹出栈。
+- 当分配的调用栈空间被占满时，会引发“堆栈溢出”问题。
+
+所以，斐波那契数列函数优化的手段就是使用循环来减少函数调用，从而减少函数执行上下文的创建压入栈的情况，就可以解决栈溢出的报错了。（递归尾部优化无法解决问题，Chrome浏览器还是栈溢出），使用[蹦床函数]([https://es6.ruanyifeng.com/#docs/function#%E5%B0%BE%E8%B0%83%E7%94%A8%E4%BC%98%E5%8C%96](https://es6.ruanyifeng.com/#docs/function#尾调用优化))来解决：
+
+```js
+function runStack (n) {
+  if (n === 0) return 100;
+  return runStack.bind(null, n- 2); // 返回自身的一个版本
+}
+// 蹦床函数，避免递归
+function trampoline(f) {
+  while (f && f instanceof Function) {
+    f = f();
+  }
+  return f;
+}
+trampoline(runStack(1000000))
+```
+
+![image](https://user-images.githubusercontent.com/8676711/75086880-2f847a80-5574-11ea-8b54-8b0547cdde78.png)
+
+可以看到，调用栈中一直是保持3个执行上下文而已，多余的都及时的pop掉了。
+
+## 作用域链
+
+每个执行上下文的变量环境中，都包含了一个外部引用，用来指向外部的执行上下文，我们把这个外部的引用称为 **outer**。
+
+当一段代码使用一个变量是，JavaScript 引擎首先会在“当前的执行上下文”中查找该变量，如果找不到就会继续在 outer 所指向的执行上下文中查找。我们把这个查找的链条就称为**作用域链**。
+
+![带有外部引用的调用栈示意图](https://user-images.githubusercontent.com/8676711/75087133-9bb4ad80-5577-11ea-8f0e-da90f7547440.png)
+
+### 词法作用域
+
+词法作用域就是指作用域是由代码中函数声明的位置来决定的，所以词法作用域是静态的作用域，通过它就能够预测代码在执行过程中如何查找标识符。词法作用域是代码阶段决定好的，和函数是怎么调用的没有关系。
+
+![词法作用域](https://user-images.githubusercontent.com/8676711/75087205-390fe180-5578-11ea-922e-2ceb4f5c75c2.png)
+
+### 块级作用域中的变量查找
+
+- 从当前执行上下文的词法环境，自顶向下查找（栈中的内存块），然后再从当前执行向下文中的变量环境中查找；
+- 查找不到，则继续在**outer**指向的执行上下文继续依次先从词法环境，再到变量环境查找。
+
+## 闭包
+
+有词法作用域的规则可以知道，内部函数总是可以访问他们的外部函数中的变量，当外部函数执行完毕后，pop stack了，遗留下了外部环境形成的闭包 Closure 环境，该环境内存中还保存着那些可以访问的变量，类似一个专属背包，除了内部函数访问，气氛方式无法访问该专属背包，我们就包这个背包称为外部函数的**闭包**（那些内部函数引用外部函数的变量依然保存在内存中，我们把这些变量的集合称为闭包）。
+
+### 闭包是怎么回收的
+
+如果引用闭包的函数是一个全局变量，那么闭包会一直存在知道页面关闭；如果这个闭包以后不再使用的话，就会造成内存泄漏。
+
+如果引用闭包的函数是一个局部变量，等函数销毁后，下次 JavaScript 引擎执行垃圾回收时，判断闭包这块内容如果不再被使用了，那么 JavaScript 引擎的垃圾回收器就会回收这块的内存。
+
+使用闭包的原则：**如果闭包会一直使用，那么他可以作为全局变量而存在；但如果使用频率不高，而且占用内存有比较大的话，那就尽量让它成为一个局部变量。**
+
+## this
+
+```js
+let a = { name: 'this解释' }
+function foo() {
+  console.log(this.name)
+}
+foo.bind(a)() // => 'this解释''
+```
+
+![this判断图](https://user-images.githubusercontent.com/8676711/75087424-edab0280-557a-11ea-91d8-d691e8135392.png)
+
+---
+
+_参考资源：《浏览器的工作原理与实践》极客时间-李兵_

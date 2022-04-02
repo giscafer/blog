@@ -1,0 +1,240 @@
+---
+  title: 设计原则 - 单一原则、开闭原则、里式替换原则
+  publishedAt: 2020-10-13 00:56:45
+  summary: 设计原则 - 单一原则、开闭原则、里式替换原则
+  tags: ["设计模式"]
+---
+
+> 文章是学习 `《设计模式之美》- 王争` 的总结
+
+## 1 引言
+
+设计原则是设计模式重要的思想和原则，需要清楚原则的定义和原则设计的初衷，能解决哪些问题，有哪些应用场景。本篇是复习5大设计原则 SOLID 的前三个 SRP（单一职责原则）、OCP（开闭原则）、LSP（里式替换原则）。
+
+## 2 概述
+
+### 单一职责原则 SRP
+
+指：**一个类或模块只负责完成一个职责（或者功能）**。
+
+如何判断类的职责是否单一？有几条可以参考的判断原则：
+
+- 类的代码行数、函数或属性过多，会影响代码的可读性和可维护性，我们就需要考虑对类进行拆分；
+- 类依赖的其他类过多，或者依赖类的其他类过多，不符合高内聚、低耦合的设计思想，我们就需要考虑对类进行拆分；
+- 私有方法过多，我们就要考虑能否将私有方法独立到新的类中，设计为 public 方法，供多的类使用，从而提高代码的复用性；
+- 比较难给类起一个合适的名字，很难用一个业务名词概括，或者只能用一些笼统的 Manager、Context 之类的词语来命名，这就说明类的职责定义得不够清晰；
+- 类中大量的方法都是集中操作类中的几个属性，比如，在 UserInfo 类中，如果一半的方法都是在操作 address 信息，那就可以考虑将这几个属性和对应的方法拆分出来。
+
+
+
+误区：避免类的职责在任何时候都设计的越单一。
+
+单一职责原则通过避免设计大而全的类，避免将不相关的功能耦合在一起，来提高类的内聚性，同时，类职责单一，类依赖的和被依赖的其他类也会变少，减少了代码的耦合性，从此来实现代码的高内聚、低耦合。但是如果拆分得过细，实际上会适得其反，反倒会降低内聚性，也会影响代码的可维护性。
+
+### 开闭原则 OCP
+
+**对扩展开放，对修改关闭**。添加一个新的功能，应该是通过在已有代码基础上扩展代码（新增模块、类、方法、属性等），而非修改已有代码（修改模块、类、方法、属性等）的方式来完成。关于定义，我们有两点要注意。第一点是，开闭原则并不是说完全杜绝修改，而是以最小的修改代码的代价来完成新功能的开发。第二点是，同样的代码改动，在粗代码粒度下，可能被认定为“修改”；在细代码粒度下，可能又被认定为“扩展”。
+
+**如何做到 “对扩展开放，对修改关闭？**
+
+我们要时刻具备扩展意识、抽象意识、封装意识。在写代码的时候，我们要多花点时间思考一下，这段代码未来可能有哪些需求变更，如何设计代码结构，事先留好扩展点，以便在未来需求变更的时候，在不改动代码整体结构、做到最小代码改动的情况下，将新的代码灵活地插入到扩展点上。
+
+很多设计原则、设计思想、设计模式，都是以提高代码的扩展性为最终目的的。特别是 23 种经典设计模式，大部分都是为了解决代码的扩展性问题而总结出来的，都是以开闭原则为指导原则的。最常用来提高代码扩展性的方法有：多态、依赖注入、基于接口而非实现编程，以及大部分的设计模式（比如，装饰、策略、模板、职责链、状态）。
+
+举例`API 接口监控代码` **Alert.ts** 类
+```ts
+/**
+ * API 接口监控代码
+ */
+
+interface AlertRule {
+  getMatchedRule(api: string);
+}
+interface Notification {
+  notify(level: NotificationEmergencyLevel, msg: string);
+}
+enum NotificationEmergencyLevel {
+  URGENCY = 0,
+  SEVERE = 1,
+}
+
+class Alert {
+  private rule: AlertRule;
+  private notification: Notification;
+
+  constructor(rule: AlertRule, notification: Notification) {
+    this.rule = rule;
+    this.notification = notification;
+  }
+
+  public check(
+    api: string,
+    requestCount: number,
+    errorCount: number,
+    durationOfSecond: number
+  ): void {
+    const tps = requestCount / durationOfSecond;
+    if (tps > this.rule.getMatchedRule(api).getMaxTps()) {
+      this.notification.notify(NotificationEmergencyLevel.URGENCY, '…');
+    }
+    if (errorCount > this.rule.getMatchedRule(api).getMaxErrorCount()) {
+      this.notification.notify(NotificationEmergencyLevel.SEVERE, '…');
+    }
+  }
+}
+```
+
+根据 OCP 改进之后的代码：
+
+```ts
+/**
+ * OCP 改进后的API 接口监控代码
+ */
+
+interface AlertRule {
+  getMatchedRule(api: string);
+}
+interface Notification {
+  notify(level: NotificationEmergencyLevel, msg: string);
+}
+
+enum NotificationEmergencyLevel {
+  URGENCY = 0,
+  SEVERE = 1,
+}
+
+class Alert {
+  private alertHandlers: AlertHandler[] = [];
+  public addAlertHandler(alertHandler: AlertHandler) {
+    this.alertHandlers.push(alertHandler);
+  }
+  public check(apiStatInfo: ApiStatInfo) {
+    for (const handler of this.alertHandlers) {
+      handler.check(apiStatInfo);
+    }
+  }
+}
+
+class ApiStatInfo {
+  private _api: string;
+  public get api(): string {
+    return this._api;
+  }
+  public set api(value: string) {
+    this._api = value;
+  }
+  private _requestCount: number;
+  public get requestCount(): number {
+    return this._requestCount;
+  }
+  public set requestCount(value: number) {
+    this._requestCount = value;
+  }
+  private _errorCount: number;
+  public get errorCount(): number {
+    return this._errorCount;
+  }
+  public set errorCount(value: number) {
+    this._errorCount = value;
+  }
+  private _durationOfSecond: number;
+  public get durationOfSecond(): number {
+    return this._durationOfSecond;
+  }
+  public set durationOfSecond(value: number) {
+    this._durationOfSecond = value;
+  }
+}
+
+abstract class AlertHandler {
+  protected rule: AlertRule;
+  protected notification: Notification;
+  constructor(rule: AlertRule, notification: Notification) {
+    this.rule = rule;
+    this.notification = notification;
+  }
+  public abstract check(apiStatInfo: ApiStatInfo);
+}
+
+class TpsAlertHandler extends AlertHandler {
+  constructor(rule: AlertRule, notification: Notification) {
+    super(rule, notification);
+  }
+  public check(apiStatInfo: ApiStatInfo) {
+    const tps = apiStatInfo.requestCount / apiStatInfo.durationOfSecond;
+    if (tps > this.rule.getMatchedRule(apiStatInfo.api.getMaxTps())) {
+      this.notification.notify(NotificationEmergencyLevel.URGENCY, '...');
+    }
+  }
+}
+
+class ErrorAlertHandler extends AlertHandler {
+  constructor(rule: AlertRule, notification: Notification) {
+    super(rule, notification);
+  }
+  public check(apiStatInfo: ApiStatInfo): void {
+    if (
+      apiStatInfo.errorCount >
+      this.rule.getMatchedRule(apiStatInfo.api.getMaxTps())
+    ) {
+      this.notification.notify(NotificationEmergencyLevel.SEVERE, '...');
+    }
+  }
+}
+
+// 重构之后的 Alert 使用举例
+class ApplicationContext {
+  private alertRule: AlertRule;
+  private notification: Notification;
+  private alert: Alert;
+
+  public initializeBeans() {
+    this.alertRule = new AlertRule();
+    this.notification = new Notification();
+    this.alert = new Alert();
+    alert.addAlertHandler(
+      new TpsAlertHandler(this.alertRule, this.notification)
+    );
+    alert.addAlertHandler(
+      new ErrorAlertHandler(this.alertRule, this.notification)
+    );
+  }
+
+  public getAlert(): Alert {
+    return this.alert;
+  }
+
+  private static instace: ApplicationContext = new ApplicationContext();
+  constructor() {
+    ApplicationContext.instace.initializeBeans();
+  }
+  public static getInstance(): ApplicationContext {
+    return this.instace;
+  }
+}
+
+const apiStatInfo: ApiStatInfo = new ApiStatInfo();
+ApplicationContext.getInstance().getAlert().check(apiStatInfo);
+
+
+```
+
+### 里式替换原则 LSP
+
+> If S is a subtype of T, then objects of type T may be replaced with objects of type S, without breaking the program。
+
+子类对象（object of subtype/derived class）能够替换程序（program）中父类对象（object of base/parent class）出现的任何地方，并且保证原来程序的逻辑行为（behavior）不变及正确性不被破坏。
+
+里式替换原则是用来指导，继承关系中子类该如何设计的一个原则。理解里式替换原则，最核心的就是理解“design by contract，按照协议来设计”这几个字。父类定义了函数的“约定”（或者叫协议），那子类可以改变函数的内部实现逻辑，但不能改变函数原有的“约定”。这里的**约定包括：函数声明要实现的功能；对输入、输出、异常的约定**；甚至包括注释中所罗列的任何特殊说明。
+
+理解这个原则，我们还要弄明白里式替换原则跟多态的区别。虽然从定义描述和代码实现上来看，多态和里式替换有点类似，但它们关注的角度是不一样的。多态是面向对象编程的一大特性，也是面向对象编程语言的一种语法。它是一种代码实现的思路。而里式替换是一种设计原则，用来指导继承关系中子类该如何设计，子类的设计要保证在替换父类的时候，**不改变原有程序的逻辑及不破坏原有程序的正确性**。
+
+以下是**违反**里式替换原则的情况：
+
+- 子类违背父类声明要实现的功能（实现逻辑不一样，比如按不同字段来排序了）
+- 子类违背父类对输入、输出、异常的约定（输入参数格式不一致、返回值不同、异常类型不同等）
+- 子类违背父类注释中所罗列的任何特殊说明
+
+
+
+

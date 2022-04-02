@@ -1,0 +1,27 @@
+---
+  title: AngularJS开发异常和解决方法
+  publishedAt: 2016-09-01 17:02:51
+  summary: AngularJS开发异常和解决方法
+  tags: ["AngularJS"]
+---
+
+### AngularJS : Prevent error $digest already in progress when calling $scope.$apply()
+
+解决方法：http://stackoverflow.com/questions/12729122/angularjs-prevent-error-digest-already-in-progress-when-calling-scope-apply
+
+The digest cycle is a synchronous call. It won't yield control to the browser's event loop until it is done. There are a few ways to deal with this. The easiest way to deal with this is to use the built in $timeout, and a second way is if you are using underscore or lodash (and you should be), call the following:
+
+```
+$timeout(function(){
+    //any code in here will automatically have an apply run afterwards
+});
+```
+
+or if you have underscore:
+
+```
+_.defer(function(){$scope.$apply();});
+```
+
+We tried several workarounds, and we hated injecting $rootScope into all of our controllers, directives, and even some factories. So, the $timeout and _.defer have been our favorite so far. These methods successfully tell angular to wait until the next animation loop, which will guarantee that the current scope.$apply is over.
+

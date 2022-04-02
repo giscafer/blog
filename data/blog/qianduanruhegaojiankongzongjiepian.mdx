@@ -1,0 +1,448 @@
+---
+  title: 前端如何搞监控总结篇
+  publishedAt: 2020-04-25 15:35:22
+  summary: 前端如何搞监控总结篇
+  tags: ["监控"]
+---
+
+
+> **本文部分内容和截图内容都来自以下第五届前端早早聊大会分享：**
+> **《如何实现用户行为的动态采集与分析》**
+> **《如何结合组件设计前端埋点策略》**
+> **《如何面向场景做监控数据分析》**
+> **《如何针对 APP 自建前端监控体系》**
+> **《如何搭建一套多端错误监控平台》**
+> **《如何基于错误日志进行分析和告警》**
+> **《如何基于数据和堆栈映射快速定位问题》**
+> **《如何设计前端实时分析及报警系统》**
+> **会议详细见：**[https://www.yuque.com/zaotalk/conf/425](https://www.yuque.com/zaotalk/conf/425)
+
+
+
+本文是会议总结文章，可能会有点大乱炖的感觉。
+
+
+监控步骤：定制规范，埋点 > 采集 > 计算 > 分析
+
+
+<a name="t78bM"></a>
+## 数据埋点的业务价值
+
+
+- 平台迭代数据抓手，降低咨询量
+- 解决高频问题，提升用户满意度
+- 解决业务痛点：我的会场效果如何？不好该如何调优？调优过程是否高效？经验是否可以复用？
+
+
+
+**面向场景做监控：**
+
+- 精细化运营（偏好敏感、人群身份）——>场景度量
+- 解决心智难以划分：圈选逻辑没有约束，场景重叠度高，同质化严重 >>> 商品&人群下钻、重叠度报告、心智报告
+- 数据指标波动问题：运营干预波动数据难体现，分析成本高，打击分析积极性>>> 场景组配置、趋势报告、场景报告
+- 流量公平问题：流量越多的场景就有更多的曝光机会，运营同学都想要流量，流量给谁>>> 生成场景分配报告
+
+
+
+<a name="i8gxt"></a>
+## 埋点规范
+<a name="QUvAi"></a>
+### 超级定位模型
+（super position model)
+
+- 站点级别 spma
+- 页面级别 spma .spmb
+- 组件级别 spma .spmb .spmc
+- 组件内部链接级别 spma .spmb .spmc .spmd
+
+
+
+
+
+<a name="nJjZR"></a>
+## 数据采集
+
+
+<a name="qU3Mn"></a>
+### 采集方式
+
+
+采集方式有：进入、离开、点击、滚屏、代码植入
+
+
+<a name="rM7eQ"></a>
+#### 进入
+
+
+- 通过编译植入项目ID，进入页面生成页面ID，比如 `data-utm-c="区块ID"`
+- 代码侵入：坑位ID、区块ID `data-utm-click="坑位ID1"`
+
+
+
+举例生成的配置文件：
+![image.png](https://cdn.nlark.com/yuque/0/2020/png/189420/1587780961806-58a7cd9d-2317-4822-b23d-09b931c5d1f3.png#align=left&display=inline&height=409&margin=%5Bobject%20Object%5D&name=image.png&originHeight=818&originWidth=1216&size=586203&status=done&style=none&width=608)
+
+
+事件委托到 document，一般的事件类型：mousedown、touch、scroll、keydown 
+
+
+设置埋点参数：进入页面的时候，可以在URL 后边加入生成唯一标识的串联ID，在链接点击跳转时，可以依据标识上报。
+```html
+< href="http://giscafer.com?utm=项目ID.页面ID.区块ID.坑位index.串联ID"
+```
+
+
+
+
+<a name="SzNeE"></a>
+#### 滚屏
+监听 scroll 事件处理一些需要上报的场景，要处理好触发次数。
+
+
+<a name="5rKrA"></a>
+#### 离开
+使用 Send Beacon 避免离开页面时请求被终止，保证数据上报正常发送。缺陷：IE浏览器不支持。IE的话改用 `<Img>` 发送发送。
+
+
+<a name="kq8Vx"></a>
+#### 无埋点采集情景
+比如商场的收藏、加购、spm链接跳转等这种逻辑下自动采集数据
+
+
+<a name="S4IqV"></a>
+#### 自定义植入代码
+手动埋点，事件触发上报等
+
+
+<a name="jYoij"></a>
+### 组件监控
+任何页面都可以拆分成组件（React 的思想：已组件的方式考虑UI构建），所以监控可以结合组件来做。当组件渲染异常时，可以监控到哪个地方出问题。比如聚合组件在业务组件中的统计效能：曝光量、点击转化率、加载性能、渲染性能、数据性能、应用次数、失败次数、代码质量。
+
+![image.png](https://cdn.nlark.com/yuque/0/2020/png/189420/1587784707013-d8518a82-b803-4390-b869-14dc0d725663.png#align=left&display=inline&height=714&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1428&originWidth=2702&size=1106593&status=done&style=none&width=1351)
+
+
+<a name="HcLRZ"></a>
+### 多端统一采集
+
+
+- 规范化采集字段（日记上报规范）
+- 统一采集方案 
+- 业务自行上报 （前端只负责埋点）
+
+![image.png](https://cdn.nlark.com/yuque/0/2020/png/189420/1587786507445-3e3ab6ea-3700-4afc-adde-e11dbe4dbef7.png#align=left&display=inline&height=558&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1116&originWidth=2060&size=244749&status=done&style=none&width=1030)
+
+
+<a name="L6xDK"></a>
+### 问题
+
+
+- 如何保证数据收集时不影响业务系统的性能？
+
+
+
+个人觉得可以用相关的技术点来解决前端可能影响到页面性能的问题，比如：Web Worker、requestIdleCallback 等，但后端的服务稳定性是否能保证需要关注吗？
+
+- web页面 beforeunload 数据丢失的问题，页面奔溃就没法收集了
+
+
+
+除了 Send Beacon 外，可以考虑 Service Worker 来配合做？页面奔溃前定时器处理做标记，下次打开页面对比对应值来判断是否页面奔溃过。
+
+
+- 网络问题是否上报？
+
+
+
+记录但不处理，不进行报警
+
+
+<a name="f7FNN"></a>
+## 数据清洗
+![image.png](https://cdn.nlark.com/yuque/0/2020/png/189420/1587786653722-5f34b4b0-beb3-4714-9661-c048b4b309d8.png#align=left&display=inline&height=545&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1090&originWidth=2080&size=251765&status=done&style=none&width=1040)
+
+
+<a name="ZYVGa"></a>
+## 数据分析
+
+
+数据分析本质就是将监控到的数据可视化展示，或是转化为大家可以理解的概念，指标数据。使用过站长统计、比如 Google Analytics 和 百度统计、CNZZ 等，他们的统计管理后台，展示给“站长”可视化的指标数据就是通过数据分析得来的。
+
+
+**实现思路/方案：**
+
+
+- 获取到网站页面的基础数据，如 PV、UV、点击数、曝光数 来通过公式规则（如功能有序页面漏斗）来计算转化率、跳出率、平均使用时长等
+
+
+
+
+
+
+
+<a name="nQOuB"></a>
+## 数据应用
+
+
+得到指标分析得结果，可以用来分析存在的问题，改善网站，通过转化率来促进义务。，也可以研究用户习惯和发现趋势，提供一些自定义设置功能帮助更好的做到分析。
+
+
+将监控数据通过各种图表工具来展示分析结果。
+![image.png](https://cdn.nlark.com/yuque/0/2020/png/189420/1587781841091-712ae21c-d637-4672-aa62-43b4c7d6bc42.png#align=left&display=inline&height=607&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1214&originWidth=2738&size=251756&status=done&style=none&width=1369)
+
+
+<a name="Rb1IA"></a>
+### 功能展示（监控看板）
+
+
+- 指标波动图（UV、PV等）
+- 热力图
+- 访问来源、时长、跳出率分析
+- 用户活跃、留存、地域分布、终端类型
+- 心智报告图表统计
+- 报表统计、日记报告、错误报告等
+- 实时信息看板
+- ……
+
+
+
+
+
+<a name="T6zaX"></a>
+## **如何针对 APP 自建前端监控体系****（宋小菜）**
+**
+> 详细见 《如何针对 APP 自建前端监控体系》PPT
+
+
+
+![image.png](https://cdn.nlark.com/yuque/0/2020/png/189420/1587792828038-da2e3012-db2c-4df9-b53d-3c426a2f5701.png#align=left&display=inline&height=790&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1580&originWidth=2896&size=841829&status=done&style=none&width=1448)
+
+
+![image.png](https://cdn.nlark.com/yuque/0/2020/png/189420/1587791184002-cdc739e5-3d57-451a-981f-e05d02ba901e.png#align=left&display=inline&height=410&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1442&originWidth=2622&size=824375&status=done&style=none&width=746)
+![image.png](https://cdn.nlark.com/yuque/0/2020/png/189420/1587792923807-8f97184e-5d6c-48a4-b341-4d29542330cf.png#align=left&display=inline&height=750&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1500&originWidth=2460&size=619291&status=done&style=none&width=1230)
+《**如何针对 APP 自建前端监控体系》**
+**
+**
+<a name="60EbZ"></a>
+### RN SDK
+
+
+- JS 端
+  - 错误捕获
+  - 网络请求
+  - 页面跳转
+- Native 端
+  - IOS 使用 KSCrash
+  - 存储捕获到的数据（包括 JS 端和 Native 端统一上报）
+
+
+
+<a name="09L2L"></a>
+### 微信小程序 SDK
+
+
+- 网络请求：代理全局对象wx 的 wx.request 的方法
+- 页面跳转：覆写 Page 对象，代理生命周期方法
+
+
+
+<a name="rHlsA"></a>
+### Log 处理
+![image.png](https://cdn.nlark.com/yuque/0/2020/png/189420/1587791783452-dd9d47c2-82d4-4e16-b783-9518c21c39c8.png#align=left&display=inline&height=648&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1296&originWidth=2408&size=587761&status=done&style=none&width=1204)
+
+
+<a name="rbtL8"></a>
+### 监控看板
+
+- 实时P/UV 查看
+- 实时错误查看
+- Issue查看、分配和统计
+- Issue 分类
+- Issue/task 更新历史
+- 报警任务查看和编辑
+- ……
+<a name="gLXwu"></a>
+### 报警控制
+
+- 更新报警任务
+- 分发报警任务
+  - 常用报警任务，主要用于发现以及生成新issue
+  - 特定报警任务
+- 更新任务执行结果
+
+
+
+eg: 常规任务
+
+  - 根据任务执行规则而分发嗅探上报的错误信息的报警任务分给任务执行器，在任务执行结果返回之后将值归类并根据错误信息特征生成issue
+
+
+
+
+
+<a name="2rRjd"></a>
+### 任务执行
+
+- 执行报警任务
+- 多结点分担任务压力
+
+
+
+
+
+<a name="eU6t7"></a>
+## **《如何搭建一套多端错误监控平台》（贝贝）5☆推荐**
+
+
+> 详细见 《如何一套多端错误监控平台》PPT，**该分享根据具体实现逐步讲解，比较接地气和清晰，点赞**。
+
+
+
+<a name="d6Kig"></a>
+### 为什么自研
+
+
+稳定性、一致性、扩展性、安全性和成本综合考虑
+
+
+![image.png](https://cdn.nlark.com/yuque/0/2020/png/189420/1587794206888-962c30a0-d4b3-425d-9ca7-e7da2a625dd0.png#align=left&display=inline&height=708&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1416&originWidth=2702&size=277349&status=done&style=none&width=1351)
+
+
+<a name="MsaVF"></a>
+### 实现
+
+
+<a name="6hCR0"></a>
+#### 架构图
+![image.png](https://cdn.nlark.com/yuque/0/2020/png/189420/1587794302593-7f72ad3d-2377-4cae-a9e0-e6d207dd8e8e.png#align=left&display=inline&height=763&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1526&originWidth=3012&size=425580&status=done&style=none&width=1506)
+
+
+<a name="cgORG"></a>
+## Web端错误监控的实现
+
+
+<a name="Fscee"></a>
+### 一、SDK——错误收集/上报
+> AOP 面向切面编程，改写原有行为
+
+<a name="4Texz"></a>
+#### 1、SDK 设计
+<a name="vspF9"></a>
+#### 2、错误捕获机制
+> 
+
+
+
+- window.onerror： 运行时错误监听
+- 监听unhandedrejection 事件：promise 没有 catch 错误场景
+- try/catch 处理跨域脚本错误： Script error.
+  - 方案1：后端配置 Access-Control-Allow-Origin、前端 script 标签配置 crossoriign
+  - 劫持原生方法，使用 try/catch 绕过，将错误抛出
+- 技术栈错误捕获方式：原生js 就是 addEventListner、Vue errorHandler、React 是 componentDidCatch
+
+
+
+
+
+<a name="E6l98"></a>
+#### 3、环境信息收集
+<a name="Ibwpu"></a>
+#### 4、行为收集
+<a name="3pB5R"></a>
+##### 行为分类
+
+- 用户行为：点击、滚动、聚焦/失焦、长按等；
+- 浏览器行为：发起请求、跳转、前进后退、关闭、新开窗口等；
+- 控制台打印行为
+
+
+
+<a name="Z1Xba"></a>
+#### 5、数据上报
+
+
+<a name="2WV9x"></a>
+##### 5.1、数据上报方式
+Q: 为什么用 1x1 像素 gif 图？
+
+
+- 没有跨域问题；
+- 发 GET 请求之后不需要获取数据、服务器也不需要发送数据；
+- 不会携带当前域名 cookie !
+- 不会阻塞页面加载、影响用户体验，只需要 new Image 对象；
+- 相比 BMP/PNG 体积最小，可以节约 41%/35% 的网络资源大小。
+
+
+
+<a name="Kkcl9"></a>
+#### 6、总结
+
+
+**监听/劫持** 原始方法，获取需要上报的数据，在错误发生时触发触发函数会用 **gif 上报**。
+
+
+<a name="dQmrY"></a>
+### 二、数据清洗
+
+
+数据特征：
+
+- 数据量大、体积大
+- 没有分类、聚合
+- 没有对非法数据进行过滤
+
+
+
+<a name="LufJt"></a>
+#### 1、存储介质对比
+![image.png](https://cdn.nlark.com/yuque/0/2020/png/189420/1587796175845-290c2464-8ed3-44ae-9e72-35f0b284ac88.png#align=left&display=inline&height=780&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1560&originWidth=2958&size=377874&status=done&style=none&width=1479)
+
+
+<a name="j5a7J"></a>
+#### 2、清洗流程
+
+
+> 详情见会议PPT
+
+
+
+ES——>获取数据——> 数据预处理——>数据聚合（为了存储小、查询快）
+
+
+<a name="ShRTu"></a>
+### SDK 实现 之 Node 篇
+<a name="MdcYO"></a>
+#### 捕获机制
+ Node 端使用 process 对象监听 uncaughtException、unhandledRejection 事件，捕获未处理的 JS异常 和 Promise 异常。
+<a name="xPzqK"></a>
+### SDK 实现 之 Weex 篇
+<a name="xQFZL"></a>
+#### 捕获机制
+
+
+<a name="Ofx9o"></a>
+### SDK 实现 之 小程序 篇
+<a name="JFhKK"></a>
+#### 捕获机制
+ 全局函数 onError 
+<a name="hGF9w"></a>
+#### 环境信息的收集
+<a name="ZFEG0"></a>
+### 原生客户端上报
+不借助 sdk， 使用系统提供方式
+<a name="yT3iJ"></a>
+#### 1、Android 错误上报机制
+使用 **系统提供 **的机制，实现 Thread.UncauhtExceptionHandler 接口，通过 uncaughtException 方法获取崩溃错误信息，在应用初始化时替换掉默认的崩溃回调。
+
+
+<a name="2Ack9"></a>
+#### 2、IOS错误上报机制
+使用 **系统提供** 的错误捕获机制，注册了 Objective-C 异常和 POSIX signal 的处理钩子，在发生奔溃的时候可以通过钩子函数记录崩溃的信息。在下次启动APP 的时候再上报。
+
+
+
+
+
+---
+
+更多见会议分享PPT
+

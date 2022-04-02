@@ -1,0 +1,32 @@
+---
+  title: angularjs单页面动态ng-include模块页面
+  publishedAt: 2016-08-31 09:52:09
+  summary: angularjs单页面动态ng-include模块页面
+  tags: ["AngularJS"]
+---
+
+### 需求描述
+
+1、单页面，左侧类似树状导航，右侧是视图的布局；
+2、点击左侧树功能节点，右侧切换显示对应功能页面；显示模式有两种，一种是**替换展示**，新点击的功能替换原来的功能页，展示最新点击的功能页；另一种是**追加展示**，左侧功能相当于多选，右侧视图展示`选择`的功能的所有页面，追加显示再最后；
+### 实现
+
+1、angularjs路由无法解决这个问题；使用ng-include页面，动态获取页面的路径，提前注入所有页面的controller。
+2、一开始用了字符串拼接，然后$compile一下，使得子页面的controller的$scope作用域被修改，获取不到模型数据。需要注意的是controller的作用域就好了，采用以下方式解决。
+
+``` javascript
+<div class="form panel" id="main-view">
+        <div ng-repeat="template in home.pageTemplates">
+            <header class="page-header  margin-bottom-0 clearfix gray">
+                <h4 class="panel-title" ng-cloak><span class="fa fa-bars margin-left-10 margin-right-5"></span>{{template.title}}</h4></header>
+            <div ng-include="template.pageSrc"></div>
+        </div>
+    </div>
+```
+
+思路来自：http://stackoverflow.com/questions/17801988/dynamically-loading-controllers-and-ng-include
+
+---
+
+2016-8-31 09:51:42
+

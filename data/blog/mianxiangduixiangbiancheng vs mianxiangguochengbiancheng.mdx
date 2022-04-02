@@ -1,0 +1,193 @@
+---
+  title: 面向对象编程 vs 面向过程编程
+  publishedAt: 2020-09-26 21:47:28
+  summary: 面向对象编程 vs 面向过程编程
+  tags: ["设计模式"]
+---
+
+> 文章是学习 `《设计模式之美》- 王争` 的总结
+
+## 1 引言
+
+主要复习主流编程范式（编程风格）面向对象和面向过程，其中面向对象编程是最主流的。区别面向对象和面向过程两种编程范式，以及抽象类和接口的区别，和如何通过普通类模拟抽象类和接口。
+
+
+## 2 概述
+
+
+
+### 什么是面向对象编程？
+
+
+
+面向对象编程OOP (Object Oriented Programming) 有两个重要和基础的概念：**类（class）和 对象（object）**。如果不按照严格的定义来说，大部分编程语言都是面向对象编程语言，比如 Java、C++、Go、Python、C#、Ruby、JavaScript、Objective-C、Scala、PHP、Perl 等。
+
+面向对象编程是一种编程范式或编程风格。它以**类**或**对象**为组织代码的基本单元，并将 **封装、抽象、继承、多态** 四个特性，作为代码设计和实现的基石。
+
+- 封装：隐藏信息和数据访问保护，暴露有限的访问接口，提高代码的可维护性
+- 抽象：就是如何隐藏信息和方法的具体实现。目的为了提高代码的可扩展行、维护性，修改实现时不需要改变定义，减少代码的改动范围；也是处理复杂系统的有效手段，有效过滤不需要关注的信息。
+- 继承：根据编程语言类型有单继承（Java）和多继承（typescript），目的是解决代码复用问题。
+- 多态：利用接口类、Duck Typing的特性实现多态，子类可以代替父类，在实际代码运行过程中，调用子类的方法实现；多态可以提供代码的扩展性和复用性，是很多设计模式和设计原则的基础是实现。
+
+面向对象编程语言是支持类或对象的语法机制，并有现成的语法机制，能方便地实现面向对象编程四大特性（封装、抽象、继承、多态）的编程语言。
+
+面向对象编程经常和 面向对象分析(OOA)  和面向对象设计(OOD) 放在一块讨论，OOA、OOD、OOP 三个连一起就是面向对象分析、设计、编程（实现），正好是面向对象软件开发要经历的三个阶段。
+
+
+
+### 什么是面向过程编程？
+
+面向过程编程也是一种编程范式或风格。它以过程（可以理解为**方法、函数、操作**）作为组织代码的基本单元，**以数据（可以理解为成员变量、属性）与方法相分离为最主要的特点**。面向过程风格是一种流程话的编程风格，通过拼接一组顺序执行的方法来操作数据完成一项功能。
+
+面向过程编程语言首先是一种编程语言。它最大的特点是**不支持类和对象**两个语法概念，**不支持丰富的面向对象编程特性（比如继承、多态、封装）**，仅支持面向过程编程。比如 Basic、Pascal、C 等。
+
+
+
+### 面向对象编程对比面向过程编程有哪些优势？
+
+1.OOP 更加能够应对大规模复杂程序的开发
+
+2.OOP 风格的代码更易复用、易扩展、易维护
+
+3.OOP 语言更加人性化、更加高级、更加智能
+
+
+
+### 哪些常见的面向过程编程？
+
+#### 1.滥用 getter、setter 方法
+
+```ts
+/**
+ * 滥用 getter setter 举例
+ */
+
+class ShoppingCart {
+  private _itemsCount: number;
+  public get itemsCount(): number {
+    return this._itemsCount;
+  }
+  public set itemsCount(value: number) {
+    this._itemsCount = value;
+  }
+  private _totalPrice: number;
+  public get totalPrice(): number {
+    return this._totalPrice;
+  }
+  public set totalPrice(value: number) {
+    this._totalPrice = value;
+  }
+  private _items: Array<any> = [];
+  public get items(): Array<any> {
+    return this._items;
+  }
+  public set items(value: Array<any>) {
+    this._items = value;
+  }
+
+  public addItem(item) {
+    this.items.push(item);
+    this.itemsCount++;
+    this.totalPrice += item.getPrices();
+  }
+}
+```
+
+代码中，`_itemCount` 、`_totalPrice` 、 `_items` 是私有属性，但是没有得到封装的作用，它们都有 setter 方法，外部使用的时候都可以通过 setter 来改变属性值，这使得 `_itemCount` 、`_totalPrice` 可能会和实际的 `_items` 个数不一致的数据风险，照成错乱。
+
+另外 `get items` 外部也可以直接得到 items，从而可以直接操作 `items.clear()` 或 `items=[]` 的方式置空数组，导致 `_itemCount` 、`_totalPrice` 不一致。所以需要封装提供一个 `clear` 方法给外部使用，不暴露 `_items` 给外部操作
+
+为了解决上边的问题，我们修改一下 ShoppingCart 类 
+
+```ts
+/**
+ * 调整后
+ */
+class ShoppingCart {
+  private _itemsCount: number = 0;
+  public get itemsCount(): number {
+    return this._itemsCount;
+  }
+
+  private _totalPrice: number = 0;
+  public get totalPrice(): number {
+    return this._totalPrice;
+  }
+
+  private _items: Array<any> = [];
+  public get items(): Array<any> {
+    return [...this._items]; // 简单效果，实际不是这样，为了外部获取items不能改掉内部的_items
+  }
+
+  public addItem(item) {
+    this.items.push(item);
+    this._itemsCount++;
+    this._totalPrice += item.getPrices();
+  }
+
+  public clear() {
+    this._items = [];
+    this._itemsCount = 0;
+    this._totalPrice = 0;
+  }
+}
+```
+
+
+
+#### 2. 滥用全局变量和全局方法
+
+在面向对象编程中，比如 Java 使用全局变量和方法的情况，有单例类对象、静态成员变量、常量、静态方法等。常量是一种非常常见的全局变量，比如代码中的配置参数，一般都设置为常量，放到一个 Constants 类中。静态方法的话就常放在 Utils 类。静态方法将方法和数据分离，破坏了封装的特性，是典型的面向过程风格。
+
+项目中，一种常见的 Constants 定义的方式如下。
+
+```ts
+// local
+export const APP_NAME = '中台管理系统';
+export const DEFAULT_AVATAR =
+  'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif';
+export const TOKEN_KEY = '_login_token';
+// request
+export const REQ_RESEND_MAX_COUNT = 1;
+export const REQ_RESEND_COUNT_EXCEED_CODE = 4000001;
+export const REQ_RESEND_COUNT_EXCEED_MSG = '重发次数超出上限';
+export const REQ_OVERTIME_DURATION = 10 * 1000;
+export const RES_SUCCESS_DEFAULT_CODE = 2000; // 处理成功
+export const RES_NOT_FOUND_CODE = 3000; // 处理失败
+export const RES_UNAUTHORIZED_CODE = 4010; // token过期
+export const RES_PERMISSION_DENIED_CODE = 4100; // 权限不足
+export const RES_INVALID_PARAMS_CODE = 4000; // 参数错误
+export const RES_SECRET_INCORRECT_CODE = 4200; // 秘钥错误
+export const RES_SERVER_EXCEPTION_CODE = 5000; // 服务器异常
+
+// notification
+
+export const ERR_MESSAGE_SHOW_DURATION = 3 * 1000;
+
+```
+
+我们把程序中用到的常量都会集中的放到这个 Constants 中，如果项目越来越庞大，配置项的常量越来岳多，这个文件众的常量数量就会越来越大，对于查找和修改某个常量也是比较费劲。在 Java 中，你修改了 Constants 类还会增加编译时间。
+
+改进 Constants 设计的话可以拆解为功能更加单一的多个“类”，比如跟 MySQL 配置相关的常量放到 MySQLConstants  类中；跟 Redis 配置相关的常量，放到 RedisConstants 类中。当然，还有一种设计方式是，在对应的用到常量的类中定义常量，比如有个 RedisConfig 类，这时候 Redis 配置相关的常量就放到这里。
+
+**同理，Utils 也进行归类细分**。如果是后端可以有 IOUtils、StringUtils、FileUtils 类，前端的话如 DomUtils、DateUtils 等，避免全部都放在叫 utils.ts 的文件中，这个文件的代码里随着开发时间会一直增加，对使用体验和易维护性都是减分的。前端的话通常也可以根据特定的功能性去命名 utils 文件，比如是一个事件代理相关的Uitls功能就命名为 `event.ts` ，某些操作也可以单独创建一个文件，因为前端目前使用模块化 import 的方式导入，也是比较方便，比如滚动代码，命名为 `scrollTo.ts`
+
+#### 3. 定义数据和方法分离
+
+MVC 三层结构是面向过程风格的编码方式。传统的 MVC 结构范围 Model 层、Controller 层、View 层。为了做前后端分离，三层结构在后端开发中被分为 Controller 层、Service 层、 Repository 层。Controller 层负责暴露接口给前端调用，Service 层负责核心业务逻辑，Repository 层负责数据读写。而每一层中，有会定义相应的 VO （View Object）、BO（Business Object）、Entity。一般情况下，VO、BO、Entity 中只会定义数据，不会定义方法，所有操作这些业务逻辑都定义在对应的 Controller 类、Service类、Repository 类中。这就是典型的面向过程的编程风格。
+
+这种开发模式又叫作基于贫血模型的开发模式。
+
+
+
+### 在面向对象编程中，为什么容易写出面向过程风格的代码？
+
+面向对象编程要比面向过程编程难一些。在 OOP 类的设计需要技巧和设计经验，需要思考如何封装合适的数据和方法到一个类里，如何设计类之间的关系和交互等设计问题。
+
+在生活中，去完成一个任务，我们一般都会思考，应该做什么、后做什么，如何一步一步地顺利执行一系列操作，最后完成整个任务 。面向过程编程风格恰恰符合人的这种流程化思维方式。而面向对象编程风格正好相反。它是一种自底向上的思考方式。它不是先去执行流程来分解任务，而是将任务翻译成一个一个的小的模块（类），设计类之间的交互，最后按照流程将类组装起来，完成整个任务。
+
+## 3 总结
+
+面向对象编程的四大特性 **封装**、**抽象**、**继承**、**多态** 使得其更适合更复杂类型的程序开发，利用这些特性编写出来的代码，更加易扩展、易复用、易维护，也更加人性化、高级和智能。
+
+

@@ -1,0 +1,149 @@
+---
+  title: Git 教程指南
+  publishedAt: 2019-04-24 10:36:43
+  summary: Git 教程指南
+  tags: ["Team"]
+---
+
+# Git 教程指南
+
+## Git 工作流
+
+[Git 工作流程](http://www.ruanyifeng.com/blog/2015/12/git-workflow.html)
+
+
+## Git 与 SVN 区别
+
+- [git和svn的详细对比](https://www.cnblogs.com/dazhidacheng/p/7478438.html)
+
+
+## 如何正确提交PR
+
+### 1.1 如何发起 `pull request`
+
+推荐 `GitHub` 使用工具，建议 [WebStorm](https://www.jetbrains.com/webstorm/) , [Sourcetree](https://www.sourcetreeapp.com/) ，命令行( window 加强 `CMD` 工具 [Cmder](http://cmder.net/) ，建议不要下载那个客户端。
+
+- [GitHub 如何创建 pull 请求](https://git.yourcompany.com/waylau/github-help/blob/master/Creating%20a%20pull%20request%20%E5%88%9B%E5%BB%BA%20pull%20%E8%AF%B7%E6%B1%82.md)
+- [GitHub 的 pull request 是指什么意思？](https://www.zhihu.com/question/21682976)
+- [利用 WebStorm 来管理你的 GitHub](http://www.mrfangge.com/how-to-use-webstorm-to-manage-your-github/)
+- [使用 WebStorm 上传代码到 GitHub](http://www.jianshu.com/p/752613f4b1c9)
+- [Git本地项目上传 & SourceTree & GitHub 简单使用](http://www.blogs8.cn/posts/Au2te07)
+- [GUI for Git|SourceTree|入门基础](http://www.jianshu.com/p/be9f0484af9d)
+- [SourceTree 使用](http://blog.sina.com.cn/s/blog_a3c770670102uywk.html)
+- [Git工作流的最佳实践总结](https://www.jianshu.com/p/202de00f267f)
+
+### 1.2 如何提交：
+
+整个流程（以下举例，其中我为`giscafer`用户）：
+我先 `fork` 了 `crm/crm-platform` 的仓库，然后我从我的仓库克隆到本地修改，修改完后提交到我的仓库，然后我再申请 `pull request` ，`crm/crm-platform` 同意合并后其实整个过程就完了，但是 `crm/crm-platform` 经常会有更改就需要我刚那一步在我本地同步一下你的远程仓库，同步后再提交到我的仓库。
+具体代码:
+```bash
+# 列出远程仓库 URL
+$ git remote -v
+# List the current remotes （列出当前远程仓库）
+# origin  https://git.yourcompany.com/user/crm-platform.git (fetch)
+# origin  https://git.yourcompany.com/user/crm-platform.git (push)
+
+# 设置一个新的远程仓库
+$ git remote add yourcompany git@git.yourcompany.com:crm/crm-platform.git
+
+# 再次列出远程仓库 URL
+$ git remote -v
+# yourcompany     git@git.yourcompany.com:crm/crm-platform.git (fetch)
+# yourcompany     git@git.yourcompany.com:crm/crm-platform.git (push)
+# origin      git@git.yourcompany.com:giscafer/crm-platform.git (fetch)
+# origin      git@git.yourcompany.com:giscafer/crm-platform.git (push)
+
+# 获取上游代码
+$ git fetch yourcompany
+
+# 检查你的 fork’s 本地 master 分支，如果不在 master 分支就切换到该分支
+$ git checkout master
+# Switched to branch 'master'
+
+# 合并来自 yourcompany/master 的更改到本地 master 分支上。
+$ git merge yourcompany/master
+```
+
+### 1.3 提交之后：
+
+提交合并到 `crm/crm-platform` 之后，为了保证与主仓库代码的一致性，还需要进行一次本地与远程仓库的手动更新。
+
+- [如何同步 Github fork 出来的分支](http://jinlong.github.io/2015/10/12/syncing-a-fork/)
+- [GitHub 同步 fork 别人的项目到自己的仓库](https://segmentfault.com/a/1190000003703918)
+
+### 基本操作练习
+
+名词解析：`master（默认开发分支）`、`origin（默认远程版本库） `、`本地分支`、`远程分支`、`Fork仓库`、`远程仓库`、`远程原仓库`
+
+- （0）如何新建分支：远程分支&本地分支，以及分支之间切换？
+> [Git 分支 - 分支的新建与合并](https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%9A%84%E6%96%B0%E5%BB%BA%E4%B8%8E%E5%90%88%E5%B9%B6)
+
+- （1） 如何删除本地分支？如何删除远程仓库分支？删除标签？
+
+批量删除远程分支，带`greenkeeper` 前缀的分支：
+```bash
+git branch -a | grep -o "greenkeeper.*" | xargs -I {} git push origin :{}
+```
+
+> [Git查看、删除、重命名远程分支和tag](https://blog.zengrong.net/post/1746.html)
+
+
+- （2） 本地分支如何推送远程仓库分支？
+
+> git push scm 「分支名称」:「分支名称」
+
+- （3） 根据tag创建新的分支.
+
+> `git branch <new-branch-name> <tag-name> `
+
+- （4） 如何更新`远程来源主仓库`分支最新代码到`Fork仓库`分支？(「fork 出来的仓库」和「最新版本的原仓库」内容同步更新)
+
+> 添加remote仓库，pull对应分支，再 push 到fork仓库
+
+- （5） 如何合并Fork仓库某分支代码到原仓库某分支？
+
+> 非主程序员只能用PR方式：本地分支的改动代码push到远程分支对应分支后，再通过PR方式请求合并到原仓库分支。PR之前，建议更新最新代码，避免冲突的可能（就是执行步骤4）
+
+
+
+## 资源
+
+- [git中文文档](https://git-scm.com/book/zh/v2)
+- [awesome-github](https://giscafer.gitbooks.io/front-end-manual/content/devtool/awesome-github.html)
+- [【视频】版本管理工具介绍—Git篇](https://www.imooc.com/learn/208)
+- [【软件操作教程】SourceTree使用教程](https://www.cnblogs.com/soundcode/p/7205295.html)
+- [Git的奇技淫巧](https://github.com/521xueweihan/git-tips)
+
+### 相关文章
+
+- [Git 更安全的强制推送，--force-with-lease](https://blog.csdn.net/wpwalter/article/details/80371264)
+
+
+## Git命令大全
+
+详细阅读文章：[Git速查表](http://blog.csdn.net/halaoda/article/details/78661334)
+
+**Git速查表**
+
+![git (1)](https://user-images.githubusercontent.com/8676711/56628621-102f6f00-667d-11e9-927d-f3cf99ed44e0.jpg)
+
+
+## git rebase 合并提交（修改已提交信息）
+
+比如Github上的开源项目，要严格要求，一个功能点`feat`或者，一个`bug`修改，代码修改好，测试没问题，一次性提交修改的文件（只允许一个commit）
+
+举例一个PR中commit两次的操作，然后工程维护者建议修改提交信息重新PR：https://github.com/NG-ZORRO/ng-zorro-antd/pull/78
+
+
+[多个commit 需要合并为一个完整的commit提交](https://www.cnblogs.com/wangiqngpei557/p/5989292.html)
+
+## 规范性的PR约束
+
+commit 信息不是乱填的，PR 标题也不是乱填的。可以参考开源工程的一些约束说明：[CONTRIBUTING.md](https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/CONTRIBUTING.md)
+
+
+
+[coding-copy-writing]:https://open.coding.net/copywriting.html
+
+

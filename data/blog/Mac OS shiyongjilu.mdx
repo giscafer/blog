@@ -1,0 +1,92 @@
+---
+  title: Mac OS 使用记录
+  publishedAt: 2020-01-31 00:20:17
+  summary: Mac OS 使用记录
+  tags: ["Tool"]
+---
+
+## 软件
+
+- [Best-App列表](https://github.com/hzlzh/Best-App)
+
+---
+
+- iTerm 强大的命令行工具，代替 Terminal
+   - [iTerm2 + Oh My Zsh 打造舒适终端体验](https://segmentfault.com/a/1190000014992947)
+- Alfred 快速启动工具
+- Paste 超级棒的剪贴板工具
+- iShot 截图工具
+- [IINA](https://github.com/iina/iina) 播放器
+- HandBrake 视频处理
+- Typora ：Markdown编辑器
+- [LICEcap](https://www.cockos.com/licecap/) 超轻量截图工具
+- SketchBook： 画板
+- [eZip](https://ezip.awehunt.com/) 压缩和解压
+- [The Unarchiver](https://theunarchiver.com/) 压缩和解压
+- [Itsycal](https://www.mowglii.com/itsycal/) 日历最强工具
+- [stats](https://github.com/exelban/stats) macOS system monitor in your menu bar
+
+
+
+## 开发
+
+之前一直用公司的 Mac , 环境直接安装没啥问题，自己入手的 mbp 就遇到一些问题，记录一下。
+
+###  shell scripts 包管理器
+
+Basher 允许您直接从 github（或其他站点）快速安装 shell 软件包。 basher 无需为每个软件包寻找特定的安装说明并弄乱您的路径，而是将为所有软件包创建一个中心位置并为您管理其二进制文件。
+
+https://github.com/basherpm/basher
+
+### Terminal 总是要输入用户密码，或者 npm install 总需要 sudo 权限
+
+```shell
+sudo vi /etc/sudoers
+找到：
+# root and users in group wheel can run anything on any machine as any user
+root        ALL = (ALL) ALL
+%admin      ALL = (ALL) ALL
+ 
+修改为：
+# root and users in group wheel can run anything on any machine as any user
+#root       ALL = (ALL) ALL
+#%admin     ALL = (ALL) ALL
+root            ALL = (ALL) NOPASSWD: NOPASSWD: ALL
+%admin          ALL = (ALL) NOPASSWD: NOPASSWD: ALL
+```
+
+- 可以通过配置免密的方式解除 sudo （存在风险）
+
+### 修改 `~/.bash_profile` 文件环境变量& source 了也不生效
+
+> Terminal 可能使用的是 zsh (看终端title是否有这个后缀），zsh加载的是 ~/.zshrc文件，而 ‘.zshrc’ 文件中并没有定义任务环境变量
+
+
+- `vim  ~/.zshrc` 创建文件
+- 在 `~/.zshrc` 文件最后，增加一行：`source ~/.bash_profile`
+- 执行命令，使其立即生效 `source ~/.zshrc `
+
+各环境文件补充说明：[MAC OSX环境变量$PATH
+](https://www.jianshu.com/p/a63d0b8f184c)
+
+### 使用 rmtrash 替代 rm -rf 
+
+避免误删文件无法恢复
+
+```bash
+brew install rmtrash
+echo "alias rm='rmtrash'" >> ~/.bash_profile
+source ~/.bash_profile
+```
+
+### gyp: No Xcode or CLT version detected!
+
+[gyp: No Xcode or CLT version detected macOS Catalina | Anansewaa](https://medium.com/flawless-app-stories/gyp-no-xcode-or-clt-version-detected-macos-catalina-anansewaa-38b536389e8d)
+
+```
+sudo rm -rf $(xcode-select -print-path)
+xcode-select --install
+```
+
+
+

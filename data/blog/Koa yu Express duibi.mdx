@@ -1,0 +1,236 @@
+---
+  title: Koa 与 Express 对比
+  publishedAt: 2019-02-28 18:27:20
+  summary: Koa 与 Express 对比
+  tags: ["Node.js","Review"]
+---
+
+# Question List
+- koa原理，为什么要用koa ( express 和 koa 对比)
+- 使用过的`koa中间件`
+- koa中`response.send`、`response.rounded`、`response.json`发生了什么事，浏览器为什么能识别到它是一个json结构或是`html`
+- `koa-bodyparser`怎么来解析`request`
+
+# Answer
+
+## 一、Express 框架
+
+`Express` 是一个轻量级的 `Web Framework`，自带Router、路由规则等，早期版本的 Express 还有`bodyParser`，后期剥离为独立模块作为中间件管理。其中间件模型是基于 `callback回调` 实现。
+
+### 源码理解 app.use(middleware())、router.handle、next
+
+`中间件 middlewares` 是较多Web框架的核心概念，可以根据不同的业务场景，集成到框架中，进而增强框架的服务能力，而框架也是需要提供一套机制来保证中间件有序的执行。
+
+在 Express 中，我们是通过 `app.use(middleware())` 的方式注册中间件，见[using-middleware文档](http://www.expressjs.com.cn/guide/using-middleware.html)。use的顺序和规则express都做了控制。我们可以看一下源码进行分析。
+
+**express.js**
+
+Express 服务实例将 Node.js 的 `req` 、`res`  对象传递给 `app.handle`  函数，使得handle内部具有`req` 、`res` 对象的控制权。handle函数还有一个叫 `next` 的参数， `next` 在中间件控制权起到了十分重要的作用。
+
+代码：
+https://github.com/expressjs/express/blob/dc538f6e810bd462c98ee7e6aae24c64d4b1da93/lib/express.js#L37
+
+**application.js**
+
+`app.handle`中，如果是路由的情况，还会将控制权转给`router.handle`，并传入res、req、callback，`app.use `方法作为 路由的 `Router#use()` 代理方法添加中间件到路由。
+
+代码：
+https://github.com/expressjs/express/blob/dc538f6e810bd462c98ee7e6aae24c64d4b1da93/lib/application.js#L158
+
+**router/index.js**
+
+[Router#use()](https://github.com/expressjs/express/blob/dc538f6e810bd462c98ee7e6aae24c64d4b1da93/lib/router/index.js#L428) 中使用了`layer`来存放中间件，类似一个等待执行的中间件堆叠层。
+
+`router.handle` 方法三个参数为 res、req、out，第三个参数变化了名称为`out`，意思可以理解为这是要原路返回出去的。
+
+https://github.com/expressjs/express/blob/dc538f6e810bd462c98ee7e6aae24c64d4b1da93/lib/router/index.js#L136
+
+这里关键部分在于内部函数 `next`，next会去查找匹配`layer对叠层`，如果匹配到，将会通过[proto.process_params](https://github.com/expressjs/express/blob/dc538f6e810bd462c98ee7e6aae24c64d4b1da93/lib/router/index.js#L327) 来处理，将参数传递给layer层并执行，最后 `layer.handle_request` 执行的就是路由的`handle`。
+
+```js
+function next(err) {
+    var layerError = err === 'route'
+      ? null
+      : err;
+   ……
+ // find next matching layer
+    var layer;
+    var match;
+    var route;
+
+    while (match !== true && idx < stack.length) {
+      layer = stack[idx++];
+      match = matchLayer(layer, path);
+      route = layer.route;
+      ……
+    }
+}
+```
+
+整个过程中，`next` 起到了关键作用——**所有的中间件都要执行next，从而把当前的控制权以回调的方式往下面传递。**
+
+### Express中`response.send`、`response.json`发生了什么事，浏览器为什么能识别到它是一个`json`结构或是`html`
+
+`response.json` 本质上也是调用[ response.send ](https://github.com/expressjs/express/blob/dc538f6e810bd462c98ee7e6aae24c64d4b1da93/lib/response.js#L267)方法，所以只需要分析一下response.send 的源码即可。
+
+[res.send](https://github.com/expressjs/express/blob/dc538f6e810bd462c98ee7e6aae24c64d4b1da93/lib/response.js#L141) 中通过判断`chunk` (body) 的类型，以及`Content-Type` 的值，来动态[设置](https://github.com/expressjs/express/blob/dc538f6e810bd462c98ee7e6aae24c64d4b1da93/lib/response.js#L589) ` Content-Type`类型，使得浏览器知道响应的内容是什么类型数据。Express请求响应Content-Type类型常见有：
+
+```js
+res.type('.html');
+res.type('html');
+res.type('json');
+res.type('application/json');
+res.type('png');
+```
+### Express中间件 `body-parser`  如何解析request
+
+从源码可以看到，`body-parser` 通过根据请求报文主体的压缩格式`Content-Encoding` 类型，将获取到[请求的内容流](https://github.com/expressjs/body-parser/blob/56a2b73c26b2238bc3050ad90af9ab9c62f4eb97/lib/read.js#L144)进行解析。主要做了以下几点的实现：
+
+- 处理不同类型的请求体，如：`text`、`json`、`urlencoded`，对应主体的格式不同
+- 处理不同的编码：`utf8`，`gbk` 等；
+- 处理不同的压缩类型：`gzip` 、 `deflate` 、`identity` 等
+- 其他边界、异常的处理
+
+简单使用，在Express中，通过设置请求为json格式
+
+```js
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
+```
+
+
+## 二、Koa 框架
+
+> Koa 是一个新的 web 框架，由 Express 幕后的原班人马打造， 致力于成为 web 应用和 API 开发领域中的一个更小、更富有表现力、更健壮的基石。 通过利用 async 函数，Koa 帮你丢弃回调函数，并有力地增强错误处理。 Koa 并没有捆绑任何中间件， 而是提供了一套优雅的方法，帮助您快速而愉快地编写服务端应用程序。
+
+`Koa1.0` 是基于 `co` 实现，通过 `Generator/yield` 来控制异步（详细了解[co模块](http://es6.ruanyifeng.com/#docs/generator-async#co-%E6%A8%A1%E5%9D%97)与[tj说：co是async/await的一块垫脚石](https://github.com/tj/co#co-v4)）。随后 `Koa2.0` 改用 ES7 中的 `async/await` 来配合 `Promise` 实现异步控制。
+
+### Context 
+
+上下文对象ctx是由 [createContext](https://github.com/koajs/koa/blob/130e363856747b487652f04b5550056d7778e43a/lib/application.js#L160) 创建的。主要把一些属性和变量挂载到 `context` 上，以及`request` 和 `response`。对于将 `ctx` 添加到整个应用程序中使用的属性或方法非常有用，这可能会更加有效（不需要中间件）和/或 更简单（更少的require()），而更多依赖于 `ctx` ，这可以被认为是一种反模式。
+
+
+### 洋葱圈模型 & next()
+
+当一个中间件调用 `next()`，则该函数暂停并将控制传递给定义的下一个中间件。当在下游没有更多的中间件执行后，堆栈展开并且每个中间件恢复执行其上游行为。
+
+Koa 中间件构成实现模块是[koa-compose](https://github.com/koajs/compose) (application源码[构成中间件](https://github.com/koajs/koa/blob/130e363856747b487652f04b5550056d7778e43a/lib/application.js#L127))，是一个洋葱圈模型。
+
+![](https://segmentfault.com/img/bV6DZG?w=478&h=435)
+![](https://segmentfault.com/img/bV4AlJ?w=1883&h=731)
+
+`compose`模块的源码也只有几十行：
+
+```js
+/**
+ * Compose `middleware` returning
+ * a fully valid middleware comprised
+ * of all those which are passed.
+ *
+ * @param {Array} middleware
+ * @return {Function}
+ * @api public
+ */
+
+function compose (middleware) {
+  if (!Array.isArray(middleware)) throw new TypeError('Middleware stack must be an array!')
+  for (const fn of middleware) {
+    if (typeof fn !== 'function') throw new TypeError('Middleware must be composed of functions!')
+  }
+
+  /**
+   * @param {Object} context
+   * @return {Promise}
+   * @api public
+   */
+
+  return function (context, next) {
+    // last called middleware #
+    let index = -1
+    return dispatch(0)
+    function dispatch (i) {
+      if (i <= index) return Promise.reject(new Error('next() called multiple times'))
+      index = i
+      let fn = middleware[i]
+      if (i === middleware.length) fn = next
+      if (!fn) return Promise.resolve()
+      try {
+        return Promise.resolve(fn(context, dispatch.bind(null, i + 1)));
+      } catch (err) {
+        return Promise.reject(err)
+      }
+    }
+  }
+}
+```
+从源码可以看出，`compose` 对中间件进行了递归的操作，最终形成了一个中间件自执行链（只要第一个中间件执行了，随后的中间件都会依次被执行），这与`koa1.0` 版本基于`co` 实现一个目的，`koa1.0` 利用Thunk函数对 `generator yield` 异步操作封装成达到自执行目的。`Koa2` 之后，就改用 `async/await 配合 promise` 来实现了，上边代码就是中间件自执行操作的核心。
+
+每个中间件都被封装成了一个 `Promise对象`。（这也是可以猜到的，因为 `await` 配合 `Promise` 才是最佳的。）
+
+如下例子：
+
+```js
+const Koa = require('koa');
+const app = new Koa();
+
+
+app.use(async function m1(ctx, next) {
+    console.log('m1');
+    await next(); // 暂停进入下一个中间件
+    console.log('m1 end');
+    const rt = ctx.response.get('X-Response-Time');
+    console.log(`${ctx.method} ${ctx.url} - ${rt}`);
+});
+
+
+app.use(async function m2(ctx, next) {
+    const start = Date.now();
+    console.log('m2');
+    await next(); // 暂停进入下一个中间件
+    console.log('m2 end');
+    const ms = Date.now() - start;
+    ctx.set('X-Response-Time', `${ms}ms`);
+});
+
+app.use(async function m3(ctx, next) {
+    console.log('m3');
+    ctx.body = 'Hello World!';
+});
+
+app.listen(3000);
+
+```
+
+**输出结果：**
+
+```txt
+
+// 请求开始
+m1
+// m1中await next()进入暂停，进入下一个中间件m2
+m2
+//  m2中await next()进入暂停，进入下一个中间件m3
+m3
+//  洋葱模型，逆向回去，先m2的
+m2 end
+//  洋葱模型，逆向回去，m2执行完毕后进行上游m1的
+m1 end
+GET / - 2ms
+// 响应结束
+
+```
+
+### 异常处理
+
+`Koa` 还提供了异常处理的解决方式，统一的异常处理源码见[ctx.onerror](https://github.com/koajs/koa/blob/130e363856747b487652f04b5550056d7778e43a/lib/context.js#L107)，我们可以使用 `app.on('error',()=>{})` 来统一错误处理。
+
+
+---
+
+**参考资料**
+https://www.zhihu.com/question/38879363
+https://www.imooc.com/article/22994
+https://www.cnblogs.com/chyingp/p/nodejs-learning-express-body-parser.html
+https://juejin.im/post/5a62bab4f265da3e58596f40
+
+

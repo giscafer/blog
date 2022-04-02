@@ -1,0 +1,81 @@
+---
+  title: Linux 下 Ionic Android 打包环境搭建记录
+  publishedAt: 2019-07-04 11:25:01
+  summary: Linux 下 Ionic Android 打包环境搭建记录
+  tags: ["App"]
+---
+
+> 这个过程以后可能会重复，或者搞成docker，这里先做个记录
+
+## 全局安装 ionic ，cordova
+
+```
+npm i ionic@3.9.2 cordova@7.1.0
+```
+
+全局命令：`ln -s 安装路径  /usr/local/bin`
+
+## jdk1.8 安装
+
+下载jdk包，解压到 `/usr/local/jdk1.8` 下，配置环境变量
+
+```
+export JAVA_HOME=/usr/local/jdk1.8
+export JRE_HOME=${JAVA_HOME}/jre
+export CLASSPATH=.:${JAVA_HOME}/lib:${JRE_HOME}/lib
+export PATH=${JAVA_HOME}/bin:$PATH
+```
+
+## Android SDK 安装
+
+### 下载安装SDK
+
+```
+wget http://dl.google.com/android/android-sdk_r24.4.1-linux.tgz
+tar xvzf android-sdk_r24.4.1-linux.tgz
+mv ./android-sdk-linux ./usr/local/android
+```
+
+编辑环境变量
+ 
+```bash
+vim /etc/profile
+
+export ANDROID_HOME=/usr/local/android
+export PATH=$ANDROID_HOME/tools:$PATH
+export PATH=$ANDROID_HOME/platform-tools:$PATH
+
+source /etc/profile
+```
+
+
+### 列出需要安装的资源
+
+```
+android list sdk --all
+```
+列出所有的 skd 资源包括 Sdk buildTools,SDK platform 等等
+选中所需呀资源的序号，比如3 是 buildtoolsVersion 28.0.3,47是 platform 8.1.0
+`android update sdk -u -a -t 3,7,15,101,199  (需要资源的序号)` 下载
+
+### 安装 Gradle
+
+```
+wget https://services.gradle.org/distributions/gradle-3.3-all.zip
+unzip ./gradle-3.3-all.zip 
+```
+
+编辑环境变量
+ 
+```bash
+vim /etc/profile
+
+export GRADLE_HOME=/usr/local/gradle-3.3
+export PATH=$PATH:/usr/local/gradle-3.3/bin
+
+source /etc/profile
+```
+
+
+
+

@@ -1,0 +1,250 @@
+---
+  title: 自定义全局变量存储和订阅属性变化实现分析
+  publishedAt: 2019-11-23 15:29:59
+  summary: 自定义全局变量存储和订阅属性变化实现分析
+  tags: ["JavaScript"]
+---
+
+## 前言
+
+从 `Flux` 到 ` Redux ` ，还有 `Vux` 、`Mobx` 等，前端数据流和状态存储的控制库很多，也很强大，适用于复杂的项目中对数据状态的管理和组件之间的通信控制。另外加入响应式编程的 `RxJS` 的话，就变得更强大了……
+
+本篇和上边的各种都无感，只是分析如何实现一个极简的全局变量存储和支持订阅状态属性变化。
+
+## 实现
+
+### 从 lodash 说起
+
+`lodash` 有 `_.set(obj,key,value)` 和 `_.get(obj,key)` 这些方法。如下
+
+**_.set(obj,key,value)** 
+```js
+var object = { 'a': [{ 'b': { 'c': 3 } }] };
+ 
+_.set(object, 'a[0].b.c', 4);
+console.log(object.a[0].b.c);
+// => 4
+ 
+_.set(object, ['x', '0', 'y', 'z'], 5);
+console.log(object.x[0].y.z);
+// => 5
+```
+**_.get(obj,key)** 
+```js
+var object = { 'a': [{ 'b': { 'c': 3 } }] };
+ 
+_.get(object, 'a[0].b.c');
+// => 3
+ 
+_.get(object, ['a', '0', 'b', 'c']);
+// => 3
+ 
+_.get(object, 'a.b.c', 'default');
+// => 'default'
+```
+
+下边自己实现模拟类似的 `set/get` 方法，定义名为  `Store` 的类 ：
+
+（1）Store.set 方法实现类似 `_.set` 效果
+
+![image](https://user-images.githubusercontent.com/8676711/69475200-4b597280-0e05-11ea-9028-fe390d36b8b3.png)
+
+（2）Store.get 方法实现类似 `_.get` 效果
+
+![image](https://user-images.githubusercontent.com/8676711/69475212-6e842200-0e05-11ea-8790-5af716b7af52.png)
+
+
+### Observer 类
+
+- 定义 数据 data 管理全局数据
+- 定义 observers，管理全局的 Observer 实例
+- 定义 Observer 类
+
+```ts
+
+export const data = {}; // 管理全局数据
+export const observers = {}; // 管理所有Observer实例
+
+export const uuid = () => {
+  return Math.random()
+    .toString(16)
+    .substr(2);
+};
+
+export class Observer {
+  id: string;
+  key: string;
+  fn: Function;
+  constructor(id: string, key: string, fn: Function) {
+    this.id = id || uuid();
+    this.key = key;
+    this.fn = fn;
+  }
+ // 模拟解除监听
+  unsubscribe() {
+    delete observers[this.id];
+  }
+}
+```
+
+### 改进 Store 类
+
+- 把 `Store.set` 和 `Store.get` 函数的第一个参数 `obj `都移除，变成内部直接使用 `data`;
+- 新增 `subscribe` 静态函数，实现订阅效果
+
+```ts
+
+import { Observer, uuid, observers, data } from "./observer";
+
+class Store {
+  // 模拟lodash（或underscore）的函数 _.set()
+  static set(key, val) {
+
+    if (!key) {
+      return;
+    }
+    if (typeof key !== "string") {
+      return;
+    }
+    let props = key.split(".");
+    let value = data;
+    for (let i = 0; i < props.length - 1; i++) {
+      const prop = props[i];
+      if (!value[prop]) {
+        value[prop] = {};
+      }
+      value = data[prop];
+    }
+    value[props[props.length - 1]] = val;
+  }
+
+  // 模拟lodash（或underscore）的函数 _.get()
+  static get(key) {
+
+    if (!key) {
+      return;
+    }
+    if (typeof key !== "string") {
+      return;
+    }
+
+    const props = key.split(".");
+    let value;
+    for (let i = 0; i < props.length; i++) {
+      const prop = props[i];
+      if (i === 0 && !data[prop]) {
+        return undefined;
+      }
+      if (!value) {
+        value = data[prop];
+      } else {
+        value = value[prop];
+      }
+    }
+
+    return value;
+  }
+  // 订阅
+  static subscribe(key, fn) {
+    const id = uuid();
+    const ob = new Observer(id, key, fn);
+    observers[id] = ob;
+    const val = this.get(key);
+    if (val !== null && val !== undefined) {
+      fn(val);
+    }
+    return ob;
+  }
+}
+// test set()
+Store.set("sex", "male");
+Store.set("name.first", "Nickbing");
+Store.set("name.last", "Lao");
+console.log(data);
+
+// 输出：{ sex: 'male', name: { first: 'Nickbing', last: 'Lao' } }
+
+// test get()
+console.log(Store.get("sex")); // 输出：male
+console.log(Store.get("name.last")); // 输出：Lao
+
+// test subscribe()
+Store.subscribe('name', (res) => {
+  console.log(`subscribe的结果：${JSON.stringify(res)}`)
+})
+
+// 输出：subscribe的结果：{"first":"Nickbing","last":"Lao"}
+```
+
+到此，已实现的内容有：
+
+- 全局数据状态data 的管理（set\get)
+- ~订阅属性~ subscribe 和 订阅者 observers 的管理，通过 Store.subscribe 函数可以延迟获取属性值
+
+### 属性订阅监听
+
+订阅监听效果就是属性值发生变化，就会触发 `subscribe` 函数的调用，所以我们需要修改 `Store.set` 这个静态方法，使得值设置变化时，触发 `subscribe` 绑定的回调函数调用。
+
+```ts
+
+ // 模拟lodash（或underscore）的函数 _.set()
+  static set(key, val) {
+
+    if (!key) {
+      return;
+    }
+    if (typeof key !== "string") {
+      return;
+    }
+    let props = key.split(".");
+    let value = data;
+    for (let i = 0; i < props.length - 1; i++) {
+      const prop = props[i];
+      if (!value[prop]) {
+        value[prop] = {};
+      }
+      value = data[prop];
+    }
+    value[props[props.length - 1]] = val;
+    
+   // 新增
+    // 触发已有的订阅回调
+    for (let id in observers) {
+      const observer = observers[id];
+      if (key.indexOf(observer.key) === 0 || key === observer.key) {
+        if (observer.fn) {
+          observer.fn(val);
+        }
+      }
+    }
+  }
+
+```
+
+新增 `updated` 函数，主动触发更新所有监听 key 的回调：
+
+```ts
+  static updated(key: string) {
+    for (const id in observers) {
+      if (key.indexOf(observers[id].key) === 0) {
+        observers[id].fn(Store.get(observers[id].key));
+      }
+    }
+  }
+```
+
+## 总结
+
+通过上边步骤，依次实现了
+
+- 全局数据状态变量 data 控制只能通过 set 和 get 修改
+- 提供 subscribe 订阅属性，提供 unsubscribe 解除订阅
+- 修改 数据状态data，触发 subscribe 函数
+- 提供 统一触发指定 key 的 所有 subscribe 订阅列表下的回调函数
+
+源码参考：[le5le-store](https://github.com/le5le-com/le5le-store)
+
+
+
+
+

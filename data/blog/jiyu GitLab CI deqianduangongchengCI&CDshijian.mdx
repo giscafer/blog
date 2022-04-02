@@ -1,0 +1,377 @@
+---
+  title: 基于 GitLab CI 的前端工程CI/CD实践
+  publishedAt: 2019-04-09 18:25:24
+  summary: 基于 GitLab CI 的前端工程CI/CD实践
+  tags: ["Team"]
+---
+
+# 基于 GitLab CI 的前端工程CI/CD实践
+
+**CI/CD** 是 Gitlab 提供的一整套持续集成、持续交付解决方案。
+
+概念：「持续集成（Continuous Integration）」、「持续交付（Continuous Delivery）」和「持续部署（Continuous Deployment）」，概念理解详细见文章：[简单理解持续集成、持续交付、持续部署 ](http://www.sohu.com/a/204476451_465922) 与  [谈谈持续集成，持续交付，持续部署之间的区别](https://www.cnblogs.com/pegasus923/p/8674196.html)
+
+近期在抽空把团队工程化这块做好，CI/CD只是其中的九牛一毛。在运维文开同学协助配合下，以公司某项目前端工程做试验，实现了 CI 的过程，本质上CD也是支持了的，主要是看CD这个过程怎么做更好。自动触发了构建操作，还是直接使用构建后的 `artifacts` 直接部署，走不走Jenkins后续方案等……下边简单介绍一下。
+
+## GitLab 的CI配置
+
+**前提：服务器部署配置了 Runner 。**  如图，搞了一个`共享型的 Runner`，十几个前端工程都可以基于此 Runner 执行CI脚本。因为Runner是共享的，所以`gitlab-ci.yml` 中的 docker 镜像 image 建议保证每个项目不一致，这样就可以共同使用一个 Runner 来并行执行多个项目CI，本质上在不同的 docker 镜像中运行脚本，这样就不会冲突了。Runner: [gitlab-runner](https://gitlab.com/gitlab-org/gitlab-runner)
+
+![shore-runner](https://user-images.githubusercontent.com/8676711/56628016-d52c3c00-667a-11e9-8858-6839946aad85.png)
+
+
+下边是举例 Angular 前端工程 在 Gitlab 上实践的 `CI` 脚本，目前只做了代码检查和自动构建过程检测。实现自动化检查代码是否规范，前端限制了一些`代码拼写规范、console.log禁用、alert禁用` 等 [tslint的约束](https://palantir.github.io/tslint/rules/)，这些都可以在工程下自定义维护规则。aot构建是为了进一步检查一些编译问题。只要两者通过，Jenkins 构建100%是无差错的。
+
+配置：
+
+```yml
+
+# GitLab CI/CD 前端 Angular 持续集成实践 : https://github.com/giscafer/front-end-manual/issues/27
+# 因为共享Runner，这里不建议一样的版本号，避免同时运行的时候，相同docker镜像会出问题
+image: node:latest
+# image: node:10.4.1
+
+# 变量定义
+# https://docs.gitlab.com/ee/ci/variables/#using-predefined-environment-variables
+variables:
+  NODE_MODULES_VERSION: 'ng-starter-web-1.0.0' # node_modules版本号，每次升级依赖改一下这里的数值
+  CURRENT_BRANCH: $CI_COMMIT_REF_NAME
+
+# 缓存目录文件
+# key是唯一值，重名会覆盖上一次的缓存
+cache:
+  key: '$NODE_MODULES_VERSION'
+  paths:
+    - node_modules/
+
+stages:
+  - init
+  - lint
+  - build
+  # - deploy
+
+install_packages:
+  stage: init
+  cache:
+    key: '$NODE_MODULES_VERSION'
+    paths:
+      - node_modules/
+  script:
+    # 打印一下当前是什么分支而已
+    - echo "NODE_MODULES_VERSION=$NODE_MODULES_VERSION"
+    - echo "CURRENT_BRANCH=$CURRENT_BRANCH"
+    # 设置 npm 的源，会快一些
+    - npm config set registry http://registry.npm.taobao.org/
+    # 安装所有依赖，也就是 node_modules
+    - npm install --silent
+
+lint_code:
+  stage: lint
+  # 定义缓存
+  cache:
+    key: '$NODE_MODULES_VERSION'
+    # 下面的配置指示，我们当前只拉取缓存，不上传，这样会节省不少时间
+    policy: pull
+    # 指定要缓存的文件/文件夹
+    paths:
+      - node_modules/
+  script:
+    - npm run lint
+  only:
+    - /^dev.*$/ # dev分支下只做lint语法检查
+
+build:
+  stage: build
+  cache:
+    key: '$NODE_MODULES_VERSION'
+    policy: pull
+    paths:
+      - node_modules/
+  script: npm run aot:test
+  # artifacets 是打包你指定的文件或者文件夹，然后你可以通过 gitlab 的页面进行下载的
+  artifacts:
+    # artifacets 的名字
+    name: '$CI_COMMIT_REF_NAME-dist'
+    # artifacets 的过期时间，因为这些数据都是直接保存在 Gitlab 机器上的，过于久远的资源就可以删除掉了
+    expire_in: 60 mins
+    # 制定需要打包的目录，这里我把 dist 目录给打包了，准备发布到服务器
+    paths:
+      - dist/
+  only:
+    - master
+#
+##  部署任务
+# deploy:
+#   stage: deploy
+#   # 该命令指定只有 master 分支才能够执行当前任务
+#   only:
+#     - master
+#   # 部署脚本，在下面的代码中，我用到了很多类似 ${AMAZON_PEM} 的变量，由于我们的私钥、Ip 都算是不宜公开显示的信息，
+#   # 所以我用到了 Gitlab 的变量工具，在 repo 的 Setting > CI/CD > Secret variables 中，这些变量值只有项目管理员才有权限访问
+#   script:
+#     - 'ls -la'
+#     - 'ls -Rl dist'
+#     - 'echo "${AMAZON_PEM}" > amazon.pem'
+#     - 'chmod 600 amazon.pem'
+#     - 'scp -o StrictHostKeyChecking=no -i amazon.pem -r dist/* ${AMAZON_NAME_IP}:/usr/share/nginx/html/'
+
+
+```
+
+Angular `gitlab-ci.yml` 配置还可以参考：https://stackoverflow.com/questions/46269681/gitlab-ci-failing-with-angular-cli
+
+配置中有几个关键点需要了解，如：
+
+### 变量 `variables` 
+
+用户可以自定义变量或者读取Gitlab系统自带的变量，用来动态在脚本中获取，也可以根据变量写一下if语句来执行不同的逻辑，如下：
+
+```yml
+build:
+  stage: build
+  script:
+    - |
+      if [ "$CI_COMMIT_REF_NAME" = "$ci_defined_secret_variable_deploy_branch" ]; then
+        echo "build ran and conditional was true"
+      fi
+  except:
+    - master
+
+stagetwo:
+  stage: deploy
+  script:
+    - |
+      echo "stage two ran"
+  only:
+    variables:
+      - $CI_COMMIT_REF_NAME == $ci_defined_secret_variable_deploy_branch
+```
+
+下图是某工程下的构建配置
+![namespace](https://user-images.githubusercontent.com/8676711/58222769-bee0d100-7d49-11e9-8e9f-bb16ca7d23ea.png)
+
+
+###  阶段 stages
+
+定义 stage，stage 可以简单的理解为“步骤”，会顺序执行，如果上一步错了，那不会继续执行下一步，比如像上边定义的，第一步先 `lint` 检查代码规范，第二步构建。完整的阶段划分应该为：`第一步先初始化，第二步检查代码规范，第三步进行单元测试，第四步构建，第五步就直接将项目部署到服务器`
+
+### 缓存 cache
+
+GitLab CI/CD提供了一种 [缓存机制](https://docs.gitlab.com/ee/ci/caching/#cache-dependencies-in-gitlab-cicd)，可用于在运行作业时节省时间。
+
+定义全局的缓存策略，如上所说，每个不同的 `stage`，CI 都会重新启动一个新的容器，所以我们之前 `stage` 中的文件都会消失，在前端开发中，就意味着每个 `stage` 都要重新完整装一次 ` node_modules`，这样的时间和网络成本都不低，所以我们选择将这些文件缓存下来。
+
+但是，缓存也要讲究实效性，例如我在第二次的提交中增加了一个库，那第二次的 CI 就不能再重复使用上一次的 `node_modules` 缓存了，在 `.gitlab-ci.yml` 中，我们通过设置 `cache`  的 `key` 来区分不同的缓存，从配置中可以看到，通过自定义变量 **NODE_MODULES_VERSION** 来标识 `node_modules` 的版本，决定是否下载新的依赖，每次工程修改依赖版本或者新增模块时，维护一下这个**NODE_MODULES_VERSION** 版本号就可以了。可以通过监听package.json 文件版本更新，然后脚本自动修改NODE_MODULES_VERSION版本号。如脚本：[compare-pk.js](https://gist.github.com/giscafer/1d63c806a312bace2909fb2057b786ee)
+
+
+
+```yml
+# 变量定义
+# https://docs.gitlab.com/ee/ci/variables/#using-predefined-environment-variables
+variables:
+  NODE_MODULES_VERSION: 'ng-starter-web-1.0.0' # node_modules版本号，每次升级依赖改一下这里的数值
+  CURRENT_BRANCH: $CI_COMMIT_REF_NAME
+```
+### 任务 Job
+
+剩下就是 `Job` 来定义脚本了，以上的东西都是给 `Job` 来使用的。下边举例详细说明：
+
+```yml
+# 这个是某个任务的名称，你可以随意起名
+install_packages:
+  # 指定该任务所属的步骤，每到一个步骤，该步骤所对应的所有任务都会并行执行
+  stage: init
+  # 指定要缓存的文件以及文件夹
+  cache:
+    # 这个属性是 gitlab 比较新版本里面加的特性，意思是在这一步，我只上传这个缓存，我不会拉取该缓存
+    policy: push
+    # 指定缓存的内容，在下面我缓存了 node_modules 这个文件夹，你还可以在下面继续添加文件或者文件夹
+    paths:
+      - node_modules/
+  # 该任务要运行的脚本，顺序执行
+  # 都是 bash 命令
+  # 默认当前目录就是 repo 的根目录
+  script:
+    # 打印一下当前是什么分支而已
+    - echo "CURRENT_BRANCH=$CURRENT_BRANCH"
+    # 设置 npm 的源，会快一些
+    - 'npm config set registry "https://registry.npm.taobao.org"'
+    # 安装所有依赖，也就是 node_modules
+    - "npm install"
+```
+
+### 有缓存和无缓存CI速度对比
+
+无缓存做一个lint检查需要约 8 分钟
+
+![uncache_job_time](https://user-images.githubusercontent.com/8676711/56574619-470e7200-65f6-11e9-9dc9-00bcb8c5b5db.png)
+
+有缓存则约一分半
+
+![cache_node_modules](https://user-images.githubusercontent.com/8676711/56574618-4675db80-65f6-11e9-940c-d37962665705.png)
+
+更多配置项介绍见官方文档[yaml/README](https://docs.gitlab.com/ce/ci/yaml/README.html)
+
+## 开发分支
+
+> PR: pull request 或 merge request
+
+每次提交或者 `PR` 都会自动触发 `job:lint` ，`PR` 在代码lint或者测试没有通过的情况下，是默认无法合并的（按钮禁用，权限大的用户才能跳过检查，但不建议，除非你想出错）。
+
+更方便的是，`PR` 可以设置为脚本执行通过后自动合并，当然如果需要 `CR （code review）` 的话，可以设置为手动合并。 如果连测试都没有通过的代码，就没有必要 `CR` 了。
+
+![TIM截图20190410144849](https://user-images.githubusercontent.com/8676711/55857468-d6039f00-5b9f-11e9-8d70-08901b7562be.png)
+
+## master 分支
+
+可以在 master 分支做持续交付操作（CD）, 主要就是自动化构建；将构建成功结果物，通过脚本来部署即可。如果还有后期的自动化接口或者组件测试，部署后执行测试，如果失败则回滚。按理是测试成功的代码，部署后就一般没有问题，除非是环境和数据引起的问题。
+
+因为 master 分支是 dev 或者 test 分支 PR 合并过来的，所以他们的测试和代码检查一般都通过了的，当然，合并之前也会重新执行一次代码检查和测试，最后才会走构建的job。
+
+![image](https://git.1ziton.com/yzt/wiki/uploads/ec39057b893f3106fd173b3ba7bea7f6/image.png)
+
+## Pipeline
+
+Gitlab 的 `Pipeline` 下可以看到每次提交触发Job的执行状态，可以对执行日记查看，对应job执行成功或失败都可以发生通知给开发者。
+
+![image](https://git.1ziton.com/yzt/wiki/uploads/56e23f2dd4ab21c1a5a29d8d08e63734/image.png)
+
+![image](https://git.1ziton.com/yzt/wiki/uploads/8f9f7b426e7e52787299848cbcaa48d6/image.png)
+
+
+## 持续交付（Continuous Delivery）
+
+![](http://ww1.sinaimg.cn/large/940e68eegy1g2vd5czdvcj20k00etwf5.jpg)
+
+持续交付在持续集成的基础上，将集成后的代码署到更贴近真实运行环境的「类生产环境」中。比如，我们完成单元测试后，可以把代码部署到连接数据库的 Staging 环境中更多的测试。如果代码没有问题，可以继续手动部署到生产环境中。
+
+
+> 从频繁提交代码、自动化测试(保证测试覆盖) -> 运行本地测试 -> 服务器运行测试 -> 部署到测试环境 -> 交付管理
+> 
+> 而这些都应该是自动的，所以你需要知道的东西有: 如何编写测试(Junit、Qunit、BDD、TDD..)、自动化测试(Selenium..)、版本管理(git)、配置(feature toggle)、依赖管理、部署脚本等等。
+
+
+从0起做好持续交付并不容易，涉及很多东西，从简单的做起吧。自动触发了构建操作，目前如何自动部署，走不走 Jenkins 后续方案讨论再定。可以保留 Jenkins 手动构建（出问题可以规避），也可以有自动化构建部署两种方案都有
+
+后边又尝试了Gitlab Pages的CI/CD，构建后上传到远程服务器：
+
+```yml
+image: node:10.4.1
+
+variables:
+  NODE_MODULES_VERSION: 'wiki-web-1.0.0' # node_modules版本号，每次升级依赖改一下这里的数值
+  CURRENT_BRANCH: $CI_COMMIT_REF_NAME
+
+# 缓存目录文件
+# key是唯一值，重名会覆盖上一次的缓存
+cache:
+  key: '$NODE_MODULES_VERSION'
+  paths:
+    - node_modules/
+
+stages:
+  - build
+  - deploy
+
+build:
+  stage: build
+  cache:
+    paths:
+      - node_modules/
+
+  script:
+    - npm install  --silent
+    - npm run build
+
+  artifacts:
+    name: 'dist'
+    expire_in: 60 mins
+    paths:
+      - dist
+      # - docs/.vuepress/dist
+
+  only:
+    - master
+
+deploy:
+  stage: deploy
+  environment:
+    name: Production
+  before_script:
+    # - sed -i '/jessie-updates/d' /etc/apt/sources.list
+    # https://superuser.com/questions/1423486/issue-with-fetching-http-deb-debian-org-debian-dists-jessie-updates-inrelease/1424377#1424377
+    - printf "deb http://archive.debian.org/debian/ jessie main\ndeb-src http://archive.debian.org/debian/ jessie main\ndeb http://security.debian.org jessie/updates main\ndeb-src http://security.debian.org jessie/updates main" > /etc/apt/sources.list
+    - apt-get update -qq && apt-get install -y -qq sshpass
+  script:
+    - cd dist/
+    - ls
+    - sshpass -V
+    - export SSHPASS=$USER_PASS
+    - sshpass -e scp -P 端口 -o stricthostkeychecking=no -r . root@IP:/data/git_cd
+    # - sshpass -e scp -o stricthostkeychecking=no -r . username@host.com:/var/www/html
+    # - rsync -avz --delete -e"ssh -p 端口" ./ root@ip:/data/git_cd
+  when: on_success
+  only:
+    - master
+
+```
+是一个基于 `vuepress` 的工程，CI 自动构建后，会将打包后的 `dist文件夹` 上传到 `artifacts` , CD 操作的时候从这里那就好了。
+
+![TIM截图20190410102035](https://user-images.githubusercontent.com/8676711/55847007-53b4b400-5b7a-11e9-9015-6df94b1b8600.png)
+
+构建生成的附件可以通过 `sshpass` 或 `rsync ` 将附件上传到远程服务器。相关文章可以参考：
+
+- [GitLab Build and Deploy to a Server via SSH](https://codeburst.io/gitlab-build-and-push-to-a-server-via-ssh-6d27ca1bf7b4)
+- [GitLab-CI使用Rsync进行持续部署](https://zacksleo.github.io/2017/09/08/GitLab-CI%E4%BD%BF%E7%94%A8Rsync%E8%BF%9B%E8%A1%8C%E6%8C%81%E7%BB%AD%E9%83%A8%E7%BD%B2/)
+
+## App CI
+
+Android 和 IOS  CI 环境搭建参考：
+- https://www.jianshu.com/p/651b049e8330
+- https://www.jianshu.com/p/30ebca319274
+
+以上是网友的分享文章，前半部分工作主要是搭建 Runner 和 docker 环境，有更快速的方式来搭建。我在搭建 android 环境时，使用了共享性 Runner，image选用的是开源社区的 [react-native-community/ci-sample](https://github.com/react-native-community/ci-sample) docker 镜像，然后配置对应的执行脚本即可。越过了繁琐的 android 环境搭建，这就是 docker 的好处了。
+
+![android](https://user-images.githubusercontent.com/8676711/57450863-3dda0200-7292-11e9-955c-6b722db14610.png)
+
+![TIM截图20190509194049](https://user-images.githubusercontent.com/8676711/57451160-01f36c80-7293-11e9-8f24-36fbb275ff54.png)
+
+
+## CI 工具集
+
+常用的有以下几种：
+
+- Jenkins ：借助 Jenkins 配合 gitlab 的 webhook 来做CI/CD
+- Circle CI : 强大，对 Github 友好
+- Travis CI：强大，对 Github 友好
+- Gitlab CI：Gitlab 自带 CI 环境，一样比较好用.（本文全都是在 gitlab ci 实践）。
+
+详情了解：http://dockone.io/article/8173
+
+## Jenkins CI/CD 流程图
+
+分享两个来自 ProcessOn 网友分享的 Jenkins CI/CD 流程图：
+
+![CICD后端](https://user-images.githubusercontent.com/8676711/57456243-9f549d80-729f-11e9-8d54-3951f1e58234.png)
+
+![Jenkins CI](https://user-images.githubusercontent.com/8676711/57456245-9f549d80-729f-11e9-8f86-c14c7adb1579.png)
+
+
+# 总结
+
+把Runner搞成共享型的，前端的工程就不需要重复配置Runner了，后续逐步的改善即可。一个完整的ci配置应该包含这些过程：`第一步先初始化，第二步检查代码规范，第三步进行单元测试，第四步构建，第五步就直接将项目部署到服务器`。
+
+![时间轴](https://user-images.githubusercontent.com/8676711/57457487-3884b380-72a2-11e9-8b66-cf1383e360c5.png)
+
+
+整合 DevOps，CI/CD 实现是必须的，目前市场和工具方案都特别成熟，个人认为，小团队或者大团队都有必要去学习掌握，以便改善团队的效能问题。一切能脚本自动化的工作，都不应该人工参与。无论如何，频繁部署、快速交付以及开发测试流程自动化都将成为未来软件工程的重要组成部分。
+
+
+欢迎讨论~
+
+--- 
+
+推荐：
+- [The Product Managers’ Guide to Continuous Delivery and DevOps](https://www.mindtheproduct.com/2016/02/what-the-hell-are-ci-cd-and-devops-a-cheatsheet-for-the-rest-of-us/)
+- [《持续交付:发布可靠软件的系统方法》](https://book.douban.com/subject/6862062/)
+

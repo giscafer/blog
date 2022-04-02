@@ -1,0 +1,235 @@
+---
+  title: Git 信息提交规范实践
+  publishedAt: 2019-04-10 14:14:31
+  summary: Git 信息提交规范实践
+  tags: ["Team"]
+---
+
+# 介绍
+
+- [制定 Git 消息提交规范](#commit)
+- [工具限制行为](#tools)
+- [changelog 生成](#changelog)
+
+如果要执行规范，工具是一定要有的。通过工具来限制开发人员的习惯的，一方面保证所有人参与项目都强制按照统一的规范来操作，另一方面是如果你没有工具去强制执行规范，不是每个人都会自觉遵守，行为规范没法统一的话，规范也就没有多少存在的意义了。
+
+# <a name="commit"></a> Git 提交消息规范指南
+
+我们对如何格式化 git 提交消息有非常精确的规则。这样可以查看更易读的消息，这些消息在查看项目历史记录时很容易理解。规范提交信息后，我们可以通过工具将 `git commit` 消息来生成 `{工程项目} 更改日志`，每次版本发布都会有一个清晰的日记列表。
+
+## Commit Message Format
+
+每个提交消息由 **header**， **body** 和 **footer**。  标头具有特殊格式，包括 **type**， **scope** 和 **subject**:
+
+```
+<type>(<scope>): <subject>
+<BLANK LINE>
+<body>
+<BLANK LINE>
+<footer>
+```
+
+所述 **header** 是必须的，而 **scope** 的报头的是可选的。
+
+提交消息的任何行都不能超过100个字符！这允许在GitHub以及各种git工具中更容易阅读消息。
+
+页脚应包含 [closing reference to an issue](https://help.github.com/articles/closing-issues-via-commit-messages/) （如果有）.
+
+(更多见 [samples](https://github.com/NG-ZORRO/ng-zorro-antd/commits/master))
+
+```
+docs(changelog): update change log to beta.5
+```
+```
+fix(release): need to depend on latest rxjs and zone.js
+
+The version in our package.json gets copied to the one we publish, and users need the latest of these.
+```
+
+## Revert
+
+如果提交恢复先前的提交，则它应该以 `revert: `，然后是还原提交的标头开头。在正文中它应该说：`This reverts commit <hash>.`，其中哈希是被还原的提交的SHA。
+
+## Type
+
+必须是以下之一：
+
+* **build**: 影响构建系统或外部依赖项的更改（示例范围：gulp，broccoli，npm）
+* **ci**: 对CI配置文件和脚本的更改（示例范围：Travis，Circle，BrowserStack，SauceLabs）
+* **docs**: 只更改文档
+* **feat**: 一项新功能
+* **fix**: bug修复
+* **perf**: 改进性能的代码更改
+* **refactor**:代码更改既不修复错误也不添加功能
+* **style**: 不影响代码含义的更改（空格，格式，缺少分号等）
+* **test**: 添加缺失测试或更正现有测试
+
+## Scope
+范围应该是受影响的模块的名称（文件夹名称或其他有意义的单词），并且应该以模块为前缀:(由读取由提交消息生成的更改日志的人员感知
+
+以下是一些例子:
+
+* **module:alert**
+* **module:badge**
+* **module:breadcrumb**
+* **module:OTHER_COMPONENT_NAME**
+
+“使用模块名称”规则目前有一些例外：
+
+* **packaging**: 用于更改npm包布局的更改，例如公共路径更改，package.json更改，d.ts文件/格式更改，更改包等。
+* **changelog**: 用于更新CHANGELOG.md中的发行说明
+* **showcase**: 用于repo的/ showcase目录中的docs-app（ng.ant.design）相关更改
+* none/empty string: 对所有包有用 `style`, `test` 以及 `refactor` 所做的更改 (e.g. `style: add missing semicolons`)
+
+## Subject
+该主题包含对变更的简洁描述：
+
+* 使用命令式，现在时： "change" 而非 "changed" 和 "changes"
+* 不要把第一个字母大写
+* 最后没有点.号
+
+## Body
+就像 **subject** 一样, 使用命令式，现在时: "change" 而非 "changed" 和 "changes"。
+body 应该包括改变的动机，并将其与之前的行为进行对比。
+
+## Footer
+页脚应包含有关 **Breaking Changes**任何信息，也是引用此提交 **Closes** GitHub问题的地方。.
+
+**Breaking Changes** 应该以 `BREAKING CHANGE:` 带有空格或两个换行符的单词开头。然后将其余的提交消息用于此目的。
+
+详细的解释请看这里 [document][commit-message-format].
+
+
+[coc]: https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/CODE_OF_CONDUCT.md
+[commit-message-format]: https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#
+[dev-doc]: https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/docs/DEVELOPER.md
+[github]: https://github.com/NG-ZORRO/ng-zorro-antd
+[gitter]: https://gitter.im/ng-zorro/ng-zorro-antd
+[plunker]: http://plnkr.co/edit
+
+
+## 举例
+
+以下是前端工程的提交日记举例：
+
+![git 提交日记规范](https://camo.githubusercontent.com/12cf4170048e4b3be24355bb60782654b2805948/68747470733a2f2f6769742e317a69746f6e2e636f6d2f797a742f77696b692f75706c6f6164732f37653036656230663864386264376165383561613163353337333639633738632f696d6167652e706e67)
+
+> 英文原出处：[commit-message-guidelines](https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/CONTRIBUTING.md#-commit-message-guidelines)
+
+# <a name="tools"></a> 工具限制行为
+
+利用 [husky](https://www.npmjs.com/package/husky) （哈士奇来看门） 可以阻止一些不规范 的 `git commit, git push` 操作。使用方式见官方文档，比较详细。
+
+以下是个人在项目的实践，package.json中加入 ：
+
+```json
+"husky": {
+        "hooks": {
+            "commit-msg": "node ./scripts/git/commit-msg.js -E HUSKY_GIT_PARAMS",
+            "pre-commit": "pretty-quick --staged"
+        }
+    }
+````
+
+### pre-commit 
+
+git commit 之前会触发 `pre-commit ` hooks，执行脚本 `pretty-quick --staged` ，用来自动格式化代码。格式化代码统一一个格式化工具，缩进等（可能会和编辑器配置文件`.editorconfig`配合使用），保证整个项目在代码提交到仓库之前，都是统一的格式化风格，这样就不存在多个开发人员改一个文件，缩进时影响到很多代码行的问题了，对 CR 时体验较好。所以，这个步骤也是必不可少的。
+
+1、需要安装两个模块：
+
+```bash
+npm i --save-dev prettier pretty-quick
+```
+2、配置规则文件 `.prettierrc`  和  忽略文件 `.prettierignore`
+
+`.prettierrc`
+
+```json
+{
+  "singleQuote": true,
+  "printWidth": 120,
+  "tabWidth": 2,
+  "useTabs": false,
+  "overrides": [
+    {
+      "files": ".prettierrc",
+      "options": {
+        "parser": "json"
+      }
+    }
+  ]
+}
+```
+
+`.prettierignore`
+
+```bash
+**/*.svg
+**/test.ts
+**/*.less
+coverage/
+publish/
+schematics/
+**/template/*
+**/i18n/*
+
+```
+
+首次安装环境时，可以测试看效果
+
+![pretty-quick](https://user-images.githubusercontent.com/8676711/55856430-de0e0f80-5b9c-11e9-8941-ce75d46440a5.png)
+
+
+### commit-msg
+
+git commit 时，会触发 `commit-msg` hooks，执行脚本 `node ./scripts/git/commit-msg.js -E HUSKY_GIT_PARAMS` 
+
+脚本可以参考 Angular 工程的 [commit-msg.js](https://github.com/angular/angular/blob/master/scripts/git/commit-msg.js)来自定义规范要求，也可以直接使用[commitlint](https://github.com/conventional-changelog/commitlint)，当 git message 不符合规范的时候，提交时检测不通过会有如下提示：
+
+![TIM截图20190410140538](https://user-images.githubusercontent.com/8676711/55855323-caad7500-5b99-11e9-8a58-647df28fef75.png)
+![TIM截图20190410140549](https://user-images.githubusercontent.com/8676711/55855324-cb460b80-5b99-11e9-8b42-afcff5e7c008.png)
+
+通过 ` commit-msg` 和 `pre-commit` 两个hooks，就可以阻止了开发人员不认真填写 git message 的行为了。更多hooks 可以看 [git_hooks](https://git-scm.com/docs/githooks#_hooks)，根据自己的需要配置不同的脚本行为即可
+
+# <a name="changelog"></a> changelog 生成
+
+[conventional-changelog](https://github.com/conventional-changelog/conventional-changelog) 可以通过命令行生成  `CHANGELOG.md` 文件
+
+```json
+"changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0"
+```
+
+![TIM截图20190413141824](https://user-images.githubusercontent.com/8676711/56075561-0d1fbd80-5df7-11e9-9967-ae1b4c9d59cf.png)
+
+
+> 通常情况线下，我们会在 master 分支进行如下的版本发布操作：
+> 
+> 1. git pull origin master
+> 2. 根据 pacakage.json 中的 version 更新版本号，更新 changelog
+> 3. git add -A, 然后 git commit
+> 4. git tag 打版本操作
+> 5. push 版本 tag 和 master 分支到仓库
+> 
+> 其中2，3，4则是 [standard-version](https://github.com/conventional-changelog/standard-version) 工具会自动完成的工作，配合本地的 shell 脚本，则可以自动完成一系列版本发布的工作了。
+
+手工打标签发布的话如：
+
+```bash
+git tag -a v1.1.0 -m "chore(release): 1.1.0"
+git push --follow-tags origin master
+```
+以上这些动作都可以通过脚本来统一处理，运行脚本文件即可。
+
+# 总结
+
+git message 规范化很重要，对版本更新信息的汇总管理，代码问题出现时，可能很好的追踪和查看修改记录，团队协作的情况下，是有必要进行管理的，吃过亏你就知道错了。Github上的开源项目，一般都会有很多相似规范的约束，这也是全球开源项目维护者、贡献者的协作的保障。有参与过开源项目 [NG-ZORRO/ng-zorro-antd](https://github.com/NG-ZORRO/ng-zorro-antd/pulls?utf8=%E2%9C%93&q=is%3Apr+author%3Agiscafer+is%3Amerged) 的bug修改，这方面感受较多，建议开发者多了解或者有机会参与一些工程较规范的项目贡献。
+
+---
+
+> Author: [@giscafer](https://github.com/giscafer)
+> 欢迎讨论
+
+
+参考资料
+- https://zhuanlan.zhihu.com/p/51894196
+

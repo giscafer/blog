@@ -1,0 +1,110 @@
+---
+  title: 理解 Virtual DOM
+  publishedAt: 2019-03-13 10:48:34
+  summary: 理解 Virtual DOM
+  tags: ["Review","React"]
+---
+
+# Question List 
+
+- 什么是Virtual DOM?
+- Virtual DOM 的对比过程 （preact为例）
+
+# Answer
+
+
+## DOM介绍 & 存在问题
+
+DOM （Document Object Model）是一种通过对象来表示结构化文档的方法，它是一种跨平台的、与语言无关的约定，用于表示HTML、XML和其他格式的数据并与之交互。浏览器通过处理DOM来实现细节，我们可以使用 JavaScript、CSS来与它交互。可以搜索节点并更改它的详细信息，删除或者插入新节点。
+
+DOM 几乎是跨平台和跨浏览器的，那它有什么问题呢？主要问题是 **DOM 从来没有为创建动态UI进行优化**。
+
+我们通过一张图来看浏览器是如何呈现web页面的：
+![renderpage](https://user-images.githubusercontent.com/8676711/54594161-0fe2f900-4a6b-11e9-90a5-14e711749f15.png)
+
+浏览器中的页面呈现引擎解析HTML网页以创建DOM，同时解析CSS，并将CSS应用于HTML，和DOM组成一个渲染树（Render Tree），这个过程称为**Attachment**。布局过程（Layout）为每个节点提供精确的坐标，节点在其中进行绘制和展示。我们对DOM进行操作的时候，浏览器就会重复上边的渲染过程。
+
+我们可以使用JavaScript 和像 jQuery这样的库去处理DOM，但它们在解决性能问题方面做得很少。想象一下，像微博、Twitter、Facebook 这种社交平台，页面滚动一定情况后，用户浏览器下将有数万个节点，使这些节点之间进行有效的交互、动态UI是一个巨大的问题。
+
+
+## 如何解决 DOM 性能问题
+
+### Shadow DOM
+
+`Shadow DOM` 是W3C工作草案标准。该规范描述了将多个DOM树组合成一个层次结构的方法，以及这些树如何在文档中相互交互，从而实现更好的DOM组合
+
+参考：
+- [Shadow DOM](https://www.w3.org/TR/shadow-dom/)
+- [Shadow DOM v1：独立的网络组件](https://developers.google.cn/web/fundamentals/web-components/shadowdom?hl=zh-cn)
+
+
+
+### Virtual DOM 
+
+![vdom](https://user-images.githubusercontent.com/8676711/55935010-1711b700-5c65-11e9-89a1-2c628896d823.png)
+
+
+指不是直接地接触DOM，而是构建它的`抽象`版本。这样我们使用DOM的某种`轻量副本`，就可以随意的修改它，然后保存到真正的DOM树种。保存时我们应该进行比较，找出DOM节点差异并更改（重新渲染）应该更改的内容。
+
+它比直接操作DOM快得多，因为它不需要进入真正DOM的所有重量级部分。它工作得很好，但只有当我们以正确的方式使用它的时候。有两个问题需要解决：`何时重新渲染DOM`以及`如何有效的实现它`。
+
+**何时重新渲染DOM**——当数据发送更改并需要更新时。
+
+但我们怎么知道数据被改变了呢？
+
+我们有两个选择：
+
+- 第一种是 `脏值检测`（dirty checking），定期轮询检测，并递归检测数据结构中的所有值。
+- 第二种方式是监听观察状态变化 (observable)，如果状态没有改变，我们不需要做什么；如果状态发生改变，我们确切地知道要更新什么了。
+
+**怎么做**才能真正快速。
+
+- 高效的 `diff算法`
+- 批处理DOM的读写操作
+- 只针对子树进行有效的更新
+- 使用可观察（Observable ）的而不是脏检查来检测更改
+
+
+总结：`Virtual DOM` 是一种技术和一组库/算法，它允许我们通过避免直接使用DOM和只使用模拟DOM树的轻量级JavaScript对象来提高前端性能。
+
+
+## Virtual DOM 在 React 中的实现
+
+ReactJS 使用 `Observale` 来查找修改后的组件，每当在任何组件上调用 `setState()` 方法时，ReactJS 都会标记该组件为`dirty`，并重新渲染它。
+
+无论何时调用 `setState()` 方法，ReactJS 都会从头创建整个 `Virtual DOM` ，创建整个`Virtual DOM`非常快，不影响性能。在任何给定的时间，ReactJS 维护两个 `Virtual DOM`，一个使用更新状态后的`Virtual DOM`，另一个使用之前（老的）状态的`Virtual DOM`。
+
+ReactJS 使用 `diff 算法` 比较两个 `Virtual DOM` 去查找更新真实DOM（Real DOM）的最小步骤。在两棵树之间寻找最小修改数的复杂度为`O(n^3)`。但是React使用启发式方法，并带有一些假设，使得问题的复杂度为 `O(n)`。
+
+ReactJS 使用以下步骤来查找两个`Virtual DOM`的不同之处：
+
+- **如果父状态更改，重新渲染所有子状态** 如果父组件状态变化了，ReactJS 会重新渲染所有子组件，不管子组件状态是否发生变化，所以 ReactJS 提供了 `shouldComponentUpdate()` 生命周期方法，用来有效的减少一些没必要的渲染，提升性能
+- **广度优先搜索（BFS）** 
+- **Reconciliation** 确定 `Real DOM` 哪些需要更新的过程：1、不同的元素类型将产生不同的树；2、开发人员可以通过设置`key`属性来告知 ReactJS 哪些子元素可能是稳定的。详细见官方文档[docs/reconciliation](https://reactjs.org/docs/reconciliation.html)
+- **批量更新（Batch Update）** ReactJS 等待所有的事件循环完成，才批量将对比好的需要更新的元素更新到 `Real DOM`
+
+执行完所有步骤后，React将重新绘制 `Real DOM`。这意味着在事件循环期间，只有一次绘制 `Real DOM`。因此，所有的布局过程只会按时运行，以更新 `Real DOM`。
+
+## Virtual DOM Algorithm Flowchart For Preact
+
+![1_TF0TZszVwpYc1Pba7Dbk7Q](https://user-images.githubusercontent.com/8676711/55934908-c39f6900-5c64-11e9-9284-54250fda3b1c.png)
+
+## React Native
+
+归功于VDOM，React Native 可以实现跨平台，详细：[Does React Native have a 'Virtual DOM'?](https://stackoverflow.com/questions/41804855/does-react-native-have-a-virtual-dom)
+
+---
+
+- [浏览器的工作原理：新式网络浏览器幕后揭秘](https://www.html5rocks.com/zh/tutorials/internals/howbrowserswork/)
+- [A quick guide to learn React and how its Virtual DOM works](https://medium.freecodecamp.org/a-quick-guide-to-learn-react-and-how-its-virtual-dom-works-c869d788cd44)
+- [What is Virtual Dom](https://medium.com/@tony_freed/what-is-virtual-dom-c0ec6d6a925c)
+- [Performance Comparison for React, Angular and Knockout](http://chrisharrington.github.io/demos/performance/)
+- [网上都说操作真实 DOM 慢，但测试结果却比 React 更快，为什么？](https://www.zhihu.com/question/31809713)
+- [Medium上Virtual DOM的文章](https://medium.com/search?q=Virtual%20DOM)
+- [Virtual DOM in ReactJS](https://hackernoon.com/virtual-dom-in-reactjs-43a3fdb1d130)
+- [界面之下：还原真实的MV*模式](https://github.com/livoras/blog/issues/11)
+- [深度剖析：如何实现一个 Virtual DOM 算法](https://github.com/livoras/blog/issues/13)
+- [Matt-Esch/virtual-dom](https://github.com/Matt-Esch/virtual-dom) A Virtual DOM and diffing algorithm 
+- https://en.wikipedia.org/wiki/Levenshtein_distance
+
+

@@ -14,13 +14,11 @@
 
 # production
 /build
-public/sitemap.xml
-public/feed.xml
 
 # misc
 .DS_Store
 *.pem
-.eslintcache
+*.mdx
 
 # debug
 npm-debug.log*
@@ -36,6 +34,3 @@ yarn-error.log*
 # vercel
 .vercel
 
-
-# Contentlayer
-.contentlayer

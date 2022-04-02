@@ -1,0 +1,187 @@
+---
+  title: 设计模式 - 单例模式
+  publishedAt: 2021-08-11 14:04:04
+  summary: 设计模式 - 单例模式
+  tags: ["设计模式"]
+---
+
+**单例模式（Singleton Design Patterns)**：一个类只允许创建一个实例，单例一般用来处理资源访问冲突、或者是表示一个全局唯一类。
+
+## 为什么说支持懒加载的双重检测不比饿汉式更优？
+
+- 饿汉模式：类加载时提前初始化静态实例，不支持延迟加载
+- 懒汉模式：支持延迟加载，但函数锁造成加锁解锁频繁，并发低，存在性能问题
+- 双重检测：在函数内部进行判断加类就级别锁，静态对象实例化之后不再触发加锁解锁的情况，并发高
+- 内部静态类：比双重检测简单。
+
+在前端，由于js是单线程的，所以，不会存在锁的情况，不过也可以了解后端是通过锁来解决这个并发问题的。
+
+
+### 饿汉模式
+
+> ts 代码
+
+```ts
+class SingletonEhan {
+  private id: number = 0;
+  private static instance: SingletonEhan = new SingletonEhan();
+  private SingletonEhan() {}
+  private static getInstance() {
+    return SingletonEhan.instance;
+  }
+
+  getId() {
+    return (this.id += 1);
+  }
+}
+```
+
+### 懒汉模式
+
+> ts 代码
+
+```ts
+class SingletonLhan {
+  private id: number = 0;
+  private static instance: SingletonLhan;
+  private SingletonLhan() {}
+  // java 写的话函数加上 synchronized 锁，导致频繁加锁和解锁并发低
+  // js 单线程所以不需要考虑此问题
+  private static getInstance() {
+    if (!this.instance) {
+      this.instance = new SingletonLhan();
+    }
+
+    return this.instance;
+  }
+
+  getId() {
+    return (this.id += 1);
+  }
+}
+```
+
+###  双重检测
+
+> ts 代码
+
+```ts
+class SingletonLhan2 {
+  private id: number = 0;
+  private static instance: SingletonLhan;
+  private SingletonLhan() {}
+
+  private static getInstance() {
+    if (!this.instance) {
+      // java 写的话函数加上 synchronized 锁，解决频繁加锁和解锁并发低问题
+      // js 单线程所以不需要考虑此问题
+      // synchronized(SingletonLhan2.class){
+      //   if (!this.instance) {
+      //     this.instance = new SingletonLhan();
+      //   }
+      // }
+      this.instance = new SingletonLhan();
+    }
+
+    return this.instance;
+  }
+
+  getId() {
+    return (this.id += 1);
+  }
+}
+```
+
+### 静态内部类
+
+> java 代码
+
+```java
+
+public class SingletonInner{
+  private int id=0;
+
+  private constructor(){}
+
+  private static class Inner{
+    private static SingletonInner instance = new SingletonInner();
+  }
+
+  private static SingletonInner getInstance(){
+    return Inner.instance;
+  }
+
+  public int getId(){
+    return id+=1;
+  }
+}
+
+```
+
+---
+
+思考，如果不是用 typescript 来写，es6 写的话不存在 private 属性的东西，如何实现？
+
+—— 闭包
+
+## 单例模式有哪些问题？有没有替代方案？
+
+### 单例的问题
+
+- 单例对OOP特性（封装、抽象、继承、多态）编程不友好
+- 单例会隐藏类之间的依赖关系
+- 单例对代码的扩展性不友好
+ 比如，如果设计数据库连接池为单例类，慢SQL优化的时候，想将慢SQL独立一个数据库连接池，这时候扩展性就比较差。不适合设计成单例模式。
+- 单例对代码的可测试性不友好
+单例的局部变量是全局可变、被所有代码共享的，修改会影响到别的测试结果。
+- 单例不支持有参数的构造函数
+实际上可扩展支持
+
+### 替代方案
+
+为了保证全局唯一性，除了单例类，还可以用以下方法：
+
+- 静态方法实现。
+- 将单例生成的对象，作为参数传入函数。
+- 工程模式、IOC
+
+
+
+## 集群环境下的分布式单例模式
+
+#### 单例模式中的唯一性
+
+一个单例类只能实例化一个实例对象。
+
+#### 线程唯一的单例
+
+一个线程中单例实例是唯一的，线程间实例不同，可以用 `HashMap<线程id,单例实例对象>`  来存储区分
+
+#### 进程唯一的单例
+
+一个进程中的单例实例是唯一的，进程中多线程都是使用同一个单例实例对象。进程间不唯一。因为应用程序最新执行单元就是进程起步，进程分配了独立的运行空间，不同进程间的环境和内存是独立隔离开的。
+
+#### 如何实现集群环境下的单例？
+
+集群是多个服务器或者多个应用程序部署，程序运行环境和内存都是独立的，实际上就是多进程如何保证单例唯一。要使得集群应用的单例是唯一的，需要借助存储共享的能力。
+
+使用共享存储区（比如文件），在进程使用到单例时，从共享存储区读取到内存，并反序列化为对象，然后再使用，使用完成之后还要再存储到外部共享存储区。
+
+为了保证任何时间，进程之间只有一份对象存在，一进程在获取到对象之后，需要对对象进行加锁，避免其他进程再对其读取。并在使用完成这个对象之后，还需要显式的将对象从内存删除，并释放对对象的加锁。
+
+#### 如何实现一个多例模式？
+
+使用HashMap 来控制
+
+---
+
+Java中单例的唯一性作用的范围不是进程，而是类的加载器
+
+
+
+
+
+
+
+
+

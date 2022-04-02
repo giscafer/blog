@@ -1,0 +1,246 @@
+---
+  title: Docker部署nuxt.js + nightmare 网站笔记
+  publishedAt: 2020-05-18 09:23:57
+  summary: Docker部署nuxt.js + nightmare 网站笔记
+  tags: ["Vue","运维"]
+---
+
+近期用 nuxt.js + nightmare 开发的爬虫工具，发布时部署 Linux 系统。由于 Linux 系统没有图像相关的 GUI 界面，需要安装一系列的依赖，所以才遇到坑。
+
+CentOS 和 Ubuntu 系统都不一样的操作，遇到 docker 创建的各种坑（其实就是不熟悉），以及国内服务器 docker build 时下载速度慢，需要镜像更换等，从不会写 Dockerfile 到懂得使用 Docker 部署 nuxt.js 应用的过程，以下是一些操作记录。
+
+
+## puppeteer 镜像设置为国内
+
+```
+config set PUPPETEER_MIRRORS=https://npm.taobao.org/mirrors
+npm install puppeteer
+```
+
+## pm2
+
+pm2 启动 nuxt 的方式
+
+```
+pm2 start npm --name nuxt -- start
+```
+
+#### 端口占用
+
+Linux
+
+```shell
+- netstat -aptn |grep -i 3000  # 查看所有 3000 端口使用情况·
+- netstat -ntlp # 查看当前所有 tcp 端口
+```
+
+MacOS
+
+```
+lsof -i:3000
+kill 3000
+```
+
+#### sudo npm 问题
+
+- sudo ln -s /home/node/bin/npm /usr/bin/npm
+- sudo ln -s /home/node/bin/node /usr/bin/node
+
+#### 防火墙端口
+
+- firewall-cmd --zone=public --add-port=3000/tcp --permanent
+- firewall-cmd --reload
+
+#### nightmare 和 centos
+
+https://www.myfreax.com/how-to-install-google-chrome-web-browser-on-centos-8/
+
+Ubuntu
+
+https://github.com/segmentio/nightmare/issues/224
+
+https://github.com/mitel/nightmare-docker/blob/master/Dockerfile
+
+#### docker nuxt
+
+https://hoody.tech/blog/detail/27
+
+```shell
+# 移除所有容器
+docker rm $(docker ps -a -q)
+# 日记查看
+docker logs -f -t --tail 行数 容器名
+# 重启 docker
+systemctl restart docker
+# 进入容器shell
+docker exec -it nginx /bin/bash
+# 查看时区
+date -R
+```
+
+- Ubuntu 安装最新版 nodejs
+  https://www.jianshu.com/p/e7605f75b767
+
+- Ubuntu 安装 docker
+  https://www.jianshu.com/p/80e3fd18a17e
+
+#### docker 镜像源切换
+
+```shell
+sudo vim /etc/docker/daemon.json
+```
+
+输入
+
+```json
+{
+  "registry-mirrors": ["https://sji1i20h.mirror.aliyuncs.com"]
+}
+```
+
+重启 docker
+
+```shell
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+
+```
+
+**apt-get** 镜像更换
+
+```
+RUN sed -i s@/deb.debian.org/@/mirrors.163.com/@g /etc/apt/sources.list
+RUN apt-get clean
+RUN apt-get update
+```
+
+其中 **s@/deb.debian.org/@/mirrors.163.com/@g** 表示将 `deb.debian.org` 全部替换为 `mirrors.163.com` 的意思
+
+不写着行，直接系统 设置 `sources.list` 在 docker 内部不起作用，最会对当前系统执行有效
+
+`sources.list` 内容为：
+
+```
+deb http://mirrors.163.com/debian/ jessie main non-free contrib
+deb http://mirrors.163.com/debian/ jessie-updates main non-free contrib
+deb http://mirrors.163.com/debian/ jessie-backports main non-free contrib
+deb-src http://mirrors.163.com/debian/ jessie main non-free contrib
+deb-src http://mirrors.163.com/debian/ jessie-updates main non-free contrib
+deb-src http://mirrors.163.com/debian/ jessie-backports main non-free contrib
+deb http://mirrors.163.com/debian-security/ jessie/updates main non-free contrib
+deb-src http://mirrors.163.com/debian-security/ jessie/updates main non-free contrib
+
+```
+
+可以先考虑 备份原来的文件 `mv /etc/apt/sources.list /etc/apt/sources.list.bak`
+
+### Dockerfile
+
+```dockerfile
+
+FROM node:12.14.0
+
+MAINTAINER giscafer.com
+
+#设置node环境变量为production
+ENV NODE_ENV=production
+ # 配合程序逻辑
+ENV container=linux
+ENV HOST 0.0.0.0
+#创建/app 目录作为部署目录,创建容器实例时,挂载此目录
+RUN mkdir -p /app
+
+# docker - apt-get更换国内源解决Dockerfile构建速度过慢
+RUN sed -i s@/deb.debian.org/@/mirrors.163.com/@g /etc/apt/sources.list
+RUN apt-get clean
+
+RUN apt-get update
+
+# Installing the packages needed to run Nightmare
+RUN apt-get install -y \
+  xvfb \
+  x11-xkb-utils \
+  xfonts-100dpi \
+  xfonts-75dpi \
+  xfonts-scalable \
+  xfonts-cyrillic \
+  x11-apps \
+  clang \
+  libdbus-1-dev \
+  libgtk2.0-dev \
+  libnotify-dev \
+  libgconf2-dev \
+  libasound2-dev \
+  libcap-dev \
+  libcups2-dev \
+  libxtst-dev \
+  libxss1 \
+  libnss3-dev \
+  gcc-multilib \
+  g++-multilib  \
+  libgnome-keyring-dev
+
+
+# 把项目复制到镜像里面
+COPY . /app
+# 指定命令执行的目录为 /app
+WORKDIR /app
+EXPOSE 3000
+
+# 淘宝镜像
+RUN npm config set registry https://registry.npm.taobao.org
+# electron 淘宝镜像
+RUN npm config set ELECTRON_MIRROR http://npm.taobao.org/mirrors/electron/
+RUN npm install
+RUN npm run build
+
+#设置容器启动时执行的命令
+ENTRYPOINT [ "npm","start" ]
+
+```
+
+#### 提出环境部分单独发布镜像
+
+https://hub.docker.com/repository/docker/giscafer/nightmare
+
+#### 项目部署的dockerfile
+
+```dockerfile
+
+FROM giscafer/nightmare:latest
+
+MAINTAINER giscafer.com
+
+#设置node环境变量为production
+ENV NODE_ENV=production
+ # 配合程序逻辑
+ENV container=linux
+ENV HOST 0.0.0.0
+#创建/app 目录作为部署目录,创建容器实例时,挂载此目录
+RUN mkdir -p /app
+
+# 把项目复制到镜像里面
+COPY . /app
+# 指定命令执行的目录为 /app
+WORKDIR /app
+EXPOSE 3000
+
+# 淘宝镜像
+RUN npm config set registry https://registry.npm.taobao.org
+# electron 淘宝镜像
+RUN npm config set electron_mirror http://npm.taobao.org/mirrors/electron/
+RUN rm -rf node_modules
+RUN npm install
+RUN npm run build
+
+#设置容器启动时执行的命令
+ENTRYPOINT [ "npm","start" ]
+
+
+```
+
+---
+
+单纯测试nightmare在linux上docker部署的话参考：[Running Nightmare headlessly on Linux](https://github.com/segmentio/nightmare/issues/224#issuecomment-365938300)
+
+

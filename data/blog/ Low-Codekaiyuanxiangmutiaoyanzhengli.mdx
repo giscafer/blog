@@ -1,0 +1,150 @@
+---
+  title:  Low-Code开源项目调研整理
+  publishedAt: 2021-02-21 11:04:03
+  summary:  Low-Code开源项目调研整理
+  tags: []
+---
+
+# 开源的 Low-Code 项目调研
+
+
+
+**`Low-Code`** 一词早在 2014 年就由 Forrester 提出了。（见 [wikipedia](https://en.wikipedia.org/wiki/Low-code_development_platform)）。
+
+你 Google 搜关键词 **“Low-code development platform”** 可以找到很多关于 `Low-Code` 的内容。类似的词有** Pro-Code（纯代码）、Less Code（少写代码）、No-Code（无代码、自动化）**。Low-Code 应该介于 Less Code 与 No-Code 之间。
+
+
+## 什么是低代码平台（Low-Code)❓
+
+
+- 低代码开发平台能够实现业务应用的快速交付。也就是说，不只是像传统开发平台一样“能”开发应用而已，低代码开发平台的重点是开发应用更“快”。更重要的是，这个快的程度是颠覆性的：根据Forrester在2016年的调研，大部分公司反馈低代码平台帮助他们把开发效率提升了5-10倍。而且我们有理由相信，随着低代码技术、产品和行业的不断成熟，这个提升倍数还能继续上涨。
+
+- 低代码开发平台能够降低业务应用的开发成本。一方面，低代码开发在软件全生命周期流程上的投入都要更低（代码编写更少、环境设置和部署成本也更简单）；另一方面，低代码开发还显著降低了开发人员的使用门槛，非专业开发者经过简单的IT基础培训就能快速上岗，既能充分调动和利用企业现有的各方面人力资源，也能大幅降低对昂贵专业开发者资源的依赖。
+
+
+
+更多介绍>> [文章：什么是低代码平台？](https://mp.weixin.qq.com/s/tMC1Uas99F28_tU5lH0CNw)
+
+## 低代码开源项目（一）：平台、框架
+
+
+> 搜索相关类别的开源项目，可以利用 Github 主题分类的筛选方式，比如 [https://github.com/topics/low-code-development-platform](https://github.com/topics/low-code-development-platform)，可以点击 Star 关注这类主题，日后 Github 会在你的个人主页推送相关的流行项目。
+
+
+
+### [ice](https://ice.work/) 团队
+
+
+阿里的物料平台、前端解决方案，详细介绍见 [关于飞冰](https://ice.work/docs/guide/about)
+
+
+**试用感受**：大而全。可以整合自己的物料，根据飞冰的规范、定制自己的物料生态。飞冰出来好几年了，但也未见很多团队去使用开来，有可能是大家使用源码自答了私服？团队太小，不适合使用，团队大了，自身业务和设计也有自己的特色，用不起来，不如自己搭建物料平台。没有自研能力的时候，可以去试用看是否能借飞冰来提升研发效能或者是沉淀自己的物料资源。
+
+
+### [budibase](https://github.com/Budibase/budibase)  团队
+
+Budibase是一个开源的低代码开发平台
+
+**试用感受**：暂未体验，不过看官方感觉挺不错
+
+
+### [formily](https://github.com/alibaba/formily)  团队
+
+阿里巴巴集团统一表单解决方案。
+
+
+**试用感受**：是一个表单框架，主要是阿里业务中后台表单的沉淀，对于大众也比较试用，表单组件库以及schema表单都支持，是写代码的表单方案。
+
+### [amis](https://github.com/baidu/amis)  团队
+
+百度开源的前端低代码框架，通过 JSON 配置就能生成各种页面。
+
+
+**试用感受：**通过 JSON 配置就能生成各种后台页面，极大减少开发成本，甚至可以不需要了解前端。在一些只注重数据处理和展示的平台中，少定制化的情况下比较适合试用。
+
+
+### [n8n](https://github.com/n8n-io/n8n) 团队 
+
+n8n是一个可扩展的工作流自动化工具。通过 [Fair-code](https://faircode.io/) 的代码分发模式，可以自托管，并允许您添加自己的自定义功能代码逻辑和应用程序。n8n 基于节点的方法使它具有高度通用性，使您能够将任何东西连接到所有东西。
+
+
+**试用感受：**可以自己去看个2分钟的视频 [https://www.youtube.com/watch?v=3w7xIMKLVAg](https://www.youtube.com/watch?v=3w7xIMKLVAg) , 这类项目适合结合 DevOps 去实践。
+
+
+### [ngx-formly](https://github.com/ngx-formly/ngx-formly) 团队
+
+
+支持多UI组件，Angular 技术栈，团队持续维护
+
+
+
+
+## 低代码开源项目（二）：拖拽生成页面
+
+
+### [react-visual-editor](https://github.com/brick-design/react-visual-editor) 独立开发者
+
+
+组件可视化拖拽，页面搭建，源码生成工具,自由拖拽嵌套，可实现任何真实开发中的复杂页面，所见即所得，可完美还原UI设计，多平台展示支持。
+
+
+**试用感受**：支持手机和PC两种平台，生成源码 react + antd 的源码可直接使用，组件基本满足开发场景，对于没有物料市场、模板工程、脚手架的团队，可以说是一个方便的工具。
+
+
+### [luban-h5](https://github.com/ly525/luban-h5) 独立开发者
+
+
+类似易企秀的H5制作、建站工具、可视化搭建系统。
+
+**试用感受**：H5 页面完善度不错，可以支持多页H5编辑，是一个可以直接使用的开源项目。
+
+
+### [quark-h5](https://github.com/huangwei9527/quark-h5) 独立开发者
+
+
+基于vue2 + koa2的 H5制作工具。让不会写代码的人也能轻松快速上手制作H5页面。类似易企秀、百度H5等H5制作、建站工具。
+
+
+**试用感受**：H5页面只做，基本满足要求，可存储模板，组件和细节完善的话是可以使用到业务场景中的一个项目。
+
+
+### [gods-pen](https://github.com/ymm-tech/gods-pen) 团队
+
+
+基于vue的高扩展在线网页制作平台，可自定义组件，可添加脚本，可数据统计。
+
+
+**试用感受**：比上边几个同类H5好很多，还有组件商城。
+
+
+### [sparrow](https://github.com/sparrow-js/sparrow) 独立开发者
+
+核心目标仅有一条“提升研发效率”，目前提供基于vue、element-ui组件库中后台项目的实践，实时输出源代码。
+
+
+感受：后续团队内部的物料平台搭建，可以考虑参考。
+
+
+## 总结
+
+几年前，为了提供团队内的研发效率，自己也研究过类似的小应用。比如基于 json schema 实现表单页面自动生成并产出源代码的学习工程： [ngx-form-builder](https://github.com/giscafer/ngx-form-builder)
+
+现在 Low-Code 的流行，越来越多的开源项目可以参考学习。是否能被自己所用，还需要结合公司的产品业务、团队的情况去看，类似的时候，进行开源项目的改造也是可以探索一下研发效能的提升。
+
+最近项目要搞一个可视化大屏编辑器，就是那种数据大屏，通过编辑器拖和编辑实现。也因为自己之前学习了解一些Low-Code平台的东西，才能短时间内在技术上可以hold住。短时间=几周实现一个编辑器，疯了吗？我都觉得疯了，项目时间不合理，只能硬着头往前赶。
+
+开发不到一周的编辑器雏形：
+![image](https://user-images.githubusercontent.com/8676711/108614267-0e2ec680-7434-11eb-8fe5-f30a3ab4b1ab.png)
+
+
+## 相关资料
+
+
+- [国内外低代码平台简析](https://zhuanlan.zhihu.com/p/158551880?utm_source=wechat_session&utm_medium=social&s_r=0#showWechatShareTip)
+- [awesome-lowcode](https://github.com/taowen/awesome-lowcode)  国内低代码平台从业者交流 （更多好产品可以选择pr到此）
+
+---
+
+推荐阅读：
+
+「可视化搭建系统」——从设计到架构，探索前端领域技术和业务价值 - Lucas HC的文章 - 知乎 https://zhuanlan.zhihu.com/p/164558106

@@ -1,0 +1,115 @@
+---
+  title: Web 安全之 CSP (内容安全策略) 和 SRI（子资源完整性）
+  publishedAt: 2019-11-27 14:46:39
+  summary: Web 安全之 CSP (内容安全策略) 和 SRI（子资源完整性）
+  tags: ["Web安全"]
+---
+
+`CSP` 和 `SRI` 可以预防`XSS攻击`和`数据包嗅探攻击`。
+
+## Content-Security-Policy (内容安全策略)
+
+> 来自MDN 的介绍
+
+`内容安全策略(Content-Security-Policy)` 是一个额外的安全层，用于检测并削弱某些特定类型的攻击，包括 `跨站脚本 (XSS)` 和`数据注入攻击`等。无论是数据盗取、网站内容污染还是散发恶意软件，这些攻击都是主要的手段。
+
+`CSP` 被设计成完全向后兼容（除`CSP2` 在向后兼容有明确提及的不一致;  更多细节查看这里 章节1.1）。不支持 `CSP` 的浏览器也能与实现了 `CSP` 的服务器正常合作，反之亦然：不支持 `CSP` 的浏览器只会忽略它，如常运行，默认为网页内容使用标准的同源策略。如果网站不提供 `CSP 头部`，浏览器也使用标准的同源策略。
+
+为使 `CSP` 可用, 你需要配置你的网络服务器返回  `Content-Security-Policy`  HTTP头部 ( 有时你会看到一些关于 `X-Content-Security-Policy` 头部的提法, 那是旧版本，你无须再如此指定它)。
+
+**HTTP Response Headers** ，举例：
+
+![image](https://user-images.githubusercontent.com/8676711/69699849-eca53900-1123-11ea-85a5-3e39de585b20.png)
+
+除此之外,  **`<meta>`**  元素也可以被用来配置该策略, 例如
+
+```html
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src https://*; child-src 'none';">
+```
+
+
+### 策略
+
+```
+"Content-Security-Policy":策略字符串
+```
+
+资源限制可以精细到 `img`、`font`、`style`、`frame`等粒度。
+
+#### default-src
+
+```
+Content-Security-Policy: default-src 'self'
+```
+一个网站管理者想要所有内容均来自站点的同一个源 (不包括其子域名)，详细 [Content-Security-Policy/default-src](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Content-Security-Policy/default-src)
+
+#### media-src 、 img-src、script-src 
+
+```
+Content-Security-Policy: default-src 'self'; img-src *; media-src media1.com media2.com; script-src userscripts.example.com
+```
+
+在这里，各种内容默认仅允许从文档所在的源获取, 但存在如下例外:
+
+- 图片可以从任何地方加载(注意 "*" 通配符)。
+- 多媒体文件仅允许从 media1.com 和 media2.com 加载(不允许从这些站点的子域名)。
+- 可运行脚本仅允许来自于userscripts.example.com。
+
+#### 'unsafe-eval'
+
+允许使用 eval() 以及相似的函数来从字符串创建代码。必须有单引号。
+
+
+
+更多策略见 [CSP directives](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Content-Security-Policy)
+
+### 常见网站设置
+
+- 知乎
+![image](https://user-images.githubusercontent.com/8676711/69709055-a78b0200-1137-11ea-9793-ea68f2256c77.png)
+
+
+- Twitter
+
+![image](https://user-images.githubusercontent.com/8676711/69708943-76aacd00-1137-11ea-90a5-914c080a0fa2.png)
+
+
+
+## Subresource Integrity（子资源完整性）
+
+`子资源完整性(SRI)` 是允许浏览器检查其获得的资源（例如从 CDN 获得的）是否被篡改的一项安全特性。它通过验证获取文件的哈希值是否和你提供的哈希值一样来判断资源是否被篡改。
+
+很多时候我们使用CDN多个站点之间共享了脚本和样式，以便提高网站性能节省宽带。然而也存在风险，如果攻击者获取了CDN的控制权，就可以将任意内容恶意注入到CDN文件中，从而攻击了加载此CDN资源的站点。所以就需要 `SRI` 来确保Web应用程序获得的文件未经过第三方注入或者其他形式的修改来降低被攻击的风险。
+
+### SRI 原理
+
+将文件内容通过 `base64 编码` 后的哈希值，写入你所引用的 `<script>` 或 `<link>` 标签的 `integrity` 属性值中即可启用子资源完整性功能。浏览器在加载此内容执行之前，会判断该文件的哈希值是否和 `integrity` 预期的一致，只有一致才会执行。
+
+[SRI Hash Generator](https://www.srihash.org/) 是一个在线生成 SRI 哈希值的工具。
+
+```html
+
+<script src="https://example.com/example-framework.js"
+        integrity="sha384-oqVuAfXRKap7fdgcCY5uykM6+R9GqQ8K/uxy9rx7HNQlGYl1kPzQho1wx4JwY8wC"
+        crossorigin="anonymous"></script>
+```
+
+### 内容安全策略及子资源完整性
+
+你可以根据`内容安全策略(CSP)`来配置你的服务器使得指定类型的文件遵守 `SRI`。这是通过在 `CSP 头部` 添加 `require-sri-for` 指令实现的：
+
+```
+Content-Security-Policy: require-sri-for script;
+```
+这条指令规定了所有 `JavaScript` 都要有 **integrity** 属性，且通过验证才能被加载。
+
+所以，只要文件变化了，浏览器就不会执行，有效避免了脚本攻击。
+
+
+
+---
+参考链接
+
+- https://developer.mozilla.org/zh-CN/docs/Web/Security
+- https://www.jianshu.com/p/217b11f5f953
+

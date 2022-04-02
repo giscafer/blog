@@ -1,0 +1,112 @@
+---
+  title: Angular 工程 ng build 构建提速
+  publishedAt: 2019-08-30 10:53:19
+  summary: Angular 工程 ng build 构建提速
+  tags: ["性能优化","Angular"]
+---
+
+> 公司项目统一都使用 [angular-cli](https://github.com/angular/angular-cli) 来搭建工程环境，从 Angular2 到 Angular8 版本都经历了，老项目都基本升级到 Angular4、6，新一点的项目，ng 版本都是7、8了。许多项目构建的速度，一直都是正常的表现，某一两个项目表现的比较异常，这不得不采取相关改进措施。
+
+Angular 生产环境构建打包 `ng build --prod` 是开启了 `AOT` （[为什么要AOT编译](https://angular.cn/guide/aot-compiler#why-compile-with-aot)），`ng build` 构建配置项也比较多，含义介绍见文档：[build](https://angular.io/cli/build)，常见配置属性设置如下：
+
+```json
+"prod": {
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.local.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ]
+   }
+```
+
+同样的配置，在不同的项目，构建时间长短也是不一样的。所以影响项目构建时间的原因可能有：
+
+- **项目代码问题**（结构，路由划分，代码规范）
+后期优化的可能性小，所以前期需要做好规范限制；
+- **代码量**（系统越大，ts文件越多，构建时间会越长）
+和系统大小有关，建议根据模块和路由划分，来加载划分一些模块代码，对构建生成的chunk大小也有帮助；
+- **第三方依赖**（ node_modules 依赖第三方的模块数量）
+- **Angular CLI 版本**（cli 自身问题）
+关注版本变化更新日记
+- **angular.json 配置影响**
+- **系统硬件性能**（ 16G 的iMac 明显比 16G内存的Windows 10系统快两倍多）
+- **变更脚手架** （改用SystemJS 和 Webpack 搭建环境，不用ng-cli）
+
+
+
+## 解决方案探索
+
+_Tips: 我们构建默认都统一加大了node.js的执行内存_
+
+
+我们有个项目，再上线工单系统的页面之后，多出了10分钟的构建时间，构建时间在 15~20分钟 区间浮动。截图是 Gitlab CI/CD Build Job的（iMac 是8分钟内） 
+
+<img width="762" alt="angular-build-15min" src="https://user-images.githubusercontent.com/8676711/63991566-e6022800-cb1a-11e9-811b-b7dd062b3a5d.png"/>
+
+本地iMac的构建速度：
+
+<img width="1169" alt="angular-build1" src="https://user-images.githubusercontent.com/8676711/63994139-13a09e80-cb26-11e9-928d-ccc8c38820ce.png"/>
+
+
+至于为什么 构建参数、配置不变的情况下，iMac 构建会比 gitlab runner（Linux 以及 Windows 系统）快很多，初步单纯认为是硬件性能的影响。我们项目持续集成服务器是 Linux 非 iMac，所以优化的时候，以CI/CD服务器构建效果的速度作为参考。
+
+### 找到构建过程最慢的点
+
+构建过程最慢的有两个地方分别是`79%` 和92%的操作：
+
+```bash
+79% chunk modules optimization ModuleConcatenationPlugin                          
+```
+```bash
+92% chuck asset optimization             
+```
+
+所有慢的构建都在这里浪费时间的，有网友是这么描述：
+
+> I've just upgraded my CLI to 1.7.2 (I've double checked the node_modules and --version) and a my build time has gone from about 15 seconds to infinity
+> It hangs forever at "92% chunk asset optimization", I've waited more than 10 mins before giving up
+> It's a very small app
+
+理解这两个过程是干了什么，然后再去查找解决方案。官方文档是这么描述着两个属性配置的：
+
+
+buildOptimizer=true\|false | Enables '@angular-devkit/build-optimizer' optimizations when using the 'aot' option.Default: false
+-- | --
+
+optimization=true\|false | Enables optimization of the build output.
+-- | --
+
+### 关闭 optimization 和 buildOptimizer 
+
+经实践，修改着两个配置属性为`false`后，构建就提速多倍，如图
+
+<img width="1045" alt="angular_optimization_false" src="https://user-images.githubusercontent.com/8676711/63991517-c1a64b80-cb1a-11e9-9c8d-d96f3df061c8.png"/>
+
+又得必有失，从图中也可以看出来，提速了，但是单个文件代码体积明显提升了，因为关闭了optimization ，输出的文件体积没有做优化。
+
+### 其他手段
+
+……未完待续
+
+---
+ 参考资源：
+- https://www.bountysource.com/issues/46543750-build-with-ng-prod-is-extremely-slow
+- https://github.com/angular/angular-cli/issues/6795
+
+
+---
+
+> Author: [@giscafer](https://github.com/giscafer)，原文地址：[front-end-manual/issues/33](https://github.com/giscafer/front-end-manual/issues/33) ，
+> 欢迎讨论
+
+

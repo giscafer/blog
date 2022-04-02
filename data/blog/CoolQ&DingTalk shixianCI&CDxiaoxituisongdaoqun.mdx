@@ -1,0 +1,216 @@
+---
+  title: CoolQ/DingTalk 实现CI/CD消息推送到群
+  publishedAt: 2019-06-19 10:03:21
+  summary: CoolQ/DingTalk 实现CI/CD消息推送到群
+  tags: ["Team","运维"]
+---
+
+基于Gitlab 的 CI/CD 流程搞好后，需要将CI Job或流水线的执行状态通知到给相关QA或者开发人员，整个大前端组，项目系统工程数量>15个，所以有必要聚合CI/CD相关自动化流水线信息，将相关需要关注的信息通过机器人自动推送到群里。
+
+工作上常用群的话选择有微信群，钉钉，QQ群等。微信现在限制了2018年之后注册的新用户无法通过脚本走API登录，很难搞到2016年注册的小号，因此只能选择钉钉群和QQ群了，因为我司不用钉钉，有自己的OA系统，所以就尝试了酷Q的机器人推送方案。下面将详细介绍实现过程。
+
+## 钉钉机器人消息推送到群
+
+DingTalk (钉钉) 提供了群机器人，提供 WebHook 来实现，特别的方便，消息发送还支持各种格式的模板，比如text、link、markdown等，增强了使用情景和体验。关于钉钉自定义机器人，官方文档也很详细，这里不多介绍实现过程。详细见：[自定义机器人](https://open-doc.dingtalk.com/microapp/serverapi2/qf2nxq)
+
+### 通过 shell script实现模板信息发送
+
+以下主要是消息通知到群的 shell script.
+
+```bash
+
+# 前一个命令执行状态判断是成功信息还是失败信息
+if [ "$?" -eq "0" ];then
+         log "[OK]"
+         DEPLOY_SYSTEM="${!YZT_ENV_SERVER_IP2}:${!YZT_ENV_SERVER_PORT2}"
+         sendDingTalkSuccessNotifications
+else
+         logStep ">> $?"
+         DEPLOY_SYSTEM="${!YZT_ENV_SERVER_IP2}:${!YZT_ENV_SERVER_PORT2}"
+         sendDingTalkErrorNotifications
+fi
+
+# 相关脚本
+function sendDingTalkErrorNotifications() {
+      DEPLOY_STATUS='部署失败！'
+      sendDingTalkNotifications
+}
+function sendDingTalkSuccessNotifications() {
+      DEPLOY_STATUS='部署成功！'
+      sendDingTalkNotifications
+}
+
+# 推送模板发送（模板拼接）
+function sendDingTalkNotifications() {
+   logStep " STEP 5 - Send Notifications to DingTalk"
+   local title="「前端CI/CD」 ${PROJECT_NAME}"
+   local text="### ${title} \n #### 构建分支：${CI_COMMIT_REF_NAME} \n #### 构建状态：${DEPLOY_STATUS}\n #### 部署主机：${DEPLOY_SYSTEM} \n #### 提交者：${GITLAB_USER_EMAIL} \n\n\n ##### [流水线 Pipeline #${CI_PIPELINE_ID}](${CI_PROJECT_URL}/pipelines/${CI_PIPELINE_ID}) \n"
+   curl POST "$CI_DINGTALK_WEBHOOK_URL" -H 'Content-Type: application/json' -d "{\"msgtype\": \"markdown\",\"markdown\": {\"title\":\"$title\",\"text\": \"$text\"}}"
+   # curl POST "$CI_DINGTALK_WEBHOOK_URL" -H 'Content-Type: application/json' -d '{ "msgtype": "markdown", "markdown": {"title":"CI/CD cmp-web","text": "##### 构建分支：test \n Pipelines状态：成功\n ######## [流水线Pipeline #3181](http://git.1ziton.com/front-end/cmp-web/pipelines/3181) \n"}}'
+}
+
+function log() {
+   echo "$(date):$@"
+}
+
+function logStep() {
+	echo "$(date):====================================================================================="
+        echo "$(date):$@"
+	echo "$(date):====================================================================================="
+	echo ""
+}
+
+```
+### 效果
+
+![dingtalk](https://user-images.githubusercontent.com/8676711/59731331-38e87500-9278-11e9-8ce4-f509e07f68e7.png)
+
+
+## 基于酷Q搭建 QQ机器人消息推送到群
+
+搭建服务之前，需要了解CoolQ是如何工作的，以及如何通过 [CoolQ HTTP API](https://github.com/richardchien/coolq-http-api) 来推送信息，官方文档：https://cqhttp.cc/docs/
+
+本人在windows 非 Docker 的方式搭建过了一次，然后再在 Linux 系统上搭建过一次，总体觉得，还是Docker 比较方便。安装官方提供的 Docker 服务，部署测试通过后，写对应的脚本来实现消息推送到QQ群。
+
+### Docker 服务安装
+
+官方文档：[Docker](https://cqhttp.cc/docs/4.10/#/Docker)，以下是个人操作步骤记录。
+
+（1）拉取 cqhttp 镜像
+
+```bash
+docker pull richardchien/cqhttp:latest
+```
+（2）新建一个文件夹，用于存储 酷Q 的程序文件
+
+```bash
+mkdir coolq  
+```
+（3）后台运行 docker 服务
+
+```bash
+docker run -d --rm --name cqhttp-devops -v $(pwd)/coolq:/home/user/coolq -p 9000:9000 -p 18936:5700 -e COOLQ_ACCOUNT=你要登录的QQ号码 -e CQHTTP_POST_URL=http://你的服务器ip:8080 -e CQHTTP_SERVE_DATA_FILES=yes richardchien/cqhttp:latest
+```
+
+介绍一下简单的docker操作命令给新人，查看 cqhttp-devops 的 docker日记可以用 `docker logs -f cqhttp-devops` , 删除命令：`docker rm -f cqhttp-devops`
+
+（4）访问` http://服务器ip:9090`
+
+访问正常后，表示服务正常，点击`连接`，输入默认密码 `MAX8char` ，即可进入虚拟机，登录机器人用的QQ账号即可，安全问题，酷Q限制必须是开启了 `登录保护` 的QQ，才可以登录。
+
+登录成功后，运行CoolQ Air , 会如下图所示，可以查看HTTP API的应用目录
+
+![coolq](https://user-images.githubusercontent.com/8676711/59732595-8c10f680-927d-11e9-9232-8b8c53fdb048.png)
+
+（5）修改 AccessToken
+
+这两个东西是要在接口请求的时候做认证的，保证安全性，避免被别人直接走接口发送信息。
+
+进入第四步骤中 http api 对应的目录下，找到自己登录的 qq 号对应的json文件修改即可。比如 123456.json，如果没有，就是 `.ini` 后缀，详细见官方文档说明 [Configuration](https://cqhttp.cc/docs/4.10/#/Configuration)
+
+我的配置是如下，操作时改为自己的即可。
+```ini
+[general]
+host = 0.0.0.0
+post_url = http://192.168.100.100:8080
+
+[3616909583]
+access_token = Mgep4rV49rM8Jf
+port = 5700
+
+```
+
+### 测试消息推送
+
+创建一个群，或者拉你所用的QQ机器人到一个群里，使用curl 方式或者 postman 测试都可以，也可以使用 node.js 脚本测试
+
+测试方式1：postman get请求测试
+
+![TIM截图20190619104434](https://user-images.githubusercontent.com/8676711/59733160-82888e00-927f-11e9-93b3-eb8547056633.png)
+
+
+测试方式2：nodejs代码测试：
+```js
+const request = require('request');
+const COOLQ_HTTP_URL = '192.168.100.100:18936'; // 你的ip:端口（docker部署运行时设置好的）
+const ACCESS_TOKEN = 'Bearer 你的accessToken';
+
+const configOptions = {
+  url: `http://${COOLQ_HTTP_URL}/send_group_msg`,
+  method: 'get',
+  headers: {
+    // 'Content-Type': 'application/json',
+    authorization: ACCESS_TOKEN 
+  },
+  qs: {
+    message: 'test23232322',
+    group_id: '807533895'
+  }
+};
+
+function getOption(params) {
+  const message =
+    `「${params.title}」\n` +
+    `内容：${params.content}\n` +
+    '----------------------------------\n' +
+    `原链接：${params.url}\n`;
+
+  configOptions.qs = {
+    message,
+    group_id: params.group_id
+  };
+  return configOptions;
+}
+
+function sendGroupMsg(body) {
+  let opt = getOption(body);
+  request(opt, function(error, response, body) {
+    if (!error && response.statusCode == 200) {
+      console.log('success');
+      console.log(body);
+    }
+  });
+}
+
+sendGroupMsg({
+  text: 'text',
+  title: 'CoolQ/DingTalk 实现CI/CD消息推送到群',
+  content: '内容',
+  url: 'https://github.com/giscafer/front-end-manual/issues/31',
+  group_id: '807533895'
+});
+
+
+```
+
+效果：
+
+![qq](https://user-images.githubusercontent.com/8676711/59733507-b0ba9d80-9280-11e9-98ce-3c6cd290683e.png)
+
+结合 Gitlab CI 流水线最终效果：
+
+![devops qq](https://user-images.githubusercontent.com/8676711/59745480-787a8580-92a7-11e9-854b-b124967d661d.png)
+
+
+到此，就完成了测试了，整个过程已经联调通，最后至于使用shell来直接请求推送消息，还是通过node.js、python等脚本来推送消息，都可以，看个人喜好了。
+
+搭建过程，试了远程执行shell script和node.js 脚本，不亦乐乎（注意脚本安全性）。
+
+![curl nodejs](https://user-images.githubusercontent.com/8676711/59735883-09daff00-928a-11e9-846d-c1575839c13d.png)
+
+### 自动消息回复
+
+成员加群，自动发送欢迎消息，自动回复信息等，可以通过CQHttp提供的 [事件上报](https://richardchien.gitee.io/coolq-http-api/docs/4.10/#/Post) 来实现。
+
+demo代码：https://github.com/1ziton/cqrobot
+
+![autoreply](https://user-images.githubusercontent.com/8676711/59826919-f4d59d00-9369-11e9-9755-ac0b5c794064.png)
+
+
+---
+
+> Author: [@giscafer](https://github.com/giscafer)，原文地址：[front-end-manual/CoolQ/DingTalk 实现CI/CD消息推送到群](https://github.com/giscafer/front-end-manual/issues/31) ，
+> 欢迎讨论
+
+
+

@@ -1,0 +1,64 @@
+---
+  title: Angular AOT构建优化与后端渲染
+  publishedAt: 2017-05-03 15:06:38
+  summary: Angular AOT构建优化与后端渲染
+  tags: ["A&Q","Angular"]
+---
+
+# AOT 编译
+
+## 相关文章
+
+[如何评价 angular 2 中的 AoT？](https://www.zhihu.com/question/53434390/answer/134984857)
+
+[Angular 预编译（AOT） ](https://coyee.com/article/11723-ahead-of-time-compilation-in-angular)
+
+[预 (AOT) 编译器](https://angular.cn/guide/aot-compiler)
+
+
+JIT: Just-in-Time Compiler
+AOT:Ahead-of-Time Compiler
+
+## Issues
+
+- 使用`ng build --prod -aot `构建的时候，工程中未使用到的components会报错，如下；删除未引用的文件即可
+
+>  Cannot determine the module for class ImComponent
+
+
+[解决方案](https://github.com/angular/angular-cli/issues/1663)
+> 
+> ERROR in main.19f09357128c495bb8e8.bundle.js from UglifyJs
+> Unexpected token: name (Wrapper_RouterOutlet) [main.19f09357128c495bb8e8.bundle.js:15,6]
+
+
+**构建如果报错JavaScript heap out of memory**
+
+```
+<--- JS stacktrace --->
+
+==== JS stack trace =========================================
+
+Security context: 00000319856CFB61 <JS Object>
+    1: DoJoin(aka DoJoin) [native array.js:~129] [pc=00000258C3E9F96F] (this=0000031985604381 <undefined>,w=0000012E5C1B5271 <JS Array[688]>,x=688,N=00000319856043C1 <true>,J=0000031985604411 <String[0]: >,I=00000319856B46F1 <JS Function ConvertToString (SharedFunctionInfo 0000031985652DC9)>)
+    2: Join(aka Join) [native array.js:180] [pc=00000258C330EE12] (this=0000031985604381 <undefined>,...
+
+FATAL ERROR: CALL_AND_RETRY_LAST Allocation failed - JavaScript heap out of memory
+
+
+```
+https://github.com/angular/angular/issues/12184
+
+`package.json`设置node内存后执行
+`"build-aot": "node --max_old_space_size=2192 node_modules/@angular/cli/bin/ng  build --aot --prod"`
+
+
+# AngularUniversal 后端模板渲染
+
+AngularUniversal : https://universal.angular.io/
+
+## 相关文章
+
+http://www.jianshu.com/p/81e8472376cc#
+
+http://www.jianshu.com/p/304bb0728e7c

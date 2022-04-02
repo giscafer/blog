@@ -1,0 +1,37 @@
+---
+  title: AngularJS 动态创建组件
+  publishedAt: 2017-04-29 15:58:21
+  summary: AngularJS 动态创建组件
+  tags: ["AngularJS"]
+---
+
+类似angularjs中的`ng-include`，或者是动态创建html，再$compile编译一下。这些语法在ng2+已经被去掉，去掉原因如下：
+
+> Something like ng-include can not be supported for several reasons:
+> 
+> - In Angular 2 directives are declared on per component. Having ng-include would mean that the same ng-include would behave differently depending where it is included. The same goes for variable declarations.
+> - It is a security risk, in the sense of you may point it to a user input.
+> - It prevents Angular from doing offline compilation, hence speed / size improvements.
+> 
+> The solution is that you need to wrap your templates into components, and then you can lazy load the components. This will work with offline compilation, does not have security concerns and still allows for offline compilation.
+
+
+
+
+## 参考资料
+
+**Blog**
+https://blog.lacolaco.net/post/dynamic-component-creation-in-angular-2/
+
+**NgComponentOutlet**（含代码举例）
+http://stackoverflow.com/questions/36325212/angular-2-dynamic-tabs-with-user-click-chosen-components/36325468#36325468
+
+**Issues**
+[Final statement about ngInclude alternative](https://github.com/angular/angular/issues/7596)
+[Proposal: Declarative Dynamic Components](https://github.com/angular/angular/issues/9599)
+
+
+## MVVM框架性能优化 ng1的动态模板为例
+
+![ng1mvvm](https://user-images.githubusercontent.com/8676711/46901201-1d0b2300-cee2-11e8-9979-db7c5bae8fda.png)
+

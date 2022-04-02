@@ -1,0 +1,191 @@
+---
+  title: 一文搞懂贫血模型、充血模型、领域驱动设计
+  publishedAt: 2021-09-13 14:23:37
+  summary: 一文搞懂贫血模型、充血模型、领域驱动设计
+  tags: ["设计模式"]
+---
+
+
+
+## 什么是贫血模型？
+
+
+**MVC三层架构模式** 想必大家都听过或者用过，传统开发的MVC模式其实大部分是贫血模型。
+​
+
+我们回顾一下MVC的三层架构：
+​
+
+
+- M 代表 Model （数据层）
+- V 表示 View （展示层）
+- C 表示 Controller （逻辑层）
+
+
+
+前后端分离之后，后端负责暴露接口给前端调用，这种情况下，后端项目分为：
+> 这只是举例某一种命名方式，也有别的习惯命名不同
+
+- Repository 层，负责数据访问（DAO）
+- Service 层，负责业务逻辑处理
+- Controller 层，负责暴露接口给前端调用
+
+​
+
+回顾完MVC三层架构，接下来代码介绍一下什么写法是贫血模型，有可能你是一直用贫血模型的开发模式，只是你不知道。举个例子，这个例子为了前端同学看得懂，将 Java 改写成了 typescript 的写法
+​
+
+```typescript
+//  View Object
+class UserVo {
+  id: string | number;
+  username: string;
+  email?: string;
+  cellphone?: string;
+}
+
+//  Business Object
+class UserBo {
+  id: string | number;
+  username: string;
+  email?: string;
+  cellphone?: string;
+}
+
+/**
+ * UserRepository + Entity
+ * 负责数据库查询访问
+ */
+class UserRepository {
+  getUserById(userId: string) {
+    // 省略细节
+    return { id: 20210813164354, username: '张三' };
+  }
+}
+
+/**
+ * UserService + BO （ Business Object)
+ * 负责业务逻辑处理
+ */
+class UserService {
+  private userRepository: UserRepository; // 依赖注入，忽略此细节
+  getUserById(userId: string): UserBo {
+    // 省略细节
+    const userEntity: UserBo = this.userRepository.getUserById(userId);
+    // 这里其实会有 Entity 转 BO 的动作，省略
+    return userEntity;
+  }
+}
+
+/**
+ * UserController + VO （ View Object)
+ * 视图层数据处理，暴露接口
+ */
+class UserController {
+  private userService: UserService; // 依赖注入，忽略此细节
+
+  public getUserById(userId: string): UserVo {
+    const user: UserBo = this.userService.getUserById(userId);
+    // 这里其实有 UserBo转为 UserVo 的过程，为了方便省略
+    return user;
+  }
+}
+
+```
+​
+
+正常开发 Web 后端的时候，代码结构都是这么写（不过每个类都是独立的一个 `.java` 文件，这里为了方便一起展示）。在上面的代码中，UserRepository （其实还有个 UserEntity) 是数据访问层，UserService 和 UserBo 组成业务逻辑层，UserController 和 UserVo 属于接口层。
+
+
+UserBo 是一个纯粹的数据结构，只包含数据，不包含任何业务逻辑。业务逻辑在 UserService 中，我们通过 UserService 来操作 UserBo。换句话说，Service 层的数据和业务逻辑被分割到 BO 和 Service 两个类中。像UserBo 这样 **只包含数据不含业务逻辑的类**，叫 **贫血模型（Anemic Domain Model）**。同理，UserVo 和 UserEntity 都是贫血模型设计，这种贫血模型，将数据和业务逻辑分离，破坏了面向对象的封装性，是一种典型的**面向过程**的编程风格。
+​
+
+## 基于充血模型的  DDD 开发模式
+
+
+贫血模型是常见的传统开发模式，在以前学Java时，教程也都是这么教的。如今，流行推崇的是充血模型的开发模式：**基于充血模型的 DDD 开发模式**。
+​
+
+### 什么是充血模型？
+
+
+贫血和充血相反，数据结构和业务逻辑被封装到同一个类中，就叫** 充血模型（Rich Domain Model）**。这种充血模型满足面向对象的封装性，是典型的**面向对象**编程风格。
+​
+
+### 什么是 DDD？
+​
+
+dd ? 滴滴我？
+![image.png](https://cdn.nlark.com/yuque/0/2021/png/189420/1628846592856-c766ff39-7987-487f-9a8f-97e723031e0f.png#clientId=u196149ca-3b04-4&from=paste&height=185&id=u98f77716&margin=%5Bobject%20Object%5D&name=image.png&originHeight=370&originWidth=1260&originalType=binary&ratio=1&size=67742&status=done&style=none&taskId=ue6fe294e-ade5-41ce-9410-ebb030d44d0&width=630)
+三个 D 就不一样了。
+​
+
+![image.png](https://cdn.nlark.com/yuque/0/2021/png/189420/1628848177951-356b0799-d6c6-4b51-bfc2-340f3949e6f7.png#clientId=u196149ca-3b04-4&from=paste&height=446&id=u98c5e9b0&margin=%5Bobject%20Object%5D&name=image.png&originHeight=372&originWidth=600&originalType=binary&ratio=1&size=51515&status=done&style=none&taskId=ub69fee19-48ca-46f1-adf9-fc4d1704ce0&width=719)
+​
+
+领域驱动设计（**Domain-Driven Design**），主要是用来**指导如何解耦业务系统，划分业务模块，定义业务领域模型及其交互**。领域驱动设计这个概念并不新颖，早在 2004 年就被提出了，到现在已经有十几年的历史了。不过，它被大众熟知，还是基于另一个概念的兴起，那就是微服务。
+​
+
+领域驱动设计有点儿类似敏捷开发、SOA、PAAS 等概念，听起来很高大上，但实际上只值“五分钱”。即便你没有听说过领域驱动设计，对这个概念一无所知，只要你是在开发业务系统，也或多或少都在使用它。做好领域驱动设计的关键是，看你对自己所做业务的熟悉程度，而并不是对领域驱动设计这个概念本身的掌握程度。即便你对领域驱动搞得再清楚，但是对业务不熟悉，也并不一定能做出合理的领域设计。所以，不要把领域驱动设计当银弹，不要花太多的时间去过度地研究它。
+​
+
+实际上，基于充血模型的 DDD 开发模式实现的代码，也是按照 MVC 三层架构分层的。Controller 层还是负责暴露接口，Repository 层还是负责数据存取，Service 层负责核心业务逻辑。它跟基于贫血模型的传统开发模式的区别主要在 Service 层。
+​
+
+在基于贫血模型的传统开发模式中，Service 层包含 Service 类和 BO 类两部分，BO 是贫血模型，只包含数据，不包含具体的业务逻辑。业务逻辑集中在 Service 类中。在基于充血模型的 DDD 开发模式中，Service 层包含 Service 类和 Domain 类两部分。Domain 就相当于贫血模型中的 BO。不过，**Domain 与 BO 的区别在于它是基于充血模型开发的，既包含数据，也包含业务逻辑**。而 Service 类变得非常单薄。总结一下的话就是，**基于贫血模型的传统的开发模式，重 Service 轻 BO；基于充血模型的 DDD 开发模式，轻 Service 重 Domain**。
+​
+
+​
+
+## 为什么贫血模型比充血模型受欢迎？
+
+
+原因一是，业务系统简单，不需要精心设计充血模型，贫血模型足以应付简单的业务逻辑。业务充血模型更好的实践是基于DDD实现，简单的业务按领域设计会比较单薄，意义不大。
+​
+
+原因二是，充血模型的设计要比贫血模型更加有难度。充血模型是一种面向对象的编程风格。写代码之前就要考虑清楚需要针对数据暴露哪些操作，定义哪些业务逻辑。而不是像贫血模型那样，我们只需要定义数据，之后有什么功能开发需求，我们就在 Service 定义什么操作，不需要事先做太多设计。
+​
+
+第三点原因是，思维固化，转型有成本。基于贫血模型的传统开发模式经历了多年，已经深入人心、习以为常。如果转向用充血模型、领域驱动设计，那势必有一定的学习成本、转型成本。很多人在没有遇到开发痛点的情况下， 是不愿意做这件事的。
+​
+
+## 什么项目应该考虑使用基于充血模型的 DDD 开发模式？
+
+
+
+
+你可能会有一些疑问，这两种开发模式，落实到代码层面，区别不就是一个将业务逻辑放到 Service 类中，一个将业务逻辑放到 Domain 领域模型中吗？为什么基于贫血模型的传统开发模式，就不能应对复杂业务系统的开发？而基于充血模型的 DDD 开发模式就可以呢？
+​
+
+实际上，除了我们能看到的代码层面的区别之外（一个业务逻辑放到 Service 层，一个放到领域模型中），还有一个非常重要的区别，那就是两种不同的开发模式会导致不同的开发流程。基于充血模型的 DDD 开发模式的开发流程，在应对复杂业务系统的开发的时候更加有优势。为什么这么说呢？我们先来回忆一下，我们平时基于贫血模型的传统的开发模式，都是怎么实现一个功能需求的。
+​
+
+不夸张地讲，我们平时的开发，大部分都是 SQL 驱动（SQL-Driven）的开发模式。我们接到一个后端接口的开发需求的时候，就去看接口需要的数据对应到数据库中，需要哪张表或者哪几张表，然后思考如何编写 SQL 语句来获取数据。之后就是定义 Entity、BO、VO，然后模板式地往对应的 Repository、Service、Controller 类中添加代码。
+​
+
+业务逻辑包裹在一个大的 SQL 语句中，而 Service 层可以做的事情很少。SQL 都是针对特定的业务功能编写的，复用性差。当我要开发另一个业务功能的时候，只能重新写个满足新需求的 SQL 语句，这就可能导致各种长得差不多、区别很小的 SQL 语句满天飞。
+​
+
+所以，在这个过程中，很少有人会应用领域模型、OOP 的概念，也很少有代码复用意识。对于简单业务系统来说，这种开发方式问题不大。但对于复杂业务系统的开发来说，这样的开发方式会让代码越来越混乱，最终导致无法维护。
+​
+
+如果我们在项目中，应用基于充血模型的 DDD 的开发模式，那对应的开发流程就完全不一样了。在这种开发模式下，我们需要事先理清楚所有的业务，定义领域模型所包含的属性和方法。领域模型相当于可复用的业务中间层。新功能需求的开发，都基于之前定义好的这些领域模型来完成。
+
+
+我们知道，越复杂的系统，对代码的复用性、易维护性要求就越高，我们就越应该花更多的时间和精力在前期设计上。而基于充血模型的 DDD 开发模式，正好需要我们前期做大量的业务调研、领域模型设计，所以它更加适合这种复杂系统的开发。
+​
+
+
+---
+
+
+
+## 参考资料
+
+
+- 内容大部分引用来源：《设计模式之美》—— 王争
+- DDD 学习，可以先了解 [Clean架构、六边形架构](https://www.jdon.com/tags/40250)、 [CQRS、](http://www.jdon.com/tags/9958)[Event Source](http://www.jdon.com/tags/17268)几大相关领域。
+
+​
+
+
