@@ -16,10 +16,11 @@ const issueInstance = gh.getIssues('giscafer', 'blog')
 
 function generateMdx(issue) {
   const { title, labels, created_at, body } = issue
+  // todo: summary
   return `---
   title: ${title}
   publishedAt: ${created_at}
-  summary:
+  summary: ${' '}
   tags: ${JSON.stringify(labels.map(item => item.name))}
 ---
 
