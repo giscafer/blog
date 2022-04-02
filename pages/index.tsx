@@ -2,7 +2,6 @@ import Button from 'components/button'
 import PageHeader from 'components/pageheader'
 import Project from 'components/project'
 import Page from 'components/page'
-import { startJob } from 'lib/job'
 
 import codegen from 'public/projects/vscode-codegen.png'
 import roothub from 'public/projects/roothub.png'
@@ -33,7 +32,6 @@ const projects = [
 
 export async function getStaticProps() {
   // https://github.com/vercel/next.js/discussions/12124
-  startJob()
   return {
     props: {
       allPostsData: [],

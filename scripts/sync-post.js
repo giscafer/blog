@@ -1,4 +1,4 @@
 /* eslint-disable */
-const syncPost = require('../lib/github/syncPost')
+const syncPost = require('./github/syncPost')
 
 syncPost()

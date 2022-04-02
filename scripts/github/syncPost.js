@@ -10,23 +10,13 @@ const gh = new GitHub({
   token: process.env.GH_TOKEN,
 })
 
-const blogOutputPath = '../../../data/blog'
-const contentLayerPostPath = '../../../.contentlayer/data/Post'
+const blogOutputPath = '../../data/blog'
 
 // get blog list
 const issueInstance = gh.getIssues('giscafer', 'blog')
 
 function generateMdx(issue) {
   const { title, labels, created_at, body } = issue
-  console.log('====================================')
-  console.log(
-    JSON.stringify(
-      labels.map(item => item.name),
-      null,
-      2,
-    ),
-  )
-  console.log('====================================')
   return `---
   title: ${title}
   publishedAt: ${dayjs(created_at).format('YYYY-MM-DD HH:mm:ss')}
@@ -40,12 +30,11 @@ ${body.replace(/<br \/>/g, '\n')}
 
 function main() {
   const filePath = path.resolve(__dirname, blogOutputPath)
-  fs.ensureDirSync(filePath)
-  fs.emptyDirSync(filePath)
-  fs.emptyDirSync(path.resolve(__dirname, contentLayerPostPath))
 
   issueInstance.listIssues().then(({ data }) => {
     let successCount = 0
+    fs.ensureDirSync(filePath)
+    fs.emptyDirSync(filePath)
     for (const item of data) {
       try {
         // const dateStr = dayjs(item.created_at).format('YYYY-MM-DD')

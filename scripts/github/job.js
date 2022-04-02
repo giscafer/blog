@@ -1,6 +1,6 @@
 /* eslint-disable */
 const cron = require('node-cron')
-const syncPost = require('./github/syncPost')
+const syncPost = require('./syncPost')
 
 // https://www.npmjs.com/package/node-cron
 // # ┌────────────── second (optional)
