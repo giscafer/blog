@@ -8,11 +8,11 @@
 
 ### giscafer
 
-![微信公众号giscafer](./img/qrcode_for_giscafer.jpg)
+![微信公众号giscafer](./public/qrcode_for_giscafer.jpg)
 
 ### 大前端洞见
 
-![FE-Insights](http://ww1.sinaimg.cn/large/940e68eegy1g68ydvk3wvj20k008cjsg.jpg)
+![FE-Insights](./public/feinsight.jpg)
 
 ---
 
