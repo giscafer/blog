@@ -20,7 +20,7 @@ function generateMdx(issue) {
   return `---
   title: ${title}
   publishedAt: ${created_at}
-  summary: ${' '}
+  summary: ${'查看全文>>'}
   tags: ${JSON.stringify(labels.map(item => item.name))}
 ---
 
