@@ -65,7 +65,7 @@ const Subscribe = ({ title, header = true, className }: SubscribeProps) => {
             <p className={styles.title}>{title || '对文章感兴趣? 可以输入邮箱订阅!'}</p>
           </header>
           <p className={styles.description}>
-            关于 <em className={styles.em}>设计 &amp; 开发</em> 领域。学习大前端、Web 开发技巧和窍门，&amp; 并创建令人愉快和有用的界面！
+            关于 <em className={styles.em}>设计 &amp; 开发</em> 领域。学习大前端、Web 开发技巧 &amp; 窍门，并创作令人愉快和有用的作品！
           </p>
           <p className={styles.description}>没有垃圾邮件，随时退订！</p>
         </>

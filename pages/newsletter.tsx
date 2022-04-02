@@ -7,8 +7,7 @@ import styles from './newsletter.module.scss'
 
 const NewsletterPage = (): JSX.Element => {
   const seoTitle = 'Newsletter | Nickbing Lao'
-  const seoDesc =
-    'A newsletter in the realm between design & development. Learn animations, CSS, web development tips & tricks and creating delightful and useful interfaces!'
+  const seoDesc = ' 关于设计 &amp; 开发领域。学习大前端、Web 开发技巧 &amp; 窍门，并创作令人愉快和有用的作品！'
 
   return (
     <Page>
@@ -20,26 +19,19 @@ const NewsletterPage = (): JSX.Element => {
           url: `https://giscafer.com/newsletter/`,
           description: seoDesc,
           site_name: 'Nickbing Lao',
-          images: [
-            {
-              url: 'https://giscafer.com/newsletter.png',
-              alt: 'A newsletter in the realm between design & development',
-            },
-          ],
         }}
         twitter={{
           cardType: 'summary_large_image',
         }}
       />
       <PageHeader
-        title="Newsletter"
+        title="邮箱订阅"
         description={
           <>
             <p>
-              A newsletter in the realm between <em className={styles.em}>design &amp; development</em>. Learn animations, CSS, web
-              development tips &amp; tricks and creating delightful and useful interfaces!
+              关于 <em className={styles.em}>设计 &amp; 开发</em> 领域。学习大前端、Web 开发技巧 &amp; 窍门，并创作令人愉快和有用的作品！
             </p>
-            <p>No spam, unsubcribe at any time!</p>
+            <p>没有垃圾邮件，随时退订！</p>
           </>
         }
         compact

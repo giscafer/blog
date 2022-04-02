@@ -19,7 +19,7 @@ const footerLinks = [
   { name: 'Blog', url: '/blog' },
   { name: 'Zhihu', url: 'https://www.zhihu.com/people/giscafer' },
   { name: 'Percentage change calc', url: '/percentagechange' },
-  { name: 'Books', url: '/books' },
+  // { name: 'Books', url: '/books' },
 ]
 
 const Page = ({ children }: PageProps): JSX.Element => (

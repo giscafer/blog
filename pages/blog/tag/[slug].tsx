@@ -22,7 +22,7 @@ const Tag = ({ posts }: TagProps): JSX.Element => {
   const { query } = useRouter()
   const { slug } = query as { slug: string }
 
-  const FormattedSlug = () => <span style={{ textTransform: 'capitalize' }}>{slug.replace('-', ' ')}</span>
+  const FormattedSlug = () => <span style={{ textTransform: 'capitalize' }}>{slug?.replace('-', ' ')}</span>
 
   return (
     <Page>

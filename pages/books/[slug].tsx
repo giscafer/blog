@@ -120,7 +120,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   }
 }
 export const getStaticProps: GetStaticProps = async context => {
-  const bookRes = await fetch(`https://notion-api.splitbee.io/v1/table/b84d503315b24b7e8326ba6012dfddde`)
+  const bookRes = await fetch(`https://notion-api.splitbee.io/v1/table/b84d503315xxx7e8326ba6012dfddde`)
   const bookData = await bookRes.json()
 
   if (!bookData) {
