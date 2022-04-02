@@ -161,7 +161,7 @@ const Post = ({ post, related }: PostProps): JSX.Element => {
 
 export const getStaticPaths: GetStaticPaths = async () => {
   return {
-    paths: allPosts.map(p => ({ params: { slug: p.slug } })),
+    paths: allPosts.map(p => ({ params: { slug: p.slug || '404' } })),
     fallback: false,
   }
 }
