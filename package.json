@@ -10,6 +10,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "sync-post": "node ./scripts/sync-post.js",
     "type-check": "./node_modules/.bin/tsc"
   },
   "dependencies": {

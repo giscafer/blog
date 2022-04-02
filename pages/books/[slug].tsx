@@ -1,7 +1,7 @@
-import { GetStaticProps, GetStaticPaths } from 'next'
+// import { GetStaticProps, GetStaticPaths } from 'next'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import slugify from 'slugify'
+// import slugify from 'slugify'
 import 'react-notion/src/styles.css'
 import { NotionRenderer } from 'react-notion'
 import { Link } from 'react-feather'
@@ -109,7 +109,7 @@ const Book = ({ book, page }: BookProps): JSX.Element => {
     </Page>
   )
 }
-
+/*
 export const getStaticPaths: GetStaticPaths = async () => {
   const bookRes = await fetch(`https://notion-api.splitbee.io/v1/table/b84d503315b24b7e8326ba6012dfddde`)
   const bookData = await bookRes.json()
@@ -142,6 +142,6 @@ export const getStaticProps: GetStaticProps = async context => {
     },
     revalidate: 3600,
   }
-}
+} */
 
 export default Book
