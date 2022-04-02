@@ -23,7 +23,7 @@
 
 #### 大前端洞见
 
-<img src="./public/feinsight.jpg" width="300"/>
+<img src="./public/feinsight.jpg" width="450"/>
 
 ---
 
