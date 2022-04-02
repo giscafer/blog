@@ -30,8 +30,8 @@ ${body.replace(/<br \/>/g, '\n')}
 
 function main() {
   const filePath = path.resolve(__dirname, blogOutputPath)
-
-  issueInstance.listIssues().then(({ data }) => {
+  // 只查询自己的issues，避免别人创建的也更新到博客
+  issueInstance.listIssues({ creator: 'giscafer' }).then(({ data }) => {
     let successCount = 0
     fs.ensureDirSync(filePath)
     fs.emptyDirSync(filePath)
