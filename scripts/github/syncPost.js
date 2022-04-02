@@ -19,7 +19,6 @@ function generateMdx(issue) {
   return `---
   title: ${title}
   publishedAt: ${created_at}
-  summary: ${title}
   tags: ${JSON.stringify(labels.map(item => item.name))}
 ---
 
