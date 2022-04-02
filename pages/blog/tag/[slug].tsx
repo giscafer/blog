@@ -44,7 +44,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
     .map(p => p.tags)
     .flat()
     .filter(Boolean)
-    .map(tag => ({ params: { slug: slugify(tag, { lower: true }) } }))
+    .map(tag => ({ params: { slug: slugify(tag, { lower: true }) || '404' } }))
 
   return {
     paths: tags,

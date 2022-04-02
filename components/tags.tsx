@@ -16,7 +16,7 @@ const Tags = ({ tags }: TagsProps): JSX.Element | null => {
       {tags.map(tag => {
         return (
           <li key={tag}>
-            <Link href={`/blog/tag/${slugify(tag, { lower: true })}`}>{`#${tag}`}</Link>
+            <Link href={`/blog/tag/${slugify(tag, { lower: true }) || '404'}`}>{`#${tag}`}</Link>
           </li>
         )
       })}
