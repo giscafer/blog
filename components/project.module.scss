@@ -13,7 +13,7 @@
   padding-bottom: 50%;
   overflow: hidden;
   // background-color: black;
-  background-color: #f8f8f8;
+  background-color: var(--bg);
   border-radius: 15px;
 
   @media (min-width: 890px) {
