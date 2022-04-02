@@ -1,7 +1,6 @@
 /* eslint-disable */
 const GitHub = require('github-api')
 const fs = require('fs-extra')
-const dayjs = require('dayjs')
 const path = require('path')
 const pinyin = require('pinyin')
 const _ = require('lodash')
@@ -19,7 +18,7 @@ function generateMdx(issue) {
   const { title, labels, created_at, body } = issue
   return `---
   title: ${title}
-  publishedAt: ${dayjs(created_at).format('YYYY-MM-DD HH:mm:ss')}
+  publishedAt: ${created_at}
   summary: ${title}
   tags: ${JSON.stringify(labels.map(item => item.name))}
 ---
@@ -37,7 +36,6 @@ function main() {
     fs.emptyDirSync(filePath)
     for (const item of data) {
       try {
-        // const dateStr = dayjs(item.created_at).format('YYYY-MM-DD')
         const content = generateMdx(item)
         const tempFileName = item.title.replace(/\//g, '&').replace(/、/g, '-').replace(/ - /g, '-')
         const result = pinyin(tempFileName, {
