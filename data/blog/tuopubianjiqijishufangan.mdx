@@ -1,0 +1,119 @@
+---
+  title: 拓扑编辑器技术方案
+  publishedAt: 2022-04-02T09:24:10Z
+  summary:
+  tags: []
+---
+
+## 1.概述
+
+### 1.1 需求背景
+
+（业务项目，脱敏，省略内容。。。）
+
+### 1.2 关键难点功能分解
+
+只列出一些对技术实现影响比较大和选型的点
+
+- 编辑器画布
+   - 拖拉拽
+   - 属性面板
+   - 连线工具
+   - 外观内容
+   - 样式设置（位置&颜色字体）
+   - 撤销&还原操作
+- 组件控件
+   - 支持自定义组件（建议图片）
+   - 画布组件支持点击指定超链接或按钮弹窗查看详情
+- 预览拓扑绘制结果
+
+## 2. 总体设计
+
+### 2.1 界面设计
+
+场景的各种可视化编辑器的界面结构都类似下图所示，本次拓扑编辑器也类似
+ 
+![image](https://user-images.githubusercontent.com/8676711/161376712-e0c1314e-4453-4221-a1c1-d5ac230639fb.png)
+
+
+### 2.2 编码设计
+
+开发编辑器这种复杂功能，要设计好页面区块拆分、组件封装、数据通信等，将复杂问题简化，保证后期的可扩展性的同时，开发维护也简单。
+
+#### 2.2.1 代码结构设计
+
+编辑器大致的代码目录结构举例
+```bash
+├── pages
+│   ├── topology
+│   │   ├── Header   # 编辑器菜单栏
+│   │   ├── Layout   # 编辑器
+│   │   │   ├── LeftAreaPanel  		# 左侧组件栏面板 （内部要细分区块组件）
+│   │   │   ├── RightAreaPanel   	# 右侧属性栏面板 （内部要细分区块组件）
+│   │   │   ├── Plugin   					# 编辑器核心或插件相关
+│   │   │   ├── index.less
+│   │   │   ├── index.tsx
+│   │   ├── Preview 	# 拓扑图预览
+│   │   ├── config    # 拓扑编辑器相关配置 （这里不放在项目全局，目的是编辑器这块功能独立解耦，整个topology迁移出去都是完整的功能）
+│   │   └── index.tsx # 拓扑编辑器主入口
+```
+
+Umi 的路由配置
+```js
+ {
+    path: '/topology',
+    name: 'Topology',
+    layout: false,  // 去掉布局，可以全屏
+    icon: 'rh-icon-topology',
+    component: './topology',
+  },
+```
+
+## 3. 技术分析
+
+经调研，目前了解到有两个技术方案实现成本相对较低：
+
+- Topology  [https://github.com/le5le-com/topology](https://github.com/le5le-com/topology)
+- X6 [https://x6.antv.vision/zh/examples/gallery](https://x6.antv.vision/zh/examples/gallery)
+
+### 3.1 Topology
+
+Topology是一个集动态交互、丰富展示、数据管理等一体的全功能可视化引擎，为物联网、工业互联网、电力能源、水利工程、智慧农业、智慧医疗、智慧城市等智能可视化场景而生。
+
+在做调研的时候，也查找资源，结合 Umi 实现了个demo效果：[https://github.com/giscafer/topology-umi-demo](https://github.com/giscafer/topology-umi-demo)， 可预览demo，点击 Topology 菜单
+ 
+![image](https://user-images.githubusercontent.com/8676711/161376728-3d4eee1d-aef2-4af1-acac-e968b9e505fc.png)
+
+
+demo 依赖了指定版本的topology包
+```js
+@topology/activity-diagram 0.3.0
+@topology/chart-diagram 0.3.0 
+@topology/class-diagram 0.3.0
+@topology/core 0.5.8
+@topology/flow-diagram 0.3.0
+@topology/sequence-diagram 0.3.0
+```
+
+### 3.2 X6 （推荐）
+
+X6 是 AntV 旗下的图编辑引擎，提供了一系列开箱即用的交互组件和简单易用的节点定制能力，方便我们快速搭建 DAG 图、ER 图、流程图等应用。
+
+- 🌱 极易定制：支持使用 SVG/HTML/React/Vue 定制节点样式和交互
+- 🚀 开箱即用：内置 10+ 图编辑配套扩展，如框选、对齐线、小地图等
+- 🧲 数据驱动：基于 MVC 架构，用户更加专注于数据逻辑和业务逻辑
+- 💯 事件驱动：完备的事件系统，可以监听图表内发生的任何事件
+
+文档： [https://x6.antv.vision/zh/examples](https://x6.antv.vision/zh/examples/gallery)
+demo: [https://gitee.com/martsforever-pot/react-x6-editor](https://gitee.com/martsforever-pot/react-x6-editor)
+
+### 总结
+
+对比 Topology 和 X6 ，个人更推荐 X6，因为出自蚂蚁金服，节点可定制化和文档都比较清晰。社区支持度也相对于 Topology 活跃些。
+
+- topology 免费版开源版本 v0.3.0，最新版本(>1.0）是商业付费。
+- X6 是开源免费，最新版本
+
+
+
+
