@@ -26,9 +26,8 @@ jobs:
 
       - name: Display runtime info ✨
         run: |
-          node -v
-          npm -v
-          echo env.commitmsg
+          echo '当前目录：'
+          pwd
 
       - name: Install 🔧
         run: yarn install
