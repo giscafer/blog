@@ -126,7 +126,7 @@ const Post = ({ post, related }: PostProps): JSX.Element => {
         }}
       />
 
-      {post.slug === 'spring-parallax-framer-motion-guide' ? (
+      {post.slug === 'Awesome--Articles-List' ? (
         <ParallaxCover />
       ) : (
         <>{post.image && <BlogImage src={post.image} alt={post.title} className={styles.image} />}</>
