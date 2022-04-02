@@ -36,7 +36,7 @@ function main() {
     for (const item of data) {
       try {
         const content = generateMdx(item)
-        const tempFileName = item.title.replace(/\//g, '&').replace(/、/g, '-').replace(/ - /g, '-')
+        const tempFileName = item.title.replace(/\//g, '&').replace(/、/g, '-').replace(/ - /g, '-').replace(/\s/g, '-')
         const result = pinyin(tempFileName, {
           style: 0,
         })
