@@ -21,7 +21,7 @@
     "classnames": "^2.3.1",
     "contentlayer": "^0.0.34-dev.6",
     "dayjs": "^1.11.0",
-    "faunadb": "^4.4.1",
+    "faunadb": "^4.5.4",
     "framer-motion": "^4.1.11",
     "fs-extra": "^10.0.1",
     "github-api": "^3.4.0",

@@ -17,7 +17,9 @@ const LikeButton = ({ slug }: { slug: string }): JSX.Element | null => {
   useEffect(() => setMounted(true), [])
 
   const onLike = async () => {
+    // 本地记录了喜欢过本文章
     localStorage.setItem(slug, 'true')
+    // 请求更新like
     mutate(`/api/likes?slug=${slug}`, { ...data, likes: likes + 1 }, false)
     await fetch(`/api/likes?slug=${slug}`, { method: 'POST' })
   }

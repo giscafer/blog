@@ -5,21 +5,29 @@ module.exports = async (req, res) => {
   const q = faunadb.query
   const client = new faunadb.Client({
     secret: process.env.FAUNA_SECRET_KEY,
+    domain: 'db.fauna.com',
   })
+
   const { slug } = req.query
   if (!slug) {
     return res.status(400).json({
       message: 'Article slug not provided',
     })
   }
+
   // Check and see if the doc exists.
-  const doesDocExist = await client.query(q.Exists(q.Match(q.Index('likes_by_slug'), slug)))
-  if (!doesDocExist) {
-    await client.query(
-      q.Create(q.Collection('likes'), {
-        data: { slug, likes: 0 },
-      }),
-    )
+  try {
+    const doesDocExist = await client.query(q.Exists(q.Match(q.Index('likes_by_slug'), slug)))
+
+    if (!doesDocExist) {
+      await client.query(
+        q.Create(q.Collection('likes'), {
+          data: { slug, likes: 0 },
+        }),
+      )
+    }
+  } catch (error) {
+    console.log('error', error)
   }
 
   type documentType = { ref: string; data: { likes: number } }

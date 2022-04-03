@@ -12,7 +12,7 @@ import CustomImage from 'components/image'
 import Warning from 'components/warning'
 import HitCounter from 'components/hitcounter'
 import LikeButton from 'components/likebutton'
-import { NowPlayingIcon } from 'components/nowplaying'
+// import { NowPlayingIcon } from 'components/nowplaying'
 import Subscribe from 'components/subscribe'
 import BlogImage from 'components/blogimage'
 import SegmentedControl from 'components/segmentedcontrol'
@@ -59,7 +59,7 @@ const components = {
   Image: CustomImage,
   Warning,
   Link: CustomLink,
-  NowPlayingIcon,
+  // NowPlayingIcon,
   SegmentedControl,
   Messages,
   AnimatedMessages,

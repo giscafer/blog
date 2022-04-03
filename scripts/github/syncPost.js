@@ -18,7 +18,7 @@ function generateMdx(issue) {
   const { title, labels, created_at, body } = issue
   // todo: summary
   return `---
-  title: ${title}
+  title: ${title.trim()}
   publishedAt: ${created_at}
   summary: ${'查看全文>>'}
   tags: ${JSON.stringify(labels.map(item => item.name))}
@@ -38,7 +38,7 @@ function main() {
     for (const item of data) {
       try {
         const content = generateMdx(item)
-        const tempFileName = item.title.replace(/\//g, '&').replace(/、/g, '-').replace(/ - /g, '-').replace(/\s/g, '-')
+        const tempFileName = item.title?.trim().replace(/\//g, '&').replace(/、/g, '-').replace(/ - /g, '-').replace(/\s/g, '-')
         const result = pinyin(tempFileName, {
           style: 0,
         })

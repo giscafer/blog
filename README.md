@@ -6,11 +6,18 @@
 
 - https://giscafer.com
 
+## Features
+
+- [Github Issues 自动同步博客文章](https://mp.weixin.qq.com/s/sMNC20ei_J0XcVdJ0v3Fjw)
+- [faunadb 云端数据存储](https://fauna.com/)
+- [Linear 监控](https://linear.app/)
+- [Webmention](https://webmention.io/)
+
 ## TODO
 
+- [x] like post 功能
+- [x] 文章浏览量统计
 - [ ] mdx 文件 自动获取 summary 字段展示
-- [ ] like post 功能
-- [ ] 文章浏览量统计
 - [ ] 邮件订阅功能
 - [ ] 图片点击放大预览
 - [ ] 优化同步脚步，只同步最近变更时间的 issues

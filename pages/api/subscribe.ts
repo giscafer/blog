@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     },
     body: JSON.stringify({ email }),
   })
-  console.log('result', result)
+  // console.log('result', result)
   const data = await result.json()
 
   if (!result.ok) {

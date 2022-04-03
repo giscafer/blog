@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
 import Header from 'components/header'
-import NowPlaying from 'components/nowplaying'
+// import NowPlaying from 'components/nowplaying'
 import Link from 'next/link'
 import PageTransition from 'components/pagetransition'
 import styles from './page.module.scss'
@@ -38,7 +38,7 @@ const Page = ({ children }: PageProps): JSX.Element => (
           </li>
         ))}
       </ul>
-      <NowPlaying />
+      {/* <NowPlaying /> */}
       <p className={styles.copyright}>&copy; Nickbing Lao {new Date().getFullYear()}</p>
     </footer>
   </div>
