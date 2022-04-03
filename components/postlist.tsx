@@ -43,7 +43,7 @@ const PostList = ({ posts }: PostListProps): JSX.Element => (
           </Link>
           <p className={styles.summary}>{summary}</p>
           <p className={styles.meta}>
-            Published on <time dateTime={publishedAt}>{formatDate(publishedAt)}</time> &middot; {readTime.text}
+            发布于 <time dateTime={publishedAt}>{formatDate(publishedAt)}</time> &middot; 预估阅读 {Math.ceil(readTime.minutes)} 分钟
           </p>
         </li>
       )

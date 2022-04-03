@@ -76,13 +76,13 @@ type PostProps = {
 const Post = ({ post, related }: PostProps): JSX.Element => {
   const Component = useMDXComponent(post.body.code)
 
-  const formattedPublishDate = new Date(post.publishedAt).toLocaleString('en-US', {
+  const formattedPublishDate = new Date(post.publishedAt).toLocaleString('zh-CN', {
     month: 'short',
     day: '2-digit',
     year: 'numeric',
   })
   const formattedUpdatedDate = post.updatedAt
-    ? new Date(post.updatedAt).toLocaleString('en-US', {
+    ? new Date(post.updatedAt).toLocaleString('zh-CN', {
         month: 'short',
         day: '2-digit',
         year: 'numeric',
@@ -133,8 +133,9 @@ const Post = ({ post, related }: PostProps): JSX.Element => {
       )}
       <PageHeader title={post.title} compact>
         <p className={styles.meta}>
-          Published on <time dateTime={post.publishedAt}>{formattedPublishDate}</time>
-          {post.updatedAt ? ` (Updated ${formattedUpdatedDate})` : ''} <span>&middot;</span> {post.readingTime.text}
+          发布于 <time dateTime={post.publishedAt}>{formattedPublishDate}</time>
+          {post.updatedAt ? ` (Updated ${formattedUpdatedDate})` : ''} <span>&middot;</span> 预估阅读 {Math.ceil(post.readingTime?.minutes)}{' '}
+          分钟
           <HitCounter slug={post.slug} />
         </p>
       </PageHeader>
@@ -148,12 +149,12 @@ const Post = ({ post, related }: PostProps): JSX.Element => {
       <Subscribe className={styles.subscribe} />
       {related.length > 0 && (
         <>
-          <h2 className={styles.relatedHeading}>Related Posts</h2>
+          <h2 className={styles.relatedHeading}>相关文章</h2>
           <PostList posts={related} />
         </>
       )}
       <div className={styles.buttons}>
-        <Button href="/blog">Back to the blog</Button>
+        <Button href="/blog">返回博客列表</Button>
       </div>
     </Page>
   )

@@ -21,7 +21,7 @@ const HitCounter = ({ slug }: { slug: string }): JSX.Element => {
 
   return (
     <>
-      <span> &middot;</span> {typeof hits === 'undefined' ? '--' : hits} Views
+      <span> &middot;</span> {typeof hits === 'undefined' ? '--' : hits} 阅读量
     </>
   )
 }
