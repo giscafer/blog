@@ -6,12 +6,9 @@ import Button from 'components/button'
 const Custom404 = (): JSX.Element => (
   <Page>
     <Head>
-      <title>404 | Nickbing Lao</title>
+      <title>404 | Giscafer.com</title>
     </Head>
-    <PageHeader
-      title="404 - Page not found"
-      description="Uh oh! This page does not exists, maybe you clicked an old link or misspelled. Please try again…"
-    >
+    <PageHeader title="404 - 页面未找到" description="哦哦!本页面不存在，可能您点击了旧链接或拼写错误。请再试一次…">
       <Button href="/">Return home</Button>
     </PageHeader>
   </Page>

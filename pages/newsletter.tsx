@@ -18,7 +18,7 @@ const NewsletterPage = (): JSX.Element => {
           title: seoTitle,
           url: `https://giscafer.com/newsletter/`,
           description: seoDesc,
-          site_name: 'Nickbing Lao',
+          site_name: 'Giscafer.com',
         }}
         twitter={{
           cardType: 'summary_large_image',

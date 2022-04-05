@@ -25,8 +25,8 @@ const PercentageChange = (): JSX.Element => {
       result = `+${Math.abs(rounded)}`
     }
   }
-  const title = 'Percentage change calculator'
-  const description = 'What is the percentage increase or decrease?'
+  const title = '百分比变化计算器'
+  const description = '增加或减少的百分比是多少?'
   return (
     <Page>
       <NextSeo
