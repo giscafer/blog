@@ -25,8 +25,10 @@ const Parallax = ({ children, offset = 50, clampInitial, clampFinal }: ParallaxP
   useLayoutEffect(() => {
     const element = ref.current
     const onResize = () => {
-      setElementTop(element.getBoundingClientRect().top + window.scrollY || window.pageYOffset)
-      setClientHeight(window.innerHeight)
+      if (element) {
+        setElementTop(element?.getBoundingClientRect().top + window.scrollY || window.pageYOffset)
+        setClientHeight(window.innerHeight)
+      }
     }
     onResize()
     window.addEventListener('resize', onResize)
