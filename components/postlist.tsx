@@ -21,8 +21,8 @@ const PostList = ({ posts }: PostListProps): JSX.Element => (
       const { summary, title, readingTime: readTime, publishedAt, image, slug } = post
       return (
         <li key={slug}>
-          {slug === 'Awesome--Articles-List' ? (
-            <Link href="/blog/Awesome--Articles-List">
+          {slug === 'post-22' ? (
+            <Link href="/blog/post-22">
               <a>
                 <ParallaxCover />
               </a>

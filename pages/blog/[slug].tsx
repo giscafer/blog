@@ -126,7 +126,7 @@ const Post = ({ post, related }: PostProps): JSX.Element => {
         }}
       />
 
-      {post.slug === 'Awesome--Articles-List' ? (
+      {post.slug === 'post-22' ? (
         <ParallaxCover />
       ) : (
         <>{post.image && <BlogImage src={post.image} alt={post.title} className={styles.image} />}</>
