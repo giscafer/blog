@@ -41,11 +41,13 @@ function main() {
     for (const item of data) {
       try {
         const content = generateMdx(item)
-        const tempFileName = item.title?.trim().replace(/\//g, '&').replace(/、/g, '-').replace(/ - /g, '-').replace(/\s/g, '-')
+        /* const tempFileName = item.title?.trim().replace(/\//g, '&').replace(/、/g, '-').replace(/ - /g, '-').replace(/\s/g, '-')
         const result = pinyin(tempFileName, {
           style: 0,
         })
-        const fileName = _.flatten(result).join('')
+        const fileName = _.flatten(result).join('') */
+        // 文件名换成issue number
+        const fileName = `post-${item.number}`
         fs.writeFileSync(`${filePath}/${fileName}.mdx`, content)
         console.log(`${filePath}/${fileName}.mdx`, 'success')
         successCount++
