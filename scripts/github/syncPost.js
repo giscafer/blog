@@ -2,8 +2,6 @@
 const GitHub = require('github-api')
 const fs = require('fs-extra')
 const path = require('path')
-const pinyin = require('pinyin')
-const _ = require('lodash')
 
 const gh = new GitHub({
   token: process.env.GH_TOKEN,
