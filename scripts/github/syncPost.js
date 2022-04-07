@@ -15,7 +15,7 @@ const blogOutputPath = '../../data/blog'
 const issueInstance = gh.getIssues('giscafer', 'blog')
 
 function generateMdx(issue) {
-  const { title, labels, created_at, body } = issue
+  const { title, labels, created_at, body, id } = issue
   // todo: summary
   return `---
   title: ${title.trim()}
