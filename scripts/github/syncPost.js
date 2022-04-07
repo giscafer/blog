@@ -25,6 +25,9 @@ function generateMdx(issue) {
 ---
 
 ${body.replace(/<br \/>/g, '\n')}
+
+---
+欢迎前往原文讨论：https://github.com/giscafer/blog/issues/${id}
 `
 }
 
