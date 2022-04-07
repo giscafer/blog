@@ -25,3 +25,6 @@ _.defer(function(){$scope.$apply();});
 
 We tried several workarounds, and we hated injecting $rootScope into all of our controllers, directives, and even some factories. So, the $timeout and _.defer have been our favorite so far. These methods successfully tell angular to wait until the next animation loop, which will guarantee that the current scope.$apply is over.
 
+
+---
+欢迎前往原文讨论：https://github.com/giscafer/blog/issues/174472002
