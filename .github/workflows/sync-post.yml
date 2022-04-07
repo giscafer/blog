@@ -4,12 +4,16 @@ name: Sync Post
 on:
   # schedule:
   #   - cron: "30 1 * * *"
+  # https://docs.github.com/cn/developers/webhooks-and-events/events/issue-event-types
   issues:
     types:
       - opened
       - closed
+      - renamed
       - labeled
-      - updated
+      - unlabeled
+      - reopened
+      - committed # 修改？
   workflow_dispatch:
 env:
   GH_TOKEN: ${{ secrets.GH_TOKEN }}
