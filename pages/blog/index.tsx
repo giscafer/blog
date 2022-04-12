@@ -7,7 +7,7 @@ import debounce from 'lodash.debounce'
 // Components
 import Page from 'components/page'
 import PageHeader from 'components/pageheader'
-import Subscribe from 'components/subscribe'
+// import Subscribe from 'components/subscribe'
 import Input from 'components/input'
 import PostList from 'components/postlist'
 
@@ -68,7 +68,7 @@ const Blog = ({ posts }: BlogProps): JSX.Element => {
         </div>
       </PageHeader>
       <PostList posts={filteredPosts} />
-      <Subscribe title="对文章感兴趣? 可以输入邮箱订阅!" />
+      {/* <Subscribe title="对文章感兴趣? 可以输入邮箱订阅!" /> */}
     </Page>
   )
 }

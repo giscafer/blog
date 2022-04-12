@@ -13,7 +13,7 @@ import Warning from 'components/warning'
 import HitCounter from 'components/hitcounter'
 import LikeButton from 'components/likebutton'
 // import { NowPlayingIcon } from 'components/nowplaying'
-import Subscribe from 'components/subscribe'
+// import Subscribe from 'components/subscribe'
 import BlogImage from 'components/blogimage'
 import SegmentedControl from 'components/segmentedcontrol'
 import Messages, { TailBreakdown } from 'components/messages'
@@ -134,8 +134,8 @@ const Post = ({ post, related }: PostProps): JSX.Element => {
       <PageHeader title={post.title} compact>
         <p className={styles.meta}>
           发布于 <time dateTime={post.publishedAt}>{formattedPublishDate}</time>
-          {post.updatedAt ? ` (Updated ${formattedUpdatedDate})` : ''} <span>&middot;</span> 预估阅读 {Math.ceil(post.readingTime?.minutes)}{' '}
-          分钟
+          {post.updatedAt ? ` (Updated ${formattedUpdatedDate})` : ''} <span>&middot;</span> 预估阅读{' '}
+          {Math.ceil(post.readingTime?.minutes * 1.5)} 分钟
           <HitCounter slug={post.slug} />
         </p>
       </PageHeader>
@@ -146,11 +146,11 @@ const Post = ({ post, related }: PostProps): JSX.Element => {
         <LikeButton slug={post.slug} />
       </div>
       <Tags tags={post.tags} />
-      <Subscribe className={styles.subscribe} />
+      {/* <Subscribe className={styles.subscribe} /> */}
       {related.length > 0 && (
         <>
           <h2 className={styles.relatedHeading}>相关文章</h2>
-          <PostList posts={related} />
+          <PostList posts={related} hideImage />
         </>
       )}
       <div className={styles.buttons}>

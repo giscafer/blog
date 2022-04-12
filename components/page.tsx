@@ -12,14 +12,12 @@ type PageProps = {
 const footerLinks = [
   { name: 'Home', url: '/' },
   { name: 'GitHub', url: 'https://github.com/giscafer' },
-  { name: 'Newsletter', url: '/newsletter' },
-  { name: 'About', url: '/about' },
-  { name: 'WeiBo', url: 'https://weibo.com/laohoubin' },
   { name: 'RSS', url: '/feed.xml' },
   { name: 'Blog', url: '/blog' },
   { name: 'Zhihu', url: 'https://www.zhihu.com/people/giscafer' },
-  { name: 'Percentage change calc', url: '/percentagechange' },
-  // { name: 'Books', url: '/books' },
+  { name: 'Travel Map', url: 'http://map.giscafer.com', target: '_blank' },
+  { name: 'About', url: '/about' },
+  { name: 'WeiBo', url: 'https://weibo.com/laohoubin' },
 ]
 
 const Page = ({ children }: PageProps): JSX.Element => (
@@ -30,13 +28,24 @@ const Page = ({ children }: PageProps): JSX.Element => (
     </main>
     <footer className={styles.footer}>
       <ul className={styles.links}>
-        {footerLinks.map(link => (
-          <li key={link.name}>
-            <Link href={link.url}>
-              <a>{link.name}</a>
-            </Link>
-          </li>
-        ))}
+        {footerLinks.map(link => {
+          if (link.target === '_blank') {
+            return (
+              <li key={link.name}>
+                <a href={link.url} target="_blank" rel="noopener noreferrer">
+                  {link.name}
+                </a>
+              </li>
+            )
+          }
+          return (
+            <li key={link.name}>
+              <Link href={link.url}>
+                <a>{link.name}</a>
+              </Link>
+            </li>
+          )
+        })}
       </ul>
       {/* <NowPlaying /> */}
       <p className={styles.copyright}>&copy; Nickbing Lao {new Date().getFullYear()}</p>

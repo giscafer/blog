@@ -9,7 +9,7 @@ const links = [
   { name: 'Home', path: '/' },
   { name: 'About', path: '/about' },
   { name: 'Blog', path: '/blog' },
-  // { name: 'Books', path: '/books' },
+  { name: 'Map', path: 'http://map.giscafer.com', target: '_blank' },
 ]
 
 const Header = (): JSX.Element => {
@@ -26,13 +26,24 @@ const Header = (): JSX.Element => {
           </Link>
           <nav className={styles.nav}>
             <ol className={styles.links}>
-              {links.map(({ name, path }) => (
-                <li key={path} className={pathname === path ? styles.linkActive : styles.link}>
-                  <Link href={path}>
-                    <a>{name}</a>
-                  </Link>
-                </li>
-              ))}
+              {links.map(({ name, path, target }) => {
+                if (target === '_blank') {
+                  return (
+                    <li key={path} className={pathname === path ? styles.linkActive : styles.link}>
+                      <a href={path} target="_blank" rel="noopener noreferrer">
+                        {name}
+                      </a>
+                    </li>
+                  )
+                }
+                return (
+                  <li key={path} className={pathname === path ? styles.linkActive : styles.link}>
+                    <Link href={path}>
+                      <a>{name}</a>
+                    </Link>
+                  </li>
+                )
+              })}
             </ol>
           </nav>
           <ThemeChanger />
