@@ -1,5 +1,5 @@
 import { GetStaticProps, GetStaticPaths } from 'next'
-import slugify from 'slugify'
+// import slugify from 'slugify'
 import { useRouter } from 'next/router'
 
 // Components
@@ -30,7 +30,7 @@ const Tag = ({ posts }: TagProps): JSX.Element => {
         title={<FormattedSlug />}
         description={
           <>
-            Posts &amp; tutorials about <FormattedSlug />
+            关于 「<FormattedSlug />」 的文章和教程
           </>
         }
       />
@@ -44,8 +44,9 @@ export const getStaticPaths: GetStaticPaths = async () => {
     .map(p => p.tags)
     .flat()
     .filter(Boolean)
-    .map(tag => ({ params: { slug: slugify(tag, { lower: true }) || '404' } }))
-
+    .map(tag => ({ params: { slug: tag } }))
+  // slugify 不支持中文
+  // .map(tag => ({ params: { slug: slugify(tag, { lower: true }) || '404' } }))
   return {
     paths: tags,
     fallback: false,
@@ -54,7 +55,9 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps = async context => {
   const posts = allPosts
-    .filter(post => post.tags?.some(x => slugify(x, { lower: true }) === context.params.slug))
+    // slugify 不支持中文
+    // .filter(post => post.tags?.some(x => slugify(x, { lower: true }) === context.params.slug))
+    .filter(post => post.tags?.some(x => x === context.params.slug))
     .filter(Boolean)
     .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
     .map(post => pick(post, ['slug', 'title', 'summary', 'publishedAt', 'image', 'readingTime']))

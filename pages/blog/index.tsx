@@ -1,29 +1,31 @@
-import { useState, useCallback } from 'react'
-import { GetStaticProps } from 'next'
-import { NextSeo } from 'next-seo'
-import { Search } from 'react-feather'
-import debounce from 'lodash.debounce'
-
+import { pick } from '@contentlayer/client'
+// import Subscribe from 'components/subscribe'
+import Input from 'components/input'
 // Components
 import Page from 'components/page'
 import PageHeader from 'components/pageheader'
-// import Subscribe from 'components/subscribe'
-import Input from 'components/input'
 import PostList from 'components/postlist'
-
+import { Section } from 'components/section'
+import Badge from 'components/badge'
 // Utils
+// import slugify from 'slugify'
 import * as gtag from 'lib/gtag'
-import { pick } from '@contentlayer/client'
-import { allPosts } from '.contentlayer/data'
+import debounce from 'lodash.debounce'
+import { GetStaticProps } from 'next'
+import Link from 'next/link'
+import { NextSeo } from 'next-seo'
+import { useCallback, useState } from 'react'
+import { Search } from 'react-feather'
 import type { Post } from '.contentlayer/types'
-
+import { allPosts } from '.contentlayer/data'
 import styles from './index.module.scss'
 
 type BlogProps = {
   posts: Post[]
+  tagList: string[]
 }
 
-const Blog = ({ posts }: BlogProps): JSX.Element => {
+const Blog = ({ posts, tagList }: BlogProps): JSX.Element => {
   const [currentSearch, setCurrentSearch] = useState('')
   const trackSearch = useCallback(
     debounce((value: string) => gtag.search(value), 500),
@@ -62,22 +64,38 @@ const Blog = ({ posts }: BlogProps): JSX.Element => {
         }}
       />
       <PageHeader title="Blog" description={seoDesc}>
-        <div className={styles.inputWrapper}>
-          <Input className={styles.input} value={currentSearch} onChange={handleInputChange} placeholder="搜索文章…" type="search" />
-          <Search className={styles.inputIcon} />
-        </div>
+        <Section>
+          <div className={styles.inputWrapper}>
+            <Input className={styles.input} value={currentSearch} onChange={handleInputChange} placeholder="搜索文章…" type="search" />
+            <Search className={styles.inputIcon} />
+          </div>
+          <div className={styles.tagWrapper}>
+            <Section.Title>Tags</Section.Title>
+            <Section.Content>
+              <div className={styles.tagList}>
+                {tagList.map(tag => (
+                  <Link href={`/blog/tag/${tag}`}>
+                    <Badge key={tag} className="cursor-pointer">
+                      #{tag}
+                    </Badge>
+                  </Link>
+                ))}
+              </div>
+            </Section.Content>
+          </div>
+        </Section>
       </PageHeader>
       <PostList posts={filteredPosts} />
-      {/* <Subscribe title="对文章感兴趣? 可以输入邮箱订阅!" /> */}
     </Page>
   )
 }
 
 export const getStaticProps: GetStaticProps = async () => {
   const posts = allPosts.map(post => pick(post, ['slug', 'title', 'summary', 'publishedAt', 'image', 'readingTime']))
-
+  const tags = new Set(allPosts.reduce((acc, cur) => acc.concat(cur.tags), []))
+  const tagList: string[] = [...tags]
   return {
-    props: { posts },
+    props: { posts, tagList },
   }
 }
 

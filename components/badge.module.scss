@@ -1,0 +1,20 @@
+.tag {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  padding-top: 0.125rem;
+  padding-right: 0.625rem;
+  padding-bottom: 0.125rem;
+  padding-left: 0.625rem;
+  color: var(--tag-color);
+  font-size: 0.75rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
+  line-height: 1rem;
+  tab-size: 4;
+  background-color: var(--tag-bg-color);
+  border: 0 solid #eaeaea;
+  border-radius: 9999px;
+  cursor: pointer;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+}

@@ -9,6 +9,7 @@ type ProjectProps = {
   link: string
   github?: string
   linkText?: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   image: any
   small?: boolean
   priority?: boolean

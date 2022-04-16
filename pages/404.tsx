@@ -9,7 +9,7 @@ const Custom404 = (): JSX.Element => (
       <title>404 | Giscafer.com</title>
     </Head>
     <PageHeader title="404 - 页面未找到" description="哦哦!本页面不存在，可能您点击了旧链接或拼写错误。请再试一次…">
-      <Button href="/">Return home</Button>
+      <Button href="/blog">返回博客</Button>
     </PageHeader>
   </Page>
 )

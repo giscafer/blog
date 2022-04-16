@@ -1,7 +1,7 @@
 .input {
-  width: 250px;
+  width: 100%;
   max-width: 100%;
-  padding-left: 35px;
+  padding-left: 10px;
   transition: all 150ms ease-out;
   &:hover,
   &:active,
@@ -19,7 +19,7 @@
 .inputIcon {
   position: absolute;
   top: 50%;
-  left: 10px;
+  right: 14px;
   width: 18px;
   transform: translateY(calc(-50% - 1px));
 
@@ -28,4 +28,23 @@
     opacity: 0.6;
     stroke: var(--text);
   }
+}
+
+.tagWrapper {
+  position: relative;
+  margin-top: 30px;
+}
+
+.font-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
+}
+.gap-1 {
+  grid-gap: 0.25rem;
+  gap: 0.25rem;
+}
+
+.tagList {
+  composes: font-mono gap-1;
+  display: flex;
+  flex-wrap: wrap;
 }
