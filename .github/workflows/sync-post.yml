@@ -17,6 +17,8 @@ on:
   workflow_dispatch:
 env:
   GH_TOKEN: ${{ secrets.GH_TOKEN }}
+  GH_USER: ${{ secrets.GH_USER }}
+  GH_PROJECT_NAME: ${{ secrets.GH_PROJECT_NAME }}
 jobs:
   Publish:
     runs-on: ubuntu-latest

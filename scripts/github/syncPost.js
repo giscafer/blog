@@ -3,7 +3,7 @@ const GitHub = require('github-api')
 const fs = require('fs-extra')
 const path = require('path')
 
-const { GH_TOKEN, GITHUB_USER, GITHUB_PROJECT_NAME } = process.env
+const { GH_TOKEN, GH_USER, GH_PROJECT_NAME } = process.env
 
 const gh = new GitHub({
   token: GH_TOKEN,
@@ -11,13 +11,13 @@ const gh = new GitHub({
 
 const blogOutputPath = '../../data/blog'
 
-if (!GITHUB_USER || !GITHUB_PROJECT_NAME) {
+if (!GH_USER || !GH_PROJECT_NAME) {
   console.error('请设置GITHUB_USER和GITHUB_PROJECT_NAME')
   process.exit(-1)
 }
 
 // get blog list
-const issueInstance = gh.getIssues(GITHUB_USER, GITHUB_PROJECT_NAME)
+const issueInstance = gh.getIssues(GH_USER, GH_PROJECT_NAME)
 
 function generateMdx(issue) {
   const { title, labels, created_at, body, html_url } = issue
