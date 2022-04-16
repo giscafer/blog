@@ -8,7 +8,6 @@ import PostList from 'components/postlist'
 import { Section } from 'components/section'
 import Badge from 'components/badge'
 // Utils
-// import slugify from 'slugify'
 import * as gtag from 'lib/gtag'
 import debounce from 'lodash.debounce'
 import { GetStaticProps } from 'next'
@@ -32,7 +31,7 @@ const Blog = ({ posts, tagList }: BlogProps): JSX.Element => {
     [],
   )
   const seoTitle = 'Blog | Nickbing Lao'
-  const seoDesc = '关于大前端的技术文章，比如 React、Angular、React Native 等!'
+  const seoDesc = '关于大前端的技术文章，包含且不限于 React、Angular、React Native 等。'
   const filteredPosts = posts
     .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
     .filter(({ title, summary, tags }) => {
@@ -57,7 +56,7 @@ const Blog = ({ posts, tagList }: BlogProps): JSX.Element => {
           title: seoTitle,
           url: `https://giscafer.com/blog/`,
           description: seoDesc,
-          site_name: 'Nickbing Lao',
+          site_name: 'giscafer | Nickbing Lao',
         }}
         twitter={{
           cardType: 'summary_large_image',

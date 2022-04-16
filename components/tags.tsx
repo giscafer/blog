@@ -1,4 +1,3 @@
-import slugify from 'slugify'
 import Link from 'next/link'
 
 import styles from './tags.module.scss'
@@ -16,7 +15,8 @@ const Tags = ({ tags }: TagsProps): JSX.Element | null => {
       {tags.map(tag => {
         return (
           <li key={tag}>
-            <Link href={`/blog/tag/${slugify(tag, { lower: true }) || '404'}`}>{`#${tag}`}</Link>
+            <Link href={`/blog/tag/${tag || '404'}`}>{`#${tag}`}</Link>
+            {/* <Link href={`/blog/tag/${slugify(tag, { lower: true }) || '404'}`}>{`#${tag}`}</Link> */}
           </li>
         )
       })}

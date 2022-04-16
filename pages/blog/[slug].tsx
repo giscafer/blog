@@ -113,7 +113,7 @@ const Post = ({ post, related }: PostProps): JSX.Element => {
               alt: post.title,
             },
           ],
-          site_name: 'Nickbing Lao',
+          site_name: 'giscafer | Nickbing Lao',
           type: 'article',
           article: {
             publishedTime: post.publishedAt,
