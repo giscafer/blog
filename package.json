@@ -35,6 +35,7 @@
     "pinyin": "^2.11.1",
     "querystring": "^0.2.1",
     "random-words": "^1.1.1",
+    "rc-switch": "^3.2.2",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-feather": "^2.0.9",

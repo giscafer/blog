@@ -43,7 +43,9 @@ const PostList = ({ posts, hideImage = false }: PostListProps): JSX.Element => (
           <Link as={`/blog/${slug}`} href="/blog/[slug]">
             <a className={styles.title}>{title}</a>
           </Link>
-          <p className={styles.summary}>{summary}</p>
+          {/* TODO: mdx没有summary时智能提取？ */}
+          {summary !== '查看全文>>' && <p className={styles.summary}>{summary}</p>}
+
           <p className={styles.meta}>
             发布于 <time dateTime={publishedAt}>{formatDate(publishedAt)}</time> &middot; 预估阅读 {Math.ceil(readTime.minutes * 1.5)} 分钟
           </p>

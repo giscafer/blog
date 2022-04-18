@@ -15,6 +15,7 @@ import Link from 'next/link'
 import { NextSeo } from 'next-seo'
 import { useCallback, useState } from 'react'
 import { Search } from 'react-feather'
+import PostListSwitch from 'components/postswitch'
 import type { Post } from '.contentlayer/types'
 import { allPosts } from '.contentlayer/data'
 import styles from './index.module.scss'
@@ -26,6 +27,7 @@ type BlogProps = {
 
 const Blog = ({ posts, tagList }: BlogProps): JSX.Element => {
   const [currentSearch, setCurrentSearch] = useState('')
+  const [hideCoverMode, setHideCoverMode] = useState(false)
   const trackSearch = useCallback(
     debounce((value: string) => gtag.search(value), 500),
     [],
@@ -84,7 +86,13 @@ const Blog = ({ posts, tagList }: BlogProps): JSX.Element => {
           </div>
         </Section>
       </PageHeader>
-      <PostList posts={filteredPosts} />
+      <PostListSwitch
+        checked={hideCoverMode}
+        onChange={v => {
+          setHideCoverMode(v)
+        }}
+      />
+      <PostList posts={filteredPosts} hideImage={!hideCoverMode} />
     </Page>
   )
 }
