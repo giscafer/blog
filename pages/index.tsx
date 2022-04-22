@@ -6,6 +6,7 @@ import Page from 'components/page'
 import codegen from 'public/projects/vscode-codegen.png'
 import roothub from 'public/projects/roothub.png'
 import leekfund from 'public/projects/leekfund.png'
+import frontendBox from 'public/projects/frontend-box.png'
 
 const projects = [
   {
@@ -18,11 +19,20 @@ const projects = [
   {
     title: 'CodeGen',
     description: 'RootHub 前端研发平台 VSCode插件',
+    linkText: 'giscafer.roothub',
     link: 'marketplace.visualstudio.com/items?itemName=giscafer.roothub',
     image: codegen,
   },
   {
-    title: 'VSCode 插件-韭菜盒子',
+    title: '前端盒子',
+    description: 'VSCode 里订阅查看前端技术文章',
+    linkText: 'giscafer.frontend-box',
+    link: 'marketplace.visualstudio.com/items?itemName=giscafer.frontend-box',
+    github: 'github.com/giscafer/vscode-frontend-box',
+    image: frontendBox,
+  },
+  {
+    title: '韭菜盒子',
     description: '韭菜盒子——VSCode 里也可以看股票 & 基金 & 期货实时数据，做最好用的投资插件',
     link: 'leek.fund',
     github: 'github.com/LeekHub/leek-fund',

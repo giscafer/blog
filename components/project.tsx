@@ -34,16 +34,16 @@ const Project = ({ title, description, link, image, linkText, small, priority, g
       <p className={styles.description}>{description}</p>
       <div className={styles.links}>
         {link && (
-          <a href={`https://${link}`} className={styles.link}>
-            {linkText || `Visit ${link}`}
+          <a href={`https://${link}`} className={styles.link} target="_blank" rel="noreferrer">
+            {linkText || `访问 ${link}`}
             <Link2 />
           </a>
         )}
         {github && (
           <>
             <span className={styles.dividerDot}>·</span>
-            <a href={`https://${github}`} className={styles.link}>
-              View source
+            <a href={`https://${github}`} className={styles.link} target="_blank" rel="noreferrer">
+              源码
               <GitHub />
             </a>
           </>
