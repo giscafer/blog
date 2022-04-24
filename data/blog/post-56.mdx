@@ -1,0 +1,81 @@
+---
+  title: BFF 网关fast-gateway
+  publishedAt: 2022-04-24T09:37:00Z
+  summary: 查看全文>>
+  tags: ["架构"]
+---
+
+
+
+BFF 网关是一种逻辑分层，在后端普遍采用的技术背景下，作为适配层更好地为前端服务，而传统业务后端只需要 关注自己的微服务即可。
+
+BFF 层上游是各种后端业务微服务，在 BFF 下游就是各端应用，BFF 层向下给端提供 HTTP 接口，向上通过调用 HTTP 或 RPC 获取数据进行加工，最终完成整改 BFF 层的闭环。
+
+对比传统的架构，我们可以 得出 BFF 层设计的优势：
+
+- 降低沟通成本，领域模型与页面数据更好地解耦；
+- 提供更好的用户体验，比如可以做到多端应用适配，根据不同端，提供更精简的数据。
+
+BFF 同时也引出一些痛点：
+
+- 需要解决分工问题，作为衔接前与后的环节，需要界定前后端职责，明确开发归属；
+- 链路复杂，引入 BFF 层之后，流程变得更具繁琐；
+- 资源浪费，BFF 层回带来一定额度资源的占用，需要有较好的弹性伸缩扩容机制。
+
+## 打造 BFF 网关需要考虑的问题
+
+- 数据处理
+
+  - 数据聚合和裁剪
+  - 序列化格式转换
+  - 协议转换
+  - Node.js 调用 RPC
+
+- 流量处理
+
+  - 压缩、缓存、隔离、熔断降级、负载均衡
+  - 可用性保障，健康检查
+  - 请求分发能力、代理能力
+
+- 安全问题
+
+  - 安全验证（部分业务逻辑应该在微服务中完成，BFF 需要完成必要的检查，比如请求头检查和必要的数据消毒）
+  - 安全控制（合理使用 Content-Security-Policy）
+  - 使用 HTTPS/HSTS
+  - 设置监控报警以及调用链追踪能力
+  - 前端要注意依赖包的安全性（npm audit）
+
+- 权限与校验设计
+  - 权限控制（比如访问控制 ACL 和 RBAC）
+  - 校验设计（比如登录校验、单点登录 SSO）
+
+## 如何设计一个扩展性良好的 BFF 层
+
+- 插件化 （内置或者可插拔多种插件，比如 Logger 等，也可以接受第三方插件）
+- 中间件化 （SSO、限流、熔断等通过中间件形式实现）
+
+`fast-gateway`设计主要从 4 个方面来考虑：
+
+- 基本反代理
+- 中间件
+- 缓存
+- Hooks
+
+## Demo
+
+代码：https://github.com/giscafer/demo/tree/master/bff
+
+- `node ./remote-service.js`
+- `node ./index.js`
+- `curl -v http://127.0.0.1:8080/service/get`
+
+---
+
+**参考资料**
+
+- [BackendStack21/fast-gateway](https://github.com/BackendStack21/fast-gateway.git)
+- LucasHC [《实践打造网关：改造企业 BFF 方案》](https://kaiwu.lagou.com/course/courseInfo.htm?courseId=584)
+
+
+---
+欢迎前往原文讨论：[https://github.com/giscafer/blog/issues/56](https://github.com/giscafer/blog/issues/56)
