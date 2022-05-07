@@ -25,6 +25,11 @@
     opacity: 0.3;
   }
 }
+.bottomInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 .copyright {
   text-align: center;
 }
