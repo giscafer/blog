@@ -1,0 +1,235 @@
+---
+  title: 「技术分享」前端搞懂测试
+  publishedAt: 2022-05-08T04:56:14Z
+  summary: 查看全文>>
+  tags: ["技术方案"]
+---
+
+> 团队内技术分享，2022-01-12
+
+
+# 测试的类型
+
+- **单元测试**: 测试一段代码(通常是一个对象或函数) ，与其他部分隔离开来
+- **集成测试**: 将多个部分放在一起进行测试
+- **功能测试**(也称为e2e测试): 对整个应用程序进行自动测试，这些测试通常忽略整个应用程序的内部结构，而是从外部像黑盒子一样查看它们。
+
+详细了解：
+
+- [What are Unit Testing, Integration Testing and Functional Testing?](https://codeutopia.net/blog/2015/04/11/what-are-unit-testing-integration-testing-and-functional-testing/)
+- [JavaScript Testing: Unit vs Functional vs Integration Tests](https://www.sitepoint.com/javascript-testing-unit-functional-integration/)
+
+# 测试流派划分
+
+### TDD （Test Driven Development）
+
+误区：先写测试，后写代码的实践指的是测试先行开发，而非测试驱动开发。
+
+体现**驱动**这个动作，才能称为测试驱动开发。
+![image.png](https://cdn.nlark.com/yuque/0/2022/png/189420/1641969707018-f4e3c84d-d726-4dc6-8530-6299cf0b33be.png#clientId=u97399410-54cc-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=411&id=u797a5b7d&margin=%5Bobject%20Object%5D&name=image.png&originHeight=836&originWidth=1426&originalType=binary&ratio=1&rotation=0&showTitle=false&size=100847&status=done&style=none&taskId=u61300d57-1a0e-4ba0-bffb-2db18029262&title=&width=701.7500610351562)
+
+红，表示写了一个新的测试，测试还没有通过的状态；绿，表示写了功能代码，测试通过的状态；**而重构，就是再完成基本功能之后，调整代码的过程。**
+
+**测试驱动开发**就是多了这个步骤。在功能完成而且测试跑通之后，我们还会再次回到代码上，处理一下代码上写得不好的地方，或是新增代码与旧有代码的重复。因为我们第二步“绿”的关注点，只在于让测试通过。
+
+在测试驱动开发中，重构与测试是相辅相成的：没有测试，你只能是提心吊胆地重构；没有重构，代码的混乱程度是逐步增加的，测试也会变得越来越不好写。
+
+**TDD** 也可称为测试驱动**设计**，许多人抗拒测试有两个主要原因：**第一**，测试需要“额外”的工作量。这里我特意把额外加上引号，因为，你也许本能上认为，测试是额外的工作，但实际上，测试也应该是程序员工作的一部分，这在上一篇文章中我已经讲过。
+
+**第二**，很多人会觉得代码太多不好测。之所以这些人认为代码不好测，其中暗含了一个假设：代码已经写好了，然后，再写测试来测它。
+
+如果我们把思路反过来，我有一个测试，怎么写代码能通过它。一旦你先思考测试，设计思路就完全变了：**我的代码怎么写才是能测试的，也就是说，我们要编写具有可测试性的代码。**用这个角度，测试是不是就变得简单了呢？
+
+
+### TDD  vs ATDD vs BDD
+
+- Acceptance Test Driven Development（验收测试驱动开发）
+- Behavior-Driven Development (行为驱动开发)
+
+| **区别项** | **ATDD** | **TDD** | **BDD** |
+| --- | --- | --- | --- |
+| 参与者和范围 | 业务用户，开发人员，测试人员之间的沟通机制以确保需求得到充分记录 | 开发人员和测试人员之间的开发方法，以创建良好的代码单元（模块，类，功能） | ATDD和TDD的组合。 |
+| 重点 | 专注于提取用户验收测试中的要求并用于推动开发。是一种使客户进入设计阶段的技术 | 一种模式和范例 | 专注于客户和开发者的系统行为方面，仍然是偏向于不断测试的实践来引导客户进入测试阶段，并通过逐步关注其行为进行认证。 |
+| 敏捷步骤 | 1. 讨论 
+2. 开发 
+3.发布 
+不断重复 | 1. 测试 
+2.编码
+3.重构 
+不断重复 | 按预期行为逐步构建功能。
+它是TDD和编写使功能/行为失败的测试的延伸 |
+| 输入文档 | 验收标准+示例（数据和方案）=验收测试需求文档将作为开发和测试的基础。 | 需求文档 | 用GWT格式书写的实例化文档，有时也需要验收标准 |
+| 自动化要求 | 不是必须，但是可在回顾测试时实现 | 必须 | 必须 |
+| 故事/特性/测试地图 | 每个故事都应对应一个验收测试 | 每个功能都需要对应一个测试 | 每个故事应对应一个行为测试 |
+| 最终用户 | 客户 | 开发人员，测试人员 | 客户和开发者 |
+
+
+
+# 如何通过测试左移应对新的开发模式？
+
+## 什么是测试左移和测试右移？
+
+测试左移和右移，就是把测试的范围从传统测试的节点中释放出来，向左和右扩展。
+
+向左扩展，就是让测试介入代码提测之前的部分。比如，扩展到开发阶段，在架构设计时就考虑产品的可测试性，并尽量进行开发自测等。另外，测试可以更进一步扩展到需求评审阶段，让测试人员不只是了解需求，更要评估需求的质量，比如分析需求的合理性以及完整性等。
+
+类似的，测试右移，是让测试介入代码提测之后的部分。比如，测试人员在产品上线过程中，利用线上的真实环境测试。另外产品上线之后，测试人员仍然介入，通过线上监控和预警，及时发现问题并跟进解决，将影响范围降到最低。这样一来，测试人员不但有更多的时间进行测试，还能发现在非生产环境中难以发现的问题。
+
+## 测试左移的原则和实践
+
+- 调整团队对测试的态度；
+- 把测试添加到开发和产品需求步骤中；
+- 频繁测试，快速测试。
+
+### 测试左移原则一：调整团队对测试的态度
+
+调整团队对测试的态度，打破竖井的工作方式，是测试左移的前提。**一个有效的办法是，按照功能的维度管理团队，让整个功能团队对产品负责。**也就是说，如果产品质量出现问题，不只是测试团队“背锅”，而是会影响整个功能团队的绩效。同时，让质量问题的直接责任人承担更多的责任，来进一步增强团队成员的责任心。这种利益绑定的办法，虽然简单但非常有效，只不过出现质量问题时要记得进行根因分析，以避免再次出现类似问题。
+
+**另外，还要改变团队成员对测试工作的认知。**传统的工作方式中，我们通常认为发现 Bug 最重要，但其实为了提高产品质量，更重要的是预防 Bug。所以说，在测试左移的过程中，我们应该更聚焦在预防 Bug 上。
+
+### 测试左移原则二：把测试添加到开发和产品需求步骤中
+
+**测试左移的第一步，是把测试工作融入到开发步骤中**。常用的办法是，让测试人员参与到开发阶段的方案设计中，了解开发的实现方式。因为很多开发人员可能只熟悉他负责的那一部分，而测试人员往往对全局更加了解，所以测试人员要评估改动范围以及是否有遗漏的模块和系统。
+全栈开发的场景主要是，通过运维团队提供工具和支持，让开发人员尽量参与到运维工作中去。对于测试来说，也是同样的道理。我们可以让测试团队转型，进行工具开发，并更多地去支持专项测试，比如性能测试、安全测试等，通过“使能”的办法，让开发人员完成功能测试，包括单元测试、集成测试等。
+
+**说到让开发人员完成部分测试工作，常常会听到很多质疑声。**反对者认为，测试人员的心理模型跟开发人员不一样，他们更倾向于去找问题。而开发人员面对自己开发的产品，潜意识里就不愿意去找问题，比如，他们不愿意专门尝试各种边界输入进行测试，而把自己开发的功能搞崩溃。
+如果你能够把开发人员的责任界定得很清楚，谁开发的产品谁要保证质量，那么开发人员自然而然地就会去尝试做好测试，比如进行边界测试。而且，开发人员最了解自己写的代码，所以他能够最高效地对自己的代码进行测试。
+
+**测试左移到了开发阶段之后，再往左移一步就到了产品设计阶段，**在这里，测试人员除了解需求外，更重要的是评估需求的质量。
+
+### 测试左移原则三：频繁测试，快速测试
+
+测试左移的第三个重要原则是，频繁测试、快速测试。在测试左移之前，我们需要等待提测，比较被动，不能频繁测试。但测试左移到开发阶段之后，我们就有了很大的自由度去频繁运行测试，从而更好地发挥测试的作用，尽早发现更多的问题。
+
+这里最重要的方法具体包括：
+
+- 规范化、自动化化本地检查；
+- 建设并自动化代码入库前的检查流程；
+- 提供快速反馈，促进增量开发。
+
+
+# 持续集成（CI）、持续部署（CD)
+
+大致了解：
+
+- gitlab
+   - [基于 GitLab CI 的前端工程CI/CD实践](https://github.com/giscafer/blog/issues/27)
+- github aciton 
+   - demo演示
+- jenkins
+
+![image.png](https://cdn.nlark.com/yuque/0/2022/png/189420/1641526815046-67031729-bf22-4b69-8173-35735a4aadd3.png#clientId=uab4b43ae-f911-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=450&id=ue14fa70a&margin=%5Bobject%20Object%5D&name=image.png&originHeight=900&originWidth=1463&originalType=binary&ratio=1&rotation=0&showTitle=false&size=232326&status=done&style=none&taskId=u3b7d750b-4883-437b-8cb3-d57823779bd&title=&width=731.5)
+更多推荐：
+
+- [DevOps知识平台](https://devops.phodal.com/home)
+
+
+# 前端测试介绍
+
+测试工具框架、工具库很多，可以将他们按以下分组方式挑选使用：
+
+- **测试启动程序**（Test launchers）: 使用 CLI 或 UI 在浏览器或 Node.js 中通过用户配置启动测试。 也可以通过手动打开浏览器来实现。([Karma](https://link.juejin.cn?target=https%3A%2F%2Fkarma-runner.github.io%2F), [Jasmine](https://link.juejin.cn?target=http%3A%2F%2Fjasmine.github.io%2F), [Jest](https://link.juejin.cn?target=https%3A%2F%2Ffacebook.github.io%2Fjest%2F), [TestCafe](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FDevExpress%2Ftestcafe), [Cypress](https://link.juejin.cn?target=https%3A%2F%2Fwww.cypress.io%2F))
+- **测试结构提供程序**（Testing structure）可以帮助您组织测试文件([Mocha](https://link.juejin.cn?target=https%3A%2F%2Fmochajs.org%2F), [Jasmine](https://link.juejin.cn?target=http%3A%2F%2Fjasmine.github.io%2F), [Jest](https://link.juejin.cn?target=https%3A%2F%2Ffacebook.github.io%2Fjest%2F), [Cucumber](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fcucumber%2Fcucumber-js), [TestCafe](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FDevExpress%2Ftestcafe), [Cypress](https://link.juejin.cn?target=https%3A%2F%2Fwww.cypress.io%2F))
+- **断言函数**（Assertion functions）检查测试返回的结果是否符合预期。([Chai](https://link.juejin.cn?target=http%3A%2F%2Fchaijs.com%2F), [Jasmine](https://link.juejin.cn?target=http%3A%2F%2Fjasmine.github.io%2F), [Jest](https://link.juejin.cn?target=https%3A%2F%2Ffacebook.github.io%2Fjest%2F), [Unexpected](https://link.juejin.cn?target=http%3A%2F%2Funexpected.js.org%2F), [TestCafe](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FDevExpress%2Ftestcafe), [Cypress](https://link.juejin.cn?target=https%3A%2F%2Fwww.cypress.io%2F))
+- **生成并显示测试进度和结果**。 ([Mocha](https://link.juejin.cn?target=https%3A%2F%2Fmochajs.org%2F), [Jasmine](https://link.juejin.cn?target=http%3A%2F%2Fjasmine.github.io%2F), [Jest](https://link.juejin.cn?target=https%3A%2F%2Ffacebook.github.io%2Fjest%2F), [Karma](https://link.juejin.cn?target=https%3A%2F%2Fkarma-runner.github.io%2F), [TestCafe](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FDevExpress%2Ftestcafe), [Cypress](https://link.juejin.cn?target=https%3A%2F%2Fwww.cypress.io%2F))
+- **Mocks, Spies, 和 stubs**来隔离测试的某些部分并捕捉其副作用。([Sinon](https://link.juejin.cn?target=http%3A%2F%2Fsinonjs.org%2F), [Jasmine](https://link.juejin.cn?target=http%3A%2F%2Fjasmine.github.io%2F), [enzyme](https://link.juejin.cn?target=http%3A%2F%2Fairbnb.io%2Fenzyme%2Fdocs%2Fapi%2F), [Jest](https://link.juejin.cn?target=https%3A%2F%2Ffacebook.github.io%2Fjest%2F), [testdouble](https://link.juejin.cn?target=https%3A%2F%2Ftestdouble.com%2F))
+- **生成并比较组件或数据结构的快照**，以确保以前运行的更改是预期的。([Jest](https://link.juejin.cn?target=https%3A%2F%2Ffacebook.github.io%2Fjest%2F), [Ava](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Favajs%2Fava))
+- **生成代码覆盖率报告**，以了解测试覆盖了多少代码。([Istanbul](https://link.juejin.cn?target=https%3A%2F%2Fgotwarlost.github.io%2Fistanbul%2F), [Jest](https://link.juejin.cn?target=https%3A%2F%2Ffacebook.github.io%2Fjest%2F), [Blanket](https://link.juejin.cn?target=http%3A%2F%2Fblanketjs.org%2F))，**集成测试报告：**[**codecov**](https://codecov.io/)
+- **浏览器控制器**模拟功能测试的用户操作。 ([Nightwatch](https://link.juejin.cn?target=http%3A%2F%2Fnightwatchjs.org%2F), [Nightmare](https://link.juejin.cn?target=http%3A%2F%2Fwww.nightmarejs.org%2F), [Phantom](https://link.juejin.cn?target=http%3A%2F%2Fphantomjs.org%2F), [Puppeteer](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FGoogleChrome%2Fpuppeteer), [TestCafe](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2FDevExpress%2Ftestcafe), [Cypress](https://link.juejin.cn?target=https%3A%2F%2Fwww.cypress.io%2F))
+- **可视化回归工具**用于使用图像比较技术将您的网站与其以前的版本进行可视化比较。([Applitools](https://link.juejin.cn?target=https%3A%2F%2Fapplitools.com%2F)，[Percy](https://link.juejin.cn?target=https%3A%2F%2Fpercy.io%2F)，[Wraith](https://link.juejin.cn?target=http%3A%2F%2Fbbc-news.github.io%2Fwraith%2F)，[WebdriverCSS](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fwebdriverio-boneyard%2Fwebdrivercss)) 
+
+推荐参考文章：
+
+- [关于前端单元测试](https://github.com/Yahiko7/blog/blob/master/%E5%85%B3%E4%BA%8E%E5%89%8D%E7%AB%AF%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95.md)
+- [关于前端测试](https://juejin.cn/post/6844903970222112776)
+
+# 代码演示
+
+### 单元测试Chai+Mocha
+
+   - [https://github.com/giscafer/lao-utils](https://github.com/giscafer/lao-utils)
+### Jest 测试
+
+   - demo1 [cli/__tests__/apiGen.test.ts](https://github.com/RootLinkFE/rh.js/blob/master/packages/cli/__tests__/apiGen.test.ts)
+   - [enzymejs](https://github.com/enzymejs/enzyme/) 结合 Jest 写测试
+   - Jest Snapshot 概念：[snapshot-testing](https://jestjs.io/docs/snapshot-testing)
+      - 参考 antd [__snapshots__/index.test.tsx.snap](https://github.com/ant-design/ant-design/blob/master/components/alert/__tests__/__snapshots__/index.test.tsx.snap)
+### Puppetter 自动化测试 
+
+> 相关其他了解：PhantomJS、Nightmare、Selenium
+> 推荐Puppetter实践文章：[京喜前端自动化测试之路](https://jelly.jd.com/article/5e9d5ca110f7500156d48b42)
+
+
+[Puppeteer]()  是一个 Node 库，它提供了一套高阶 API ，通过 Devtools 协议控制 Chromium 或 Chrome 浏览器。Puppeteer 默认以 Headless 模式运行，但是可以通过修改配置文件运行“有头”模式。
+
+官方特性说明：
+
+- 生成页面 PDF；
+- 抓取 SPA（单页应用）并生成预渲染内容（即“ SSR ”，服务器端渲染）；
+- 自动提交表单，进行 UI 测试，键盘输入等；
+- 创建一个时时更新的自动化测试环境，使用 JavaScript 和最新的浏览器功能直接在最新版本的 Chrome 中执行测试；
+- 捕获网站的 Timeline Trace，用来帮助分析性能问题；
+- 测试浏览器扩展。
+### 
+demo演示介绍
+```javascript
+const puppeteer = require('puppeteer');
+
+const loginPageUrl = 'https://xxxx.leekhub.cn/user/login';
+
+(async () => {
+  const browser = await puppeteer.launch({ headless: false });
+  const page = await browser.newPage();
+  await page.goto(loginPageUrl, { waitUntil: 'networkidle2' });
+  await page.setViewport({
+    width: 1440,
+    height: 760,
+  });
+  // 如果5s不打开页面超时退出
+  await page.setDefaultTimeout(5000);
+  // 进入页面后，输入账号密码，点击登陆按钮
+  await page.type('#username', 'admin', { delay: 100 });
+  await page.type('#password', 'Admin@xxxx', { delay: 50 });
+  await page.click('.ant-btn.ant-btn-primary.ant-btn-lg'); // 点击登陆按钮
+  // 导航跳转结束，“点击”进入 客商管理
+  await page.waitForSelector('[href="/merchant-manage"]');
+  await page.click('[href="/merchant-manage"]');
+  // 正常跳转比较快，延时为了演示看菜单跳转效果
+  await page.waitFor(5000);
+
+  await page.waitForSelector('[href="/merchant-manage/driver"]');
+
+  // 打开机手管理菜单，jquery写法
+  const aElement = await page.$('[href="/merchant-manage/driver"]');
+  await aElement.click();
+  // await page.click('[href="/merchant-manage/driver"]');
+
+  // 演示截屏
+  // 演示代码错误怎么看。
+  // 演示爬虫，抓取数据
+  // await browser.close();
+})();
+
+```
+
+### CI 自动化执行测试
+> 实操 Github Action
+
+   - [https://github.com/RootLinkFE/rh.js/runs/4785285677?check_suite_focus=true](https://github.com/RootLinkFE/rh.js/runs/4785285677?check_suite_focus=true)
+   - 测试覆盖率报告自动生成和随时查看（codecov）
+
+
+# 推荐书籍
+
+- 《[持续交付：发布可靠软件的系统方法](https://book.douban.com/subject/6862062/)》
+
+# 参考文献
+除文章中参考链接，还有：
+
+- 极客专栏《10x程序员工作法》
+- 极客专栏《研发效率破局之道》
+
+
+
+---
+欢迎前往原文讨论：[https://github.com/giscafer/blog/issues/57](https://github.com/giscafer/blog/issues/57)
