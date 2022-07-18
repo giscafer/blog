@@ -3,9 +3,9 @@ import PageHeader from 'components/pageheader'
 import Project from 'components/project'
 import Page from 'components/page'
 
-import codegen from 'public/projects/vscode-codegen.png'
-import roothub from 'public/projects/roothub.png'
-import leekfund from 'public/projects/leekfund.png'
+import codegenImg from 'public/projects/vscode-codegen.png'
+import roothubImg from 'public/projects/roothub.png'
+import leekFundImg from 'public/projects/leekfund.png'
 import frontendBox from 'public/projects/frontend-box.png'
 
 const projects = [
@@ -13,7 +13,7 @@ const projects = [
     title: 'RootHub 前端物料平台',
     description: '物料资产统一管理平台，致力于前端效能提升探索',
     link: 'roothub.leekhub.com',
-    image: roothub,
+    image: roothubImg,
     github: 'github.com/RootLinkFE/roothub',
   },
   {
@@ -21,7 +21,7 @@ const projects = [
     description: 'RootHub 前端研发平台 VSCode插件',
     linkText: 'giscafer.roothub',
     link: 'marketplace.visualstudio.com/items?itemName=giscafer.roothub',
-    image: codegen,
+    image: codegenImg,
   },
   {
     title: '前端盒子',
@@ -33,10 +33,10 @@ const projects = [
   },
   {
     title: '韭菜盒子',
-    description: '韭菜盒子——VSCode 里也可以看股票 & 基金 & 期货实时数据，做最好用的投资插件',
+    description: '韭菜盒子——VSCode 里也可以看股票 & 基金 & 期货实时数据，做最好用的投资插件（10W+下载量）',
     link: 'leek.fund',
     github: 'github.com/LeekHub/leek-fund',
-    image: leekfund,
+    image: leekFundImg,
   },
 ]
 
