@@ -1,0 +1,118 @@
+---
+  title: 我的摸鱼划水实践方案
+  publishedAt: 2022-08-28T10:57:08Z
+  summary: 查看全文>>
+  tags: ["技术方案"]
+---
+
+## 背景
+
+对于中后台Web管理系统，不管需求怎么变，不管UED怎么设计，都是千变一律的列表+表单+详情页面展示。面对不同的产品，不同的设计师，可能会重复的去写这些千变一律的代码。这样的问题怎么去解决？有两个大方向：1、生成代码，尽量不写；2、区块、组件资源物料市场。
+
+**生成代码，尽量不写**。业界上的 Low-Code 和 No Code 方案框架也层出不穷，只是在不停的卷。但没有多少能真正解决中小型公司的问题。强行套用也只会变成维护难，技术债。对于这方面的框架学了解，可以阅读之前整理的文章 [《Low-Code开源项目调研》](https://github.com/giscafer/blog/issues/50)
+
+**区块、组件资源物料市场**。需要考验前端团队基建能力，以及日常开发代码规范，抽象能力，让物料市场持续丰富起来。在公司里的各部门直接共享是可以的。但是当脱离了公司，或者是换了公司，基本也是从0开始了。物料市场，之前也测试搞了个试验品，源码开源，了解前往：[roothub](https://github.com/RootLinkFE/roothub)
+
+以上两个方案都有实践尝试过，在不投入更多的研发成本和时间积累成本，是无法做到真正的效益的。对于小团队，是否有别的选择呢？下边介绍一下我业余整的「**摸鱼最佳解决方案**」工程脚手架
+
+## 为何叫「摸鱼」解决方案？
+
+摸鱼划水。并不代表是贬义的，只要你是个工作认真负责，也有极客追求精神；摸鱼就可以认为是释放生产力，研发效能提升的代名词。多少时间是重复得浪费在前后端联调对接接口，CURD千篇一律，接口返回值处理，表单页面开发和表单验证逻辑处理等。只要不需要再写这些，研发时间就可以减少60%。
+
+早之前尝试过百度 [amis](https://github.com/baidu/amis) 的前端低代码框架，获得了一些设计灵感。在试用amis时也写过一个 [sailor（水手）](https://github.com/giscafer/sailor)demo 。暗示：摸鱼划水选手！
+
+## 摸鱼最佳解决方案
+
+摸鱼最佳解决方案遵守的三个原则：
+
+- 1、**更少的代码**。 不写可能重复写的任何代码逻辑。
+- 2、**可扩展性，无技术债**。组件封装都无 breaking changed，**保留原生写法的前提**下扩展动态配置开发方式。
+- 3、**保证易维护性、复用性**。换团队时组件、配置化开发方式都能复用；只要你用 antd 就可以摸鱼了。
+
+整个方案提效的两大点：
+- 列表开发 RhTable
+- 动态表单 RhDynamicToolkit
+
+详细用法和 demo 请前往查看  [giscafer/rh-template-umi](https://github.com/giscafer/rh-template-umi.git)
+
+## 实践测评
+
+开发摸鱼方案之后，自己也在真是项目开发中实践使用了。业余时间或周末开发，总耗时约 5天左右完成一个后台管理系统。以下是整个系统的提交日记
+
+<img width="1444" alt="image" src="https://user-images.githubusercontent.com/8676711/187068782-49909a6d-73a9-4aeb-96e2-a28686015ab4.png">
+
+这种后台管理系统。**只要摸鱼方案解决了列表+表单的逻辑处理和接口CURD，其他内容的代码开发基本很少消耗开发者的时间** 。
+
+### 列表开发和详情页面开发
+
+<img width="1561" alt="image" src="https://user-images.githubusercontent.com/8676711/187069867-ed1dba26-ef78-4fa4-82bc-abc1a13d290d.png">
+<img width="1446" alt="image" src="https://user-images.githubusercontent.com/8676711/187069912-7c864201-b51f-41e0-9fc8-470a8f828dfb.png">
+<img width="1310" alt="image" src="https://user-images.githubusercontent.com/8676711/187069948-388fc71f-04c4-4d22-bc42-d229af550fe2.png">
+
+### 动态表单页面
+
+- 支持modal form、drawer form 和 单页表单
+- 表单编辑&新增逻辑不需要硬编码，配置api url 即可
+- 表单验证配置
+
+#### 表单验证 validator 规则
+
+`validator` 是个 数组，数组中每一项为一个对象，对象中的属性名称为可以是下面的任意一个，对象中还有一个 `message` 属性，用于描述错误信息。都有默认错误信息模版，满足可以不填，**但建议正则表达式填写错误提示信息，以便用户可以明确知道真正的输入格式。**
+
+- pattern 正则表达式（默认错误信息为：`格式不正确`）
+- range 数值区间（默认错误信息为：`请输入${range[0]}~${range[1]}之间的数字`）
+- rangeInt 整数数值区间（默认错误信息为：`请输入${range[0]}~${range[1]}之间的整数`）
+- maxLength 文本最大长度（默认错误信息为：`请输入${maxLength}个字符以内`）
+- min 数值最小值（默认错误信息为：`请输入大于等于${min}的数字`）
+- max 数值最大值（默认错误信息为：`请输入小于等于${max}的数字`）
+- expression 表达式验证器 （无默认错误信息，建议配置 `message` 字段）
+
+举例：
+
+> 建议在正则校验规则里通过 `message` 自定义提示，才能让用户明确清楚要怎么填，否则只能提示默认模版的`格式不正确`
+
+```js
+{
+  "validator": [
+    {
+      "type": "pattern",
+      "value": "^[a-zA-Z_]w*$",
+      "message": "只能输入字母、数字和下划线，不能以数字开头"
+    },
+    // 支持多种规则，但如果有一种能验证完就用一种就好
+    { "type": "maxLength", "value": 15 }
+  ]
+}
+```
+
+`expression` 表达式验证器，支持用模版 `${数学表达式}` 来验证表单；程序内置了强大的表达式引擎，详细见文档：[表达式](https://github.com/giscafer/rh-template-umi/blob/main/packages/rh-components/src/RhDynamicToolkit/docs/expression.md)
+
+```json
+{
+  "validator": [
+    {
+      "type": "expression",
+      "value": "${collection.packagePrice+value<=60}",
+      "message": "保证价格与运费价格之和不能超过60"
+    }
+  ]
+}
+```
+
+一个表单配置文件举例：
+
+<img width="1343" alt="image" src="https://user-images.githubusercontent.com/8676711/187070169-5bd9cac1-fde2-4bb7-8878-e608d34a8948.png">
+
+
+## 总结
+
+-  效能提升高达60%+
+-  未来规划：继续完善摸鱼方案，实践中反哺；最后会结合 sawgger codegen 生成表单配置文件和列表配置代码，进行进一步提效。
+
+
+
+
+
+
+---
+欢迎前往原文讨论：[https://github.com/giscafer/blog/issues/58](https://github.com/giscafer/blog/issues/58)
