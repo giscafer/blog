@@ -49,7 +49,7 @@ const Page = ({ children }: PageProps): JSX.Element => (
         })}
       </ul>
       <div className={styles.bottomInfo}>
-        <p className={styles.copyright}>&copy; Nickbing Lao {new Date().getFullYear()}</p>
+        <p className={styles.copyright}>&copy; Nicky Lao {new Date().getFullYear()}</p>
         <img src="https://visitor-badge.glitch.me/badge?page_id=giscafer.com" alt="访问人数" />
       </div>
     </footer>

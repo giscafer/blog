@@ -89,7 +89,7 @@ const Post = ({ post, related }: PostProps): JSX.Element => {
       })
     : null
 
-  const seoTitle = `${post.title} | Nickbing Lao`
+  const seoTitle = `${post.title} | Nicky Lao`
   const seoDesc = `${post.summary}`
   const url = `https://giscafer.com/blog/${post.slug}`
 
@@ -113,7 +113,7 @@ const Post = ({ post, related }: PostProps): JSX.Element => {
               alt: post.title,
             },
           ],
-          site_name: 'giscafer | Nickbing Lao',
+          site_name: 'giscafer | Nicky Lao',
           type: 'article',
           article: {
             publishedTime: post.publishedAt,

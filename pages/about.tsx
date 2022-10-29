@@ -10,7 +10,7 @@ const About = (): JSX.Element => {
     target: '_blank',
     rel: 'noopener noreferrer',
   }
-  const seoTitle = 'About Nickbing Lao'
+  const seoTitle = 'About Nicky Lao'
   return (
     <Page>
       <NextSeo
@@ -24,9 +24,9 @@ const About = (): JSX.Element => {
           cardType: 'summary_large_image',
         }}
       />
-      <Image src={me} alt="Picture of me (Nickbing Lao)" placeholder="blur" className={styles.image} priority />
+      <Image src={me} alt="Picture of me (Nicky Lao)" placeholder="blur" className={styles.image} priority />
       <div className={styles.text}>
-        <p>Hey I’m Nickbing Lao, a fullstack developer currently living in 🇨🇳 Guangzhou, China.</p>
+        <p>Hey I’m Nicky Lao, a fullstack developer currently living in 🇨🇳 Guangzhou, China.</p>
 
         <p>
           自驱型前端工程师，8年多大型复杂产品开发经验，4年前端团队管理经验，熟悉跨端APP 如 Ionic、React Native开发，熟悉 微前端、DevOps

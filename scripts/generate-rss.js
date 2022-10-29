@@ -6,7 +6,7 @@ const matter = require('gray-matter')
 
 async function generate() {
   const feed = new RSS({
-    title: 'Nickbing Lao',
+    title: 'Nicky Lao',
     site_url: 'https://giscafer.com',
     feed_url: 'https://giscafer.com/feed.xml',
   })
