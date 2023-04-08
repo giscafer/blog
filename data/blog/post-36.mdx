@@ -100,7 +100,21 @@ sudo rm -rf $(xcode-select -print-path)
 xcode-select --install
 ```
 
+## VPN 全局代理
 
+1.bash_profile Alias
+
+```bash
+alias proxy='export https_proxy=http://127.0.0.1:1087 export http_proxy=http://127.0.0.1:1087  export all_proxy=socks5://127.0.0.1:1087'
+alias unproxy='unset https_proxy unset http_proxy unset all_proxy'
+alias ip='curl cip.cc'
+```
+bash_profile 设置加入HTTP 和 HTTPS
+
+2.ClashX 配置文件
+
+在ClashX的配置文件中加入 - 'DOMAIN-SUFFIX,cip.cc,Proxy'
+这一步的设置是可以走规则判断，不用使用全局模式
 
 
 ---
