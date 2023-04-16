@@ -2,7 +2,7 @@ import Image from 'next/image'
 import Page from 'components/page'
 import Button from 'components/button'
 import { NextSeo } from 'next-seo'
-import me from 'public/nicky.png'
+import me from 'public/nicky.jpeg'
 import styles from './about.module.scss'
 
 const About = (): JSX.Element => {
@@ -42,13 +42,18 @@ const About = (): JSX.Element => {
         <p>
           <ul>
             <li>
-              <a href="https://github.com/giscafer" {...linkProps}>
+              <a href="https://github.com/giscafer/" {...linkProps}>
                 Github
               </a>
             </li>
             <li>
               <a href="https://www.zhihu.com/people/giscafer/" {...linkProps}>
                 知乎
+              </a>
+            </li>
+            <li>
+              <a href="https://www.twitter.com/nickbinglao/" {...linkProps}>
+                Twitter
               </a>
             </li>
           </ul>

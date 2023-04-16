@@ -33,7 +33,7 @@ const projects = [
   },
   {
     title: '韭菜盒子',
-    description: '韭菜盒子——VSCode 里也可以看股票 & 基金 & 期货实时数据，做最好用的投资插件（10W+下载量）',
+    description: '韭菜盒子——VSCode 里也可以看股票 & 基金 & 期货实时数据，做最好用的投资插件（13k+下载量）',
     link: 'leek.fund',
     github: 'github.com/LeekHub/leek-fund',
     image: leekFundImg,
@@ -49,9 +49,13 @@ export async function getStaticProps() {
   }
 }
 
+const headerTitle = '你好，我叫 Nicky ！'
+
+const headerDescription = '本站内容使用 Next.js + Github Issues 自动化发布'
+
 const Home = (): JSX.Element => (
   <Page>
-    <PageHeader title="你好，我叫 giscafer ！" description="我是一名前端开发工程师, 这是我的个人网站">
+    <PageHeader title={headerTitle} description={headerDescription}>
       <Button href="/about">了解更多</Button>
     </PageHeader>
     <h2>个人项目</h2>

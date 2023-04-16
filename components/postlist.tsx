@@ -47,7 +47,7 @@ const PostList = ({ posts, hideImage = false }: PostListProps): JSX.Element => (
           {summary !== '查看全文>>' && <p className={styles.summary}>{summary}</p>}
 
           <p className={styles.meta}>
-            发布于 <time dateTime={publishedAt}>{formatDate(publishedAt)}</time> &middot; 预估阅读 {Math.ceil(readTime.minutes * 1.5)} 分钟
+            发布于 <time dateTime={publishedAt}>{formatDate(publishedAt)}</time> &middot; 预估阅读 {Math.ceil(readTime.minutes * 3)} 分钟
           </p>
         </li>
       )
