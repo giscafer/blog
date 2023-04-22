@@ -32,13 +32,13 @@
 
 ## 微信公众号
 
-#### giscafer
+> ID: giscafer
 
-<img src="./public/qrcode_for_giscafer.jpg" width="140"/>
+<img src="./public/qrcode_for_giscafer.jpg" width="230"/>
 
-#### 大前端洞见
+<!-- #### 大前端洞见
 
-<img src="./public/feinsight.jpg" width="450"/>
+<img src="./public/feinsight.jpg" width="450"/> -->
 
 ---
 
