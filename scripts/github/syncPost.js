@@ -32,7 +32,7 @@ function generateMdx(issue) {
 ${body.replace(/<br \/>/g, '\n')}
 
 ---
-欢迎前往原文讨论：[${html_url}](${html_url})
+本人自动发布于：[${html_url}](${html_url})
 `
 }
 
