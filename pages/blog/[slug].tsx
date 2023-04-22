@@ -1,31 +1,33 @@
-import { GetStaticProps, GetStaticPaths } from 'next'
+import { GetStaticPaths, GetStaticProps } from 'next'
 import { useMDXComponent } from 'next-contentlayer/hooks' // eslint-disable-line
+import { NextSeo } from 'next-seo'
+import { useTheme } from 'next-themes'
+import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import Link from 'next/link'
-import { NextSeo } from 'next-seo'
-import dynamic from 'next/dynamic'
+import { pick } from '@contentlayer/client'
 
 // Components
+import HitCounter from 'components/hitcounter'
+import CustomImage from 'components/image'
+import LikeButton from 'components/likebutton'
 import Page from 'components/page'
 import PageHeader from 'components/pageheader'
-import CustomImage from 'components/image'
 import Warning from 'components/warning'
-import HitCounter from 'components/hitcounter'
-import LikeButton from 'components/likebutton'
 // import { NowPlayingIcon } from 'components/nowplaying'
 // import Subscribe from 'components/subscribe'
-import BlogImage from 'components/blogimage'
-import SegmentedControl from 'components/segmentedcontrol'
-import Messages, { TailBreakdown } from 'components/messages'
+import Giscus from '@giscus/react'
 import AnimatedMessages from 'components/animatedmessages'
-import Parallax from 'components/parallax'
-import Tags from 'components/tags'
-import PostList from 'components/postlist'
-import Button from 'components/button'
 import { RatingPlayground } from 'components/blog/rating'
+import BlogImage from 'components/blogimage'
+import Button from 'components/button'
+import Messages, { TailBreakdown } from 'components/messages'
+import Parallax from 'components/parallax'
+import PostList from 'components/postlist'
+import SegmentedControl from 'components/segmentedcontrol'
+import Tags from 'components/tags'
 
 // Utils
-import { pick } from '@contentlayer/client'
 import { allPosts } from '.contentlayer/data'
 import type { Post as PostType } from '.contentlayer/types'
 
@@ -71,11 +73,13 @@ const components = {
 type PostProps = {
   post: PostType
   related: PostType[]
+  githubUser?: string
+  githubProject?: string
 }
 
-const Post = ({ post, related }: PostProps): JSX.Element => {
+const Post = ({ post, related, githubUser, githubProject }: PostProps): JSX.Element => {
   const Component = useMDXComponent(post.body.code)
-
+  const { theme } = useTheme()
   const formattedPublishDate = new Date(post.publishedAt).toLocaleString('zh-CN', {
     month: 'short',
     day: '2-digit',
@@ -156,6 +160,21 @@ const Post = ({ post, related }: PostProps): JSX.Element => {
       <div className={styles.buttons}>
         <Button href="/blog">返回博客列表</Button>
       </div>
+      <Giscus
+        id="comments"
+        repo={`${githubUser}/${githubProject}`}
+        repoId="MDEwOlJlcG9zaXRvcnk2MjYyOTkxOQ=="
+        category="General"
+        categoryId="DIC_kwDOA7uoH84CV9v8"
+        mapping="specific"
+        term={seoTitle}
+        reactionsEnabled="1"
+        emitMetadata="0"
+        inputPosition="top"
+        theme={theme === 'system' ? 'preferred_color_scheme' : theme}
+        lang="zh-CN"
+        loading="lazy"
+      />
     </Page>
   )
 }
@@ -168,6 +187,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 }
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
+  const { GH_USER, GH_PROJECT_NAME } = process.env
   const post = allPosts.find(p => p.slug === params?.slug)
   const related = allPosts
     /* remove current post */
@@ -183,6 +203,8 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     props: {
       post,
       related,
+      githubUser: GH_USER,
+      githubProject: GH_PROJECT_NAME,
     },
   }
 }

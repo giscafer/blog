@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@contentlayer/client": "^0.0.33",
+    "@giscus/react": "^2.2.8",
     "@linear/sdk": "^1.21.0",
     "@types/gtag.js": "^0.0.7",
     "add": "^2.0.6",
