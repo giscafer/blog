@@ -1,0 +1,118 @@
+---
+  title: Node-RED 节点之 Kafka 消息中间件
+  publishedAt: 2023-07-24T15:16:19Z
+  summary: 查看全文>>
+  tags: ["NodeRED"]
+---
+
+
+
+因项目需求需要测试 Node-RED 节点数据发送到 Kafka，本人首次玩 Kafka，通过一次本地部署的折腾了解，然后再创建腾讯云的 CKafka 服务，最终在 Node.js 和 Node-RED 节点上测试成功。
+
+## 一、本地 Docker 部署 Kafka
+
+使用 `docker-compose.yml` 去部署
+
+> Kafka v3.5 版本是不依赖 zookeeper 的
+
+```bash
+curl -sSL https://raw.githubusercontent.com/bitnami/containers/main/bitnami/kafka/docker-compose.yml > docker-compose.yml
+docker-compose up -d
+```
+
+### 1.测试 Kafka 服务
+
+进入容器 `docker exec -it {容器名称或ID} /bin/bash`
+
+```bash
+docker exec -it kafka_kafka_1 /bin/bash
+```
+
+#### 1.1 创建 Topic
+
+```
+/opt/bitnami/kafka/bin/kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic test
+```
+
+查看 Topic
+
+```bash
+/opt/bitnami/kafka/bin/kafka-topics.sh --list --bootstrap-server localhost:9092
+```
+
+#### 1.2 创建生产者
+
+创建生产者发送消息
+
+```
+/opt/bitnami/kafka/bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic test
+```
+
+#### 1.3 创建消费者
+
+此时发消息的地方有新增数据时，消费者处会实时获取到。
+
+```
+/opt/bitnami/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test --from-beginning
+```
+
+整体输出如下
+
+```bash
+giscafer!@d891b053607f:/$ /opt/bitnami/kafka/bin/kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic test
+Created topic test.
+giscafer!@d891b053607f:/$ /opt/bitnami/kafka/bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic test
+>
+>Hello kafka
+>exit
+
+giscafer!@d891b053607f:/$ /opt/bitnami/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test --from-beginning
+
+Hello kafka
+exit
+```
+
+#### 1.4 修改 server.properties
+
+拷贝 kafka 配置出来，按需修改
+
+```bash
+docker cp {容器名称或ID}doc:/opt/bitnami/kafka/config/server.properties d:/server.properties
+```
+
+本地修改完成后
+
+```bash
+docker cp d:/server.properties {容器名称或ID}doc:/opt/bitnami/kafka/config/server.properties
+```
+
+### 2. Kafka 其他异常
+
+https://zhuanlan.zhihu.com/p/426913642
+
+## 二、腾讯云 CKafka
+
+https://cloud.tencent.com/product/ckafka
+
+可以在腾讯云上申请免费试用 CKafka 服务，体验 Cloud Kafka，可以省去本地部署和配置的麻烦。
+
+### 1.1 Node.js 连接 Kafka
+
+nodejs 模块：https://github.com/Blizzard/node-rdkafka
+
+根据文档[公网 SASL_PLAINTEXT 方式接入](https://cloud.tencent.com/document/product/597/55485)，去联调测试 CKafka 服务
+
+### 1.2 Node-RED 节点
+
+可以使用 Node-RED 的节点[node-red-contrib-rdkafka](https://github.com/dalelane/node-red-contrib-rdkafka)进行测试
+
+在腾讯云发送消息Node-RED接收
+
+![在腾讯云发送消息Node-RED接收](https://github.com/giscafer/blog/assets/8676711/0ebe1b81-e4f8-478d-a1d0-9f04dc84ac82)
+
+Node-RED模拟Producer
+
+![Node-RED模拟Producer](https://github.com/giscafer/blog/assets/8676711/a6d779ea-2044-4652-8732-c1c8dc075aea)
+
+---
+本人自动发布于：[https://github.com/giscafer/blog/issues/67](https://github.com/giscafer/blog/issues/67)
