@@ -14,10 +14,10 @@ const footerLinks = [
   { name: '旅游地图', url: 'http://map.giscafer.com', target: '_blank' },
 
   { name: 'Blog', url: '/blog' },
-  { name: '语雀', url: 'https://www.yuque.com/giscafer', target: '_blank' },
+  { name: 'Twitter', url: 'https://twitter.com/nicky_lao', target: '_blank' },
   { name: '知乎', url: 'https://www.zhihu.com/people/giscafer', target: '_blank' },
   { name: 'About', url: '/about' },
-  { name: '微博', url: 'https://weibo.com/laohoubin', target: '_blank' },
+  { name: '公众号', url: 'https://giscafer.com/qrcode_for_giscafer.jpg', target: '_blank' },
   { name: 'RSS', url: '/feed.xml', target: '_blank' },
 ]
 

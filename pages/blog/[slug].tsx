@@ -139,7 +139,7 @@ const Post = ({ post, related, githubUser, githubProject }: PostProps): JSX.Elem
         <p className={styles.meta}>
           发布于 <time dateTime={post.publishedAt}>{formattedPublishDate}</time>
           {post.updatedAt ? ` (Updated ${formattedUpdatedDate})` : ''} <span>&middot;</span> 预估阅读{' '}
-          {Math.ceil(post.readingTime?.minutes * 1.5)} 分钟
+          {Math.ceil(post.readingTime?.minutes * 3)} 分钟
           <HitCounter slug={post.slug} />
         </p>
       </PageHeader>
