@@ -1,0 +1,88 @@
+---
+  title: Node-RED Dashboard 低码大屏实践
+  publishedAt: 2023-10-29T07:24:07Z
+  summary: 查看全文>>
+  tags: ["NodeRED"]
+---
+
+
+**Node-RED** 是一个基于 Node.js 平台的可视化编程工具，是一个功能强大、易于使用、可扩展的可视化编程工具，适用于各种应用场景，如物联网、数据处理、自动化控制等。它的优势包括：
+
+**可视化编程**：Node-RED 提供了一个可视化的编程界面，使得用户可以通过拖拽和连接节点的方式来构建应用程序，而不需要编写大量的代码。
+
+**易于使用**：Node-RED 的编程界面非常直观和易于使用，即使是没有编程经验的用户也可以很快上手。
+
+**丰富的节点库**：Node-RED 提供了一个丰富的节点库，包括了各种常用的节点，如 HTTP 请求、MQTT、WebSocket、数据库等，用户可以直接使用这些节点来构建应用程序。
+
+**可扩展性**：Node-RED 的节点库是可扩展的，用户可以通过编写自定义节点来扩展节点库，以满足特定的需求。
+
+**支持多种协议**：Node-RED 支持多种协议，如 HTTP、MQTT、WebSocket 等，使得用户可以轻松地构建跨平台的应用程序。
+
+**开源免费**：Node-RED 是一个开源免费的工具，用户可以自由地使用、修改和分发它。
+
+
+
+## 案例1：定制小红书多账号统计面板
+
+数据处理：Node-RED 可以用于数据处理和转换，如数据清洗、数据分析、数据可视化等
+
+### 创建子流程
+
+流程里抓取数据和消息推送、数据处理逻辑都是复用的，所以可以抽离成子流程
+
+![image](https://github.com/giscafer/blog/assets/8676711/5f9b4323-a778-4905-bbdc-6749a1ffe1b8)
+
+### 自定义样式
+
+为了方便，将Antd 的表格样式复制出来粘贴直接使用。将来实践可以考虑将  Tailwind CSS 放进去，就可以更方便自定义组件样式效果了。
+
+![image](https://github.com/giscafer/blog/assets/8676711/ad30fa48-8625-4b89-803a-2264c709661f)
+
+### 多Tab 菜单
+
+将不同的流分为两个大屏页面，启用Tab导航，就可以渲染为多页面菜单。这里可以将小红书的不同账号作为一个tab
+
+![image](https://github.com/giscafer/blog/assets/8676711/25129448-3d80-45b0-86be-765d18792e1a)
+
+最终流的效果
+
+![image](https://github.com/giscafer/blog/assets/8676711/29bb4d4a-46fd-43ac-805d-2ccc3605cd77)
+
+最终效果图
+![image](https://github.com/giscafer/blog/assets/8676711/2bd48e7f-44eb-4afa-8948-5e5fa6536331)
+
+
+## 案例2：定制股票推送消息
+
+自动化控制：Node-RED 可以用于自动化控制，如自动化测试、自动化部署、自动化运维等。
+
+定制股票推送消息，拖拖拖，写点js就可以了
+
+![image](https://github.com/giscafer/blog/assets/8676711/86387510-054d-412a-8903-99a40c0d051a)
+
+![image](https://github.com/giscafer/blog/assets/8676711/d9ad5c4f-dfb8-4b34-ab33-9d4e18349b99)
+
+
+## 案例3：在Node-RED中监控太阳能光伏系统
+
+此案例是Node-RED 在物流网领域的应用：Node-RED 可以与各种传感器和设备进行集成，从而构建物联网应用程序，如智能家居、智能工厂等。以下是监控您的太阳能光伏系统的例子：
+
+![image](https://github.com/giscafer/blog/assets/8676711/5a1d5a5d-dad4-4df9-846e-780a32dfd3b6)
+
+![image](https://github.com/giscafer/blog/assets/8676711/cc952052-0448-4c4f-ac46-e36b6ccda7db)
+
+Demo:
+
+- Node-RED UI: http://ha.iammeter.com:11880/ui
+- Node-RED flow: http://ha.iammeter.com:11880/#flow/5fb9966c8a33b771
+
+---
+
+相关阅读推荐：
+
+- [Node-RED 节点之 Kafka 消息中间件](https://github.com/giscafer/blog/issues/67)
+
+
+
+---
+本人自动发布于：[https://github.com/giscafer/blog/issues/69](https://github.com/giscafer/blog/issues/69)
