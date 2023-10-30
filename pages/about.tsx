@@ -34,7 +34,7 @@ const About = (): JSX.Element => {
         </p>
         <p>
           对我感兴趣 (可查看{' '}
-          <a href="https://visiky.github.io/resume/?template=template1&user=giscafer" {...linkProps}>
+          <a href="https://visiky.github.io/resume/?lang=zh-CN&template=template1&user=giscafer" {...linkProps}>
             在线简历
           </a>{' '}
           ).
