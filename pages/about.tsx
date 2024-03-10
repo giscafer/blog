@@ -29,7 +29,7 @@ const About = (): JSX.Element => {
         <p>Hey I’m Nicky Lao, a fullstack developer currently living in 🇨🇳 Guangzhou, China.</p>
 
         <p>
-          自驱型前端工程师，8年多大型复杂产品开发经验，4年前端团队管理经验，熟悉跨端APP 如 Ionic、React Native开发，熟悉 微前端、DevOps
+          自驱型前端工程师，9年多大型复杂产品开发经验，4年前端团队管理经验，熟悉跨端APP 如 Ionic、React Native开发，熟悉 微前端、DevOps
           等，具备全栈开发能力。
         </p>
         <p>

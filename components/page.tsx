@@ -11,7 +11,7 @@ type PageProps = {
 const footerLinks = [
   { name: 'Home', url: '/' },
   { name: 'GitHub', url: 'https://github.com/giscafer', target: '_blank' },
-  { name: '旅游地图', url: 'http://map.giscafer.com', target: '_blank' },
+  { name: 'YouTube', url: 'https://www.youtube.com/@BeAFreelancer', target: '_blank' },
 
   { name: 'Blog', url: '/blog' },
   { name: 'Twitter', url: 'https://twitter.com/nicky_lao', target: '_blank' },
@@ -50,7 +50,7 @@ const Page = ({ children }: PageProps): JSX.Element => (
       </ul>
       <div className={styles.bottomInfo}>
         <p className={styles.copyright}>&copy; Nicky Lao {new Date().getFullYear()}</p>
-        <img src="https://visitor-badge.glitch.me/badge?page_id=giscafer.com" alt="访问人数" />
+        <img src="https://visitor-badge.laobi.icu/badge?page_id=giscafer.blog&left_text=visit" alt="访问人数" />
       </div>
     </footer>
   </div>
