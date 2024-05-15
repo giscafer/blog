@@ -11,7 +11,7 @@ type PageProps = {
 const footerLinks = [
   { name: 'Home', url: '/' },
   { name: 'GitHub', url: 'https://github.com/giscafer', target: '_blank' },
-  { name: 'YouTube', url: 'https://www.youtube.com/@BeAFreelancer', target: '_blank' },
+  { name: 'YouTube', url: 'https://www.youtube.com/@LeekHuber', target: '_blank' },
 
   { name: 'Blog', url: '/blog' },
   { name: 'Twitter', url: 'https://twitter.com/nicky_lao', target: '_blank' },
