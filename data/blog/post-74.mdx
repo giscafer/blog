@@ -1,0 +1,238 @@
+---
+  title: Tauri开发笔记
+  publishedAt: 2025-04-23T08:42:28Z
+  summary: 查看全文>>
+  tags: ["App"]
+---
+
+Tauri真的是又轻又快，但由于初次使用不熟难免遇到坑。
+
+## 一、虚拟键盘触摸屏之坑
+
+ubuntu系统是一个触摸屏，不能接入键盘和鼠标，所以界面上的操作输入都是通过虚拟键盘实现。代码使用的是`react-simple-keyboard` 组件
+
+
+```tsx
+import { Button } from 'antd';
+import { CloseOutlined } from '@ant-design/icons';
+import React, { useRef } from 'react';
+import { omit } from 'lodash';
+import Keyboard from 'react-simple-keyboard';
+import chineseLayout from "simple-keyboard-layouts/build/layouts/chinese";
+import 'react-simple-keyboard/build/css/index.css';
+
+interface RhKeyboardProps {
+    show: boolean;
+    onClose: () => void;
+    init?: (r: any) => void;
+    onChange: (input: string) => void;
+    layoutType?: string;
+}
+
+// 添加自定义布局配置
+const keyboardLayout = {
+    default: [
+        "` 1 2 3 4 5 6 7 8 9 0 - = {bksp}",
+        "{tab} q w e r t y u i o p [ ] \\",
+        "{lock} a s d f g h j k l ; ' {enter}",
+        "{shift} z x c v b n m , . / {shift}",
+        "{space}",
+    ],
+    shift: [
+        "~ ! @ # $ % ^ & * ( ) _ + {bksp}",
+        "{tab} Q W E R T Y U I O P { } |",
+        '{lock} A S D F G H J K L : " {enter}',
+        "{shift} Z X C V B N M < > ? {shift}",
+        "{space}",
+    ],
+    ...chineseLayout.layout  // 保留中文布局
+};
+
+export const RhKeyboard: React.FC<RhKeyboardProps> = ({
+    show,
+    onClose,
+    init,
+    onChange,
+    layoutType,
+}) => {
+    const keyboardRef = useRef<any>(null);
+
+    if (!show) return null;
+
+    return (
+        <div className="fixed bottom-0 left-0 w-full z-50 bg-gray-100"
+            onTouchStart={(e) => e.stopPropagation()}
+            onTouchMove={(e) => e.preventDefault()}
+        >
+            <div className="flex justify-end p-2">
+                <Button
+                    type="text"
+                    icon={<CloseOutlined />}
+                    onClick={onClose}
+                    style={{ color: '#000' }}
+                />
+            </div>
+
+            <Keyboard
+                keyboardRef={(r) => {
+                    (keyboardRef.current = r);
+                    init?.(r);
+                }}
+                layout={keyboardLayout}
+                {...(layoutType === 'chinese' ? omit(chineseLayout, 'layout') : {})}
+                layoutName="default"
+                onChange={onChange}
+                useTouchEvents={true}              // 启用触摸事件支持
+                // useMouseEvents={true}              // 启用鼠标事件
+                disableCaretPositioning={true}     // 禁用光标定位，避免触摸冲突
+                onKeyPress={(button: string) => {
+                    if (button === "{shift}") {
+                        const currentLayout = keyboardRef.current.options.layoutName;
+                        const layoutName = currentLayout === "default" ? "shift" : "default";
+                        keyboardRef.current.setOptions({ layoutName });
+                    }
+                }}
+                theme="hg-theme-default custom-keyboard"
+                buttonTheme={[
+                    {
+                        class: "hg-red",
+                        buttons: "{shift} {lock}"
+                    }
+                ]}
+                display={{
+                    "{bksp}": "退格",
+                    "{enter}": "回车",
+                    "{shift}": "Shift",
+                    "{space}": "空格",
+                    "{tab}": "Tab",
+                    "{lock}": "Lock"
+                }}
+            />
+        </div>
+    );
+};
+```
+
+## 二、自动启动服务之坑
+
+需求是开机自动启动服务并且让软件全屏，这样ubuntu的系统的盒子就像一个定制好软件的系统了。
+
+```leekhub-ui.service
+
+[Unit]
+Description=Sanyems UI Service
+After=network.target
+
+[Service]
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/home/ubuntu/.Xauthority
+Environment=RUST_BACKTRACE=1
+ExecStart=/usr/bin/leekhub-ui
+Restart=always
+User=ubuntu
+
+[Install]
+WantedBy=multi-user.target
+```
+
+其中缺少这2行代码，脚本服务启动失败。
+
+```
+message: "failed to initialize gtk", filename: "/home/ubuntu/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gtk-0.18.2/src/rt.rs", function: "gtk::rt::init", line: 141
+```
+
+```
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/home/ubuntu/.Xauthority
+``` 
+
+
+## 配置文件 
+
+以下是 `tauri.conf.json` 代码，其中 `postInstallScript` 是deb包安装完成后执行的开机自动启动脚本。
+
+```json
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "leekhub-ui",
+  "version": "0.2.0",
+  "identifier": "com.leekhub.ems",
+  "mainBinaryName": "leekhub-ui",
+  "build": {
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:3500",
+    "beforeDevCommand": "pnpm dev",
+    "beforeBuildCommand": "pnpm build"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "title": "sanyems-ui",
+        "width": 1280,
+        "height": 800,
+        "resizable": true,
+        "fullscreen": false,
+        "devtools": true
+      }
+    ],
+    "security": {
+      "csp": null,
+      "capabilities": [
+        {
+          "identifier": "custom-permision",
+          "windows": [
+            "*"
+          ],
+          "permissions": [
+            "core:window:allow-create",
+            "core:window:allow-close",
+            "core:webview:allow-create-webview",
+            "core:webview:allow-webview-close",
+            "core:webview:allow-create-webview-window"
+          ],
+          "allowlist": {
+            "http": {
+              "all": true,
+              "request": true,
+              "scope": [
+                "http://127.0.0.1:1880/ws/*",
+                "http://127.0.0.1:9001/api/history/*",
+                "http://127.0.0.1:9001/api/auth/*"
+              ]
+            },
+            "protocol": {
+              "asset": true,
+              "assetScope": [
+                "**"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "linux": {
+      "deb": {
+        "postInstallScript": "../scripts/postinstall.sh"
+      }
+    }
+  }
+}
+```
+
+
+
+
+---
+本人自动发布于：[https://github.com/giscafer/blog/issues/74](https://github.com/giscafer/blog/issues/74)
