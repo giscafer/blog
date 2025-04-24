@@ -122,6 +122,8 @@ export const RhKeyboard: React.FC<RhKeyboardProps> = ({
 [Unit]
 Description=Sanyems UI Service
 After=network.target
+StartLimitIntervalSec=60
+StartLimitBurst=3
 
 [Service]
 Environment=DISPLAY=:0
@@ -130,6 +132,7 @@ Environment=RUST_BACKTRACE=1
 ExecStart=/usr/bin/leekhub-ui
 Restart=always
 User=ubuntu
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
@@ -146,6 +149,22 @@ Environment=DISPLAY=:0
 Environment=XAUTHORITY=/home/ubuntu/.Xauthority
 ``` 
 
+执行 `sudo -u ubuntu /usr/bin/leekhub-ui` 测试手动启动是否成功，注意这里的`-u ` 指定的用户和配置文件里的User要一致，不然可能有权限问题。
+
+权限问题则执行 `sudo chown user:user /usr/bin/leekhub-ui` 的方式，命令表示用户组 user，具体根据系统用户情况修改。
+
+```bash
+export DISPLAY=:0
+export XAUTHORITY=/home/user/.Xauthority
+source .bashrc
+sudo -u user /usr/bin/leekhub-ui
+```
+
+如果是GTK异常，则需要安装依赖
+
+```bash
+sudo apt install libgdk-pixbuf2.0-dev libpango1.0-dev libcairo2-dev
+```
 
 ## 配置文件 
 
