@@ -129,6 +129,7 @@ StartLimitBurst=3
 Environment=DISPLAY=:0
 Environment=XAUTHORITY=/home/ubuntu/.Xauthority
 Environment=RUST_BACKTRACE=1
+ExecStartPre=/bin/bash -c 'export DISPLAY=:0; export XAUTHORITY=/home/ubuntu/.Xauthority'
 ExecStart=/usr/bin/leekhub-ui
 Restart=always
 User=ubuntu
