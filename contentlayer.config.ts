@@ -2,6 +2,7 @@ import { defineDocumentType, makeSource, ComputedFields } from 'contentlayer/sou
 import readingTime from 'reading-time'
 import rehypePrism from 'rehype-prism-plus'
 import codeTitle from 'remark-code-titles'
+import remarkGfm from 'remark-gfm'
 
 const imgReg = new RegExp(/https:\/\/(.*)\.(png|jpeg|gif|svg|jpg)/)
 
@@ -56,6 +57,6 @@ export default makeSource({
   documentTypes: [Post],
   mdx: {
     rehypePlugins: [rehypePrism],
-    remarkPlugins: [codeTitle],
+    remarkPlugins: [codeTitle, remarkGfm],
   },
 })
