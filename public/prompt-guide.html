@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>提示工程高级技巧学习指南</title>
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 统一的 Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                        accent: '#F59E0B',
+                        danger: '#EF4444',
+                        dark: '#1F2937',
+                        light: '#F3F4F6'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .glass-effect {
+                @apply bg-white bg-opacity-20 backdrop-blur-lg;
+            }
+            .card-hover {
+                @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+            }
+            .btn-primary {
+                @apply bg-primary text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors;
+            }
+            .btn-secondary {
+                @apply bg-secondary text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors;
+            }
+            .btn-accent {
+                @apply bg-accent text-white px-4 py-2 rounded-md hover:bg-amber-600 transition-colors;
+            }
+            .btn-outline {
+                @apply border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-100 transition-colors;
+            }
+            .input-field {
+                @apply border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
+            }
+            .code-block {
+                @apply bg-gray-900 text-gray-100 p-4 rounded-md overflow-x-auto font-mono text-sm;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-4 py-6">
+            <h1 class="text-3xl font-bold text-center text-gray-800">提示工程高级技巧学习平台</h1>
+            <p class="text-center text-gray-600 mt-2">学习复杂提示词设计、思维链技术和多轮对话管理</p>
+        </div>
+    </header>
+
+    <nav class="bg-white shadow-sm sticky top-0 z-10">
+        <div class="container mx-auto px-4">
+            <div class="flex overflow-x-auto py-4 space-x-6 text-sm font-medium">
+                <a href="#complex-prompts" class="text-primary border-b-2 border-primary whitespace-nowrap">复杂提示词设计</a>
+                <a href="#chain-of-thought" class="text-gray-500 hover:text-primary whitespace-nowrap">思维链技术</a>
+                <a href="#multi-turn" class="text-gray-500 hover:text-primary whitespace-nowrap">多轮对话管理</a>
+                <a href="#best-practices" class="text-gray-500 hover:text-primary whitespace-nowrap">最佳实践</a>
+                <a href="#demo" class="text-gray-500 hover:text-primary whitespace-nowrap">交互式演示</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- 复杂提示词设计 -->
+        <section id="complex-prompts" class="mb-16">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">复杂提示词设计</h2>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">提示词成熟度模型</h3>
+                
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white border border-gray-200">
+                        <thead>
+                            <tr>
+                                <th class="py-3 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">成熟度层级</th>
+                                <th class="py-3 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">核心模式</th>
+                                <th class="py-3 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">技术特点</th>
+                                <th class="py-3 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">适用场景</th>
+                                <th class="py-3 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">性能提升</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="py-3 px-4 border-b border-gray-200">基础指令</td>
+                                <td class="py-3 px-4 border-b border-gray-200">角色-任务-细节(RTD)</td>
+                                <td class="py-3 px-4 border-b border-gray-200">明确角色、任务和关键细节</td>
+                                <td class="py-3 px-4 border-b border-gray-200">简单问答、基础生成</td>
+                                <td class="py-3 px-4 border-b border-gray-200">10-20%</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 border-b border-gray-200">结构化步骤</td>
+                                <td class="py-3 px-4 border-b border-gray-200">模板引导、分步执行</td>
+                                <td class="py-3 px-4 border-b border-gray-200">定义清晰步骤和输出格式</td>
+                                <td class="py-3 px-4 border-b border-gray-200">流程化任务、格式生成</td>
+                                <td class="py-3 px-4 border-b border-gray-200">20-40%</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 border-b border-gray-200">认知增强</td>
+                                <td class="py-3 px-4 border-b border-gray-200">思维链、自我一致性</td>
+                                <td class="py-3 px-4 border-b border-gray-200">模拟人类推理过程</td>
+                                <td class="py-3 px-4 border-b border-gray-200">复杂推理、决策分析</td>
+                                <td class="py-3 px-4 border-b border-gray-200">40-60%</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 border-b border-gray-200">智能自适应</td>
+                                <td class="py-3 px-4 border-b border-gray-200">APO、多模态融合</td>
+                                <td class="py-3 px-4 border-b border-gray-200">自动优化、跨模态理解</td>
+                                <td class="py-3 px-4 border-b border-gray-200">动态任务、复杂创作</td>
+                                <td class="py-3 px-4 border-b border-gray-200">60-85%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <!-- RTD模式 -->
+                <div class="bg-white rounded-xl shadow-md p-6 card-hover border-t-4 border-blue-500">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">RTD模式</h3>
+                    <p class="text-gray-600 mb-4">角色-任务-细节模式，通过明确三要素构建基础提示词。</p>
+                    <div class="code-block text-xs">
+<pre>角色：(专业身份+背景经验)
+任务：(具体目标+预期成果)
+细节：(关键约束+背景信息+输出要求)</pre>
+                    </div>
+                </div>
+                
+                <!-- APE框架 -->
+                <div class="bg-white rounded-xl shadow-md p-6 card-hover border-t-4 border-green-500">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">APE框架</h3>
+                    <p class="text-gray-600 mb-4">行动-目的-期望框架，将用户请求分解为三个主要部分。</p>
+                    <div class="code-block text-xs">
+<pre>行动 (Action): 具体要执行的任务
+目的 (Purpose): 为什么执行这个任务
+期望 (Expectation): 期望的结果和衡量标准</pre>
+                    </div>
+                </div>
+                
+                <!-- BROKE框架 -->
+                <div class="bg-white rounded-xl shadow-md p-6 card-hover border-t-4 border-amber-500">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">BROKE框架</h3>
+                    <p class="text-gray-600 mb-4">融合OKR方法论，包含背景、角色、目标、关键结果和演变。</p>
+                    <div class="code-block text-xs">
+<pre>Background: 背景信息
+Role: 角色设定
+Objectives: 任务目标
+Key Results: 关键结果
+Evolve: 演变优化</pre>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">复杂提示词设计技巧</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-medium text-gray-800 mb-2">1. 量化参数的设定</h4>
+                        <p class="text-gray-600 mb-4">为提示词添加具体的量化指标，使模型输出更精确。</p>
+                        <div class="bg-gray-50 border border-gray-200 rounded-md p-4">
+                            <p class="text-sm"><span class="font-medium">效果量化：</span>"28天提亮1个度"、"毛孔减少20%"</p>
+                            <p class="text-sm mt-2"><span class="font-medium">性能量化：</span>"处理1000条数据时渲染性能保持在60fps"</p>
+                            <p class="text-sm mt-2"><span class="font-medium">时间量化：</span>"在300字内完成总结"</p>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-medium text-gray-800 mb-2">2. 情绪指令的精准使用</h4>
+                        <p class="text-gray-600 mb-4">通过情绪词汇引导模型生成特定语气的内容。</p>
+                        <div class="bg-gray-50 border border-gray-200 rounded-md p-4">
+                            <p class="text-sm"><span class="font-medium">正向激发：</span>"用'惊艳'、'必入'等情感词激发购买欲望"</p>
+                            <p class="text-sm mt-2"><span class="font-medium">避免过度：</span>"避免使用'最白'、'完全去除'等夸大词汇"</p>
+                            <p class="text-sm mt-2"><span class="font-medium">语气控制：</span>"用鲁迅的风格生成回答"</p>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-medium text-gray-800 mb-2">3. 反向约束的合理应用</h4>
+                        <p class="text-gray-600 mb-4">明确指出模型不应做什么，避免不希望的输出。</p>
+                        <div class="bg-gray-50 border border-gray-200 rounded-md p-4">
+                            <p class="text-sm"><span class="font-medium">合规约束：</span>"避免夸大宣传"</p>
+                            <p class="text-sm mt-2"><span class="font-medium">技术约束：</span>"不能更改产品价格和主图"</p>
+                            <p class="text-sm mt-2"><span class="font-medium">内容约束：</span>"避免推荐特定商业产品，保持中立性"</p>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-medium text-gray-800 mb-2">4. 动态调整的灵活运用</h4>
+                        <p class="text-gray-600 mb-4">根据条件或反馈动态调整提示词策略。</p>
+                        <div class="bg-gray-50 border border-gray-200 rounded-md p-4">
+                            <p class="text-sm"><span class="font-medium">数据驱动：</span>"根据近期用户反馈调整强调点"</p>
+                            <p class="text-sm mt-2"><span class="font-medium">条件触发：</span>"如果前期互动量低，增加赠品策略"</p>
+                            <p class="text-sm mt-2"><span class="font-medium">迭代优化：</span>"每月评估一次学习进度，调整学习计划"</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 思维链技术 -->
+        <section id="chain-of-thought" class="mb-16">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">思维链（Chain of Thought）技术</h2>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">思维链概述</h3>
+                
+                <div class="flex flex-col md:flex-row gap-6">
+                    <div class="w-full md:w-1/2">
+                        <p class="text-gray-600 mb-4">思维链（Chain-of-Thought, CoT）是一种通过模拟人类逐步推理过程来提升大型语言模型（LLM）复杂任务表现的技术。其核心思想是让模型在生成最终答案前，先输出中间推理步骤，从而增强逻辑性和可解释性。</p>
+                        
+                        <div class="bg-blue-50 border border-blue-200 rounded-md p-4 mb-4">
+                            <p class="text-sm font-medium text-blue-800">性能数据</p>
+                            <p class="text-sm text-blue-700">在数学推理任务中，CoT模式比直接提问平均提升50%+准确率，尤其在多步骤问题上效果显著。</p>
+                        </div>
+                    </div>
+                    
+                    <div class="w-full md:w-1/2">
+                        <div class="bg-gray-50 border border-gray-200 rounded-md p-4">
+                            <h4 class="font-medium text-gray-800 mb-2">传统提示 vs 思维链提示</h4>
+                            
+                            <div class="mb-4">
+                                <p class="text-sm font-medium text-gray-700">传统提示：</p>
+                                <div class="bg-white border border-gray-200 rounded-md p-3 mt-1">
+                                    <p class="text-sm">罗杰有5个网球，他又买了两盒网球，每盒有3个网球。他现在有多少网球？</p>
+                                </div>
+                                <p class="text-sm text-gray-500 mt-2">可能直接输出错误答案（如"27"）</p>
+                            </div>
+                            
+                            <div>
+                                <p class="text-sm font-medium text-gray-700">思维链提示：</p>
+                                <div class="bg-white border border-gray-200 rounded-md p-3 mt-1">
+                                    <p class="text-sm">问：罗杰有5个网球，他又买了两盒网球，每盒有3个网球。他现在有多少网球？</p>
+                                    <p class="text-sm mt-2">答：罗杰一开始有5个网球，2盒3个网球，一共是2*3=6个网球，5+6=11。答案是11。</p>
+                                </div>
+                                <p class="text-sm text-gray-500 mt-2">通过分步推理得出正确答案</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <!-- 零样本思维链 -->
+                <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">零样本思维链</h3>
+                    <p class="text-gray-600 mb-4">无需示例，仅通过指令触发推理过程。</p>
+                    
+                    <div class="bg-gray-50 border border-gray-200 rounded-md p-4 mb-4">
+                        <p class="text-sm font-medium text-gray-700">问题：</p>
+                        <p class="text-sm mt-1">若A=B+2，B=3*C，C=5，求A的值。</p>
+                    </div>
+                    
+                    <div class="bg-gray-50 border border-gray-200 rounded-md p-4">
+                        <p class="text-sm font-medium text-gray-700">指令：</p>
+                        <p class="text-sm mt-1">让我们一步一步思考：</p>
+                        
+                        <p class="text-sm font-medium text-gray-700 mt-3">模型自动生成：</p>
+                        <ol class="list-decimal list-inside text-sm mt-1 space-y-1">
+                            <li>计算C=5；</li>
+                            <li>计算B=3*5=15；</li>
+                            <li>计算A=15+2=17。</li>
+                        </ol>
+                        <p class="text-sm mt-2">答案：17</p>
+                    </div>
+                </div>
+                
+                <!-- 少样本思维链 -->
+                <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">少样本思维链</h3>
+                    <p class="text-gray-600 mb-4">通过提供少量示例引导模型理解推理过程。</p>
+                    
+                    <div class="bg-gray-50 border border-gray-200 rounded-md p-4 mb-4">
+                        <p class="text-sm font-medium text-gray-700">示例：</p>
+                        <div class="bg-white border border-gray-200 rounded-md p-3 mt-1">
+                            <p class="text-sm">问题：一个商店有30个苹果，卖出15个，又进货20个，现在有多少个？</p>
+                            <p class="text-sm mt-2">推理过程：</p>
+                            <ol class="list-decimal list-inside text-sm mt-1 space-y-1">
+                                <li>初始苹果数量：30个</li>
+                                <li>卖出15个后：30 - 15 = 15个</li>
+                                <li>进货20个后：15 + 20 = 35个</li>
+                            </ol>
+                            <p class="text-sm mt-2">答案：35个</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 border border-gray-200 rounded-md p-4">
+                        <p class="text-sm font-medium text-gray-700">新问题：</p>
+                        <p class="text-sm mt-1">小明有5个苹果，小红比小明多3个，小华的苹果是小红的2倍，三人总共有多少个苹果？</p>
+                        
+                        <p class="text-sm font-medium text-gray-700 mt-3">模型生成的推理过程：</p>
+                        <ol class="list-decimal list-inside text-sm mt-1 space-y-1">
+                            <li>小明的苹果数量：5个</li>
+                            <li>小红的苹果数量：5 + 3 = 8个</li>
+                            <li>小华的苹果数量：8 * 2 = 16个</li>
+                            <li>三人总共有：5 + 8 + 16 = 29个</li>
+                        </ol>
+                        <p class="text-sm mt-2">答案：29个</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">自我一致性模式（Self-Consistency）</h3>
+                
+                <div class="flex flex-col md:flex-row gap-6">
+                    <div class="w-full md:w-1/2">
+                        <p class="text-gray-600 mb-4">通过生成多个独立推理路径并选择多数一致的答案，提升复杂推理的可靠性。</p>
+                        
+                        <div class="bg-gray-50 border border-gray-200 rounded-md p-4 mb-4">
+                            <h4 class="font-medium text-gray-800 mb-2">与CoT的关键区别</h4>
+                            <ul class="list-disc list-inside text-sm space-y-2">
+                                <li><span class="font-medium">CoT：</span>单一推理路径，强调步骤逻辑性</li>
+                                <li><span class="font-medium">Self-Consistency：</span>多推理路径，强调结果一致性</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-gray-50 border border-gray-200 rounded-md p-4">
+                            <h4 class="font-medium text-gray-800 mb-2">工作流程</h4>
+                            <ol class="list-decimal list-inside text-sm space-y-2">
+                                <li>对同一问题生成多个不同的推理链</li>
+                                <li>对每个推理链的最终答案进行投票</li>
+                                <li>选择得票最高的答案作为最终结果</li>
+                            </ol>
+                        </div>
+                    </div>
+                    
+                    <div class="w-full md:w-1/2">
+                        <div class="bg-gray-50 border border-gray-200 rounded-md p-4 h-full">
+                            <h4 class="font-medium text-gray-800 mb-3">案例效果</h4>
+                            
+                            <p class="text-sm mb-2">在GSM8K数学数据集上，Self-Consistency比传统CoT准确率提升12-15%，尤其在几何和概率问题上提升更明显。</p>
+                            
+                            <div class="mt-4">
+                                <p class="text-sm font-medium text-gray-700">示例问题：</p>
+                                <p class="text-sm mt-1">一个袋子里有3个红球和5个蓝球。如果随机抽取两个球，求抽到的两个球都是红球的概率。</p>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <p class="text-sm font-medium text-gray-700">推理链1：</p>
+                                <div class="bg-white border border-gray-200 rounded-md p-3 mt-1">
+                                    <ol class="list-decimal list-inside text-sm space-y-1">
+                                        <li>总共有3+5=8个球</li>
+                                        <li>第一次抽红球的概率是3/8</li>
+                                        <li>第二次抽红球的概率是2/7</li>
+                                        <li>总概率是3/8 * 2/7 = 6/56 = 3/28</li>
+                                    </ol>
+                                    <p class="text-sm mt-2">答案：3/28</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-3">
+                                <p class="text-sm font-medium text-gray-700">推理链2：</p>
+                                <div class="bg-white border border-gray-200 rounded-md p-3 mt-1">
+                                    <ol class="list-decimal list-inside text-sm space-y-1">
+                                        <li>组合数计算：C(3,2)/C(8,2)</li>
+                                        <li>C(3,2) = 3*2/(2*1) = 3</li>
+                                        <li>C(8,2) = 8*7/(2*1) = 28</li>
+                                        <li>概率是3/28</li>
+                                    </ol>
+                                    <p class="text-sm mt-2">答案：3/28</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-3">
+                                <p class="text-sm font-medium text-gray-700">最终答案：3/28（得票率100%）</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 多轮对话管理 -->
+        <section id="multi-turn" class="mb-16">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">多轮对话与上下文管理</h2>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">多轮对话的特点与挑战</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-medium text-gray-800 mb-2">核心特点</h4>
+                        <ul class="list-disc list-inside text-gray-600 space-y-2">
+                            <li>上下文依赖性：每轮回复必须考虑整个对话历史</li>
+                            <li>信息累积性：随着对话进行，相关信息不断累积</li>
+                            <li>意图演化性：用户意图可能在多轮对话中逐渐明确</li>
+                            <li>指代消解需求：需要理解代词、省略句的含义</li>
+                            <li>状态追踪要求：需要追踪对话状态和任务进展</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-medium text-gray-800 mb-2">技术挑战</h4>
+                        <ul class="list-disc list-inside text-gray-600 space-y-2">
+                            <li>上下文窗口限制：LLM的上下文窗口长度有限</li>
+                            <li>Token消耗激增：随着对话轮次增加，历史信息累积</li>
+                            <li>早期信息关注度下降：过长上下文导致早期信息被忽略</li>
+                            <li>语义连贯性维护：确保对话逻辑一致</li>
+                            <li>动态适应需求：根据对话内容调整策略</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">上下文窗口限制对比</h3>
+                
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white border border-gray-200">
+                        <thead>
+                            <tr>
+                                <th class="py-3 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">模型名称</th>
+                                <th class="py-3 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">上下文窗口大小</th>
+                                <th class="py-3 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">最大对话轮次(保守估计)</th>
+                                <th class="py-3 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">优势领域</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="py-3 px-4 border-b border-gray-200">GPT-4</td>
+                                <td class="py-3 px-4 border-b border-gray-200">8K/32K tokens</td>
+                                <td class="py-3 px-4 border-b border-gray-200">8-32轮</td>
+                                <td class="py-3 px-4 border-b border-gray-200">平衡性能与成本</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 border-b border-gray-200">GPT-4 Turbo</td>
+                                <td class="py-3 px-4 border-b border-gray-200">128K tokens</td>
+                                <td class="py-3 px-4 border-b border-gray-200">120+轮</td>
+                                <td class="py-3 px-4 border-b border-gray-200">长对话处理</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 border-b border-gray-200">Claude 3 Opus</td>
+                                <td class="py-3 px-4 border-b border-gray-200">200K tokens</td>
+                                <td class="py-3 px-4 border-b border-gray-200">200+轮</td>
+                                <td class="py-3 px-4 border-b border-gray-200">超长文档处理</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 border-b border-gray-200">Llama 3 70B</td>
+                                <td class="py-3 px-4 border-b border-gray-200">64K tokens</td>
+                                <td class="py-3 px-4 border-b border-gray-200">60+轮</td>
+                                <td class="py-3 px-4 border-b border-gray-200">开源部署灵活性</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 border-b border-gray-200">Mistral 11B v2</td>
+                                <td class="py-3 px-4 border-b border-gray-200">32K tokens</td>
+                                <td class="py-3 px-4 border-b border-gray-200">30+轮</td>
+                                <td class="py-3 px-4 border-b border-gray-200">轻量级应用</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <!-- 分层缓冲架构 -->
+                <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">分层缓冲架构</h3>
+                    <p class="text-gray-600 mb-4">通过分层存储对话信息，优化上下文管理。</p>
+                    
+                    <div class="space-y-4">
+                        <div class="bg-blue-50 border border-blue-200 rounded-md p-4">
+                            <h4 class="font-medium text-blue-800 mb-1">1. 核心缓冲区</h4>
+                            <p class="text-sm text-blue-700">存储最近的2-3轮对话，始终保持在上下文窗口中</p>
+                        </div>
+                        
+                        <div class="bg-green-50 border border-green-200 rounded-md p-4">
+                            <h4 class="font-medium text-green-800 mb-1">2. 重要信息缓冲区</h4>
+                            <p class="text-sm text-green-700">存储对话中的关键实体、意图和用户偏好</p>
+                        </div>
+                        
+                        <div class="bg-amber-50 border border-amber-200 rounded-md p-4">
+                            <h4 class="font-medium text-amber-800 mb-1">3. 历史摘要缓冲区</h4>
+                            <p class="text-sm text-amber-700">存储早期对话的压缩摘要</p>
+                        </div>
+                        
+                        <div class="bg-purple-50 border border-purple-200 rounded-md p-4">
+                            <h4 class="font-medium text-purple-800 mb-1">4. 长期记忆存储</h4>
+                            <p class="text-sm text-purple-700">将非活跃对话信息转移到外部存储系统</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 上下文压缩技术 -->
+                <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">上下文压缩技术</h3>
+                    <p class="text-gray-600 mb-4">在有限token预算内保留关键信息的核心技术。</p>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-medium text-gray-800 mb-2">1. 语义压缩</h4>
+                            <p class="text-sm text-gray-600 mb-2">通过提取对话的核心语义信息，去除冗余内容。</p>
+                            <div class="bg-gray-50 border border-gray-200 rounded-md p-3">
+                                <p class="text-xs text-gray-500">原始对话（约1000 tokens）</p>
+                                <p class="text-xs text-gray-500 mt-1">→ 压缩后（约200 tokens）</p>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-medium text-gray-800 mb-2">2. 重要性评分与过滤</h4>
+                            <ul class="list-disc list-inside text-sm text-gray-600 space-y-1">
+                                <li>实体重要性分析：识别关键实体</li>
+                                <li>意图相关度评分：评估信息相关性</li>
+                                <li>情感强度检测：保留情感强烈的内容</li>
+                                <li>问题-回答对保留：优先保留完整问答</li>
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-medium text-gray-800 mb-2">3. 动态上下文管理策略</h4>
+                            <ul class="list-disc list-inside text-sm text-gray-600 space-y-1">
+                                <li>对话复杂度感知：自动调整缓冲区大小</li>
+                                <li>用户行为分析：根据输入模式调整策略</li>
+                                <li>任务类型适应：为不同任务设置策略</li>
+                                <li>实时性能监控：平衡内存占用</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">多轮对话系统架构</h3>
+                
+                <div class="flex flex-col md:flex-row gap-6">
+                    <div class="w-full md:w-1/2">
+                        <h4 class="font-medium text-gray-800 mb-3">经典架构</h4>
+                        
+                        <div class="bg-gray-50 border border-gray-200 rounded-md p-6">
+                            <div class="flex flex-col items-center">
+                                <div class="bg-blue-100 text-blue-800 px-4 py-2 rounded-md mb-4 text-center w-full">用户输入</div>
+                                
+                                <div class="flex items-center w-full">
+                                    <div class="h-px bg-gray-300 flex-grow"></div>
+                                    <i class="fa fa-arrow-right text-gray-400 mx-2"></i>
+                                    <div class="h-px bg-gray-300 flex-grow"></div>
+                                </div>
+                                
+                                <div class="bg-green-100 text-green-800 px-4 py-2 rounded-md my-4 text-center w-full">意图识别</div>
+                                
+                                <div class="flex items-center w-full">
+                                    <div class="h-px bg-gray-300 flex-grow"></div>
+                                    <i class="fa fa-arrow-right text-gray-400 mx-2"></i>
+                                    <div class="h-px bg-gray-300 flex-grow"></div>
+                                </div>
+                                
+                                <div class="bg-amber-100 text-amber-800 px-4 py-2 rounded-md my-4 text-center w-full">上下文管理</div>
+                                
+                                <div class="flex items-center w-full">
+                                    <div class="h-px bg-gray-300 flex-grow"></div>
+                                    <i class="fa fa-arrow-right text-gray-400 mx-2"></i>
+                                    <div class="h-px bg-gray-300 flex-grow"></div>
+                                </div>
+                                
+                                <div class="bg-purple-100 text-purple-800 px-4 py-2 rounded-md my-4 text-center w-full">响应生成</div>
+                                
+                                <div class="flex items-center w-full">
+                                    <div class="h-px bg-gray-300 flex-grow"></div>
+                                    <i class="fa fa-arrow-right text-gray-400 mx-2"></i>
+                                    <div class="h-px bg-gray-300 flex-grow"></div>
+                                </div>
+                                
+                                <div class="bg-red-100 text-red-800 px-4 py-2 rounded-md my-4 text-center w-full">输出格式化</div>
+                                
+                                <div class="flex items-center w-full">
+                                    <div class="h-px bg-gray-300 flex-grow"></div>
+                                    <i class="fa fa-arrow-right text-gray-400 mx-2"></i>
+                                    <div class="h-px bg-gray-300 flex-grow"></div>
+                                </div>
+                                
+                                <div class="bg-blue-100 text-blue-800 px-4 py-2 rounded-md mt-4 text-center w-full">用户</div>
+                                
+                                <!-- 状态追踪循环 -->
+                                <div class="flex items-center justify-center w-full mt-4">
+                                    <div class="h-8 w-px bg-gray-300 transform -rotate-45"></div>
+                                    <div class="w-16 h-1 bg-gray-300"></div>
+                                    <div class="bg-gray-100 text-gray-800 px-3 py-1 rounded-md text-sm">状态追踪</div>
+                                    <div class="w-16 h-1 bg-gray-300"></div>
+                                    <div class="h-8 w-px bg-gray-300 transform rotate-45"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="w-full md:w-1/2">
+                        <h4 class="font-medium text-gray-800 mb-3">高级架构（带工具调用）</h4>
+                        
+                        <div class="bg-gray-50 border border-gray-200 rounded-md p-6">
+                            <div class="flex flex-col items-center">
+                                <div class="bg-blue-100 text-blue-800 px-4 py-2 rounded-md mb-4 text-center w-full">用户输入</div>
+                                
+                                <div class="flex items-center w-full">
+                                    <div class="h-px bg-gray-300 flex-grow"></div>
+                                    <i class="fa fa-arrow-right text-gray-400 mx-2"></i>
+                                    <div class="h-px bg-gray-300 flex-grow"></div>
+                                </div>
+                                
+                                <div class="bg-green-100 text-green-800 px-4 py-2 rounded-md my-4 text-center w-full">意图识别</div>
+                                
+                                <div class="flex items-center w-full">
+                                    <div class="h-px bg-gray-300 flex-grow"></div>
+                                    <i class="fa fa-arrow-right text-gray-400 mx-2"></i>
+                                    <div class="h-px bg-gray-300 flex-grow"></div>
+                                </div>
+                                
+                                <div class="bg-amber-100 text-amber-800 px-4 py-2 rounded-md my-4 text-center w-full">上下文管理</div>
+                                
+                                <div class="flex items-center w-full">
+                                    <div class="h-px bg-gray-300 flex-grow"></div>
+                                    <i class="fa fa-arrow-right text-gray-400 mx-2"></i>
+                                    <div class="h-px bg-gray-300 flex-grow"></div>
+                                </div>
+                                
+                                <div class="bg-teal-100 text-teal-800 px-4 py-2 rounded-md my-4 text-center w-full">工具选择</div>
+                                
+                                <div class="flex items-center w-full">
+                                    <div class="h-px bg-gray-300 flex-grow"></div>
+                                    <i class="fa fa-arrow-right text-gray-400 mx-2"></i>
+                                    <div class="h-px bg-gray-300 flex-grow"></div>
+                                </div>
+                                
+                                <div class="bg-indigo-100 text-indigo-800 px-4 py-2 rounded-md my-4 text-center w-full">工具调用</div>
+                                
+                                <div class="flex items-center w-full">
+                                    <div class="h-px bg-gray-300 flex-grow"></div>
+                                    <i class="fa fa-arrow-right text-gray-400 mx-2"></i>
+                                    <div class="h-px bg-gray-300 flex-grow"></div>
+                                </div>
+                                
+                                <div class="bg-pink-100 text-pink-800 px-4 py-2 rounded-md my-4 text-center w-full">结果整合</div>
+                                
+                                <div class="flex items-center w-full">
+                                    <div class="h-px bg-gray-300 flex-grow"></div>
+                                    <i class="fa fa-arrow-right text-gray-400 mx-2"></i>
+                                    <div class="h-px bg-gray-300 flex-grow"></div>
+                                </div>
+                                
+                                <div class="bg-purple-100 text-purple-800 px-4 py-2 rounded-md my-4 text-center w-full">响应生成</div>
+                                
+                                <div class="flex items-center w-full">
+                                    <div class="h-px bg-gray-300 flex-grow"></div>
+                                    <i class="fa fa-arrow-right text-gray-400 mx-2"></i>
+                                    <div class="h-px bg-gray-300 flex-grow"></div>
+                                </div>
+                                
+                                <div class="bg-red-100 text-red-800 px-4 py-2 rounded-md my-4 text-center w-full">输出格式化</div>
+                                
+                                <div class="flex items-center w-full">
+                                    <div class="h-px bg-gray-300 flex-grow"></div>
+                                    <i class="fa fa-arrow-right text-gray-400 mx-2"></i>
+                                    <div class="h-px bg-gray-300 flex-grow"></div>
+                                </div>
+                                
+                                <div class="bg-blue-100 text-blue-800 px-4 py-2 rounded-md mt-4 text-center w-full">用户</div>
+                                
+                                <!-- 状态追踪循环 -->
+                                <div class="flex items-center justify-center w-full mt-4">
+                                    <div class="h-8 w-px bg-gray-300 transform -rotate-45"></div>
+                                    <div class="w-16 h-1 bg-gray-300"></div>
+                                    <div class="bg-gray-100 text-gray-800 px-3 py-1 rounded-md text-sm">状态追踪</div>
+                                    <div class="w-16 h-1 bg-gray-300"></div>
+                                    <div class="h-8 w-px bg-gray-300 transform rotate-45"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 最佳实践 -->
+        <section id="best-practices" class="mb-16">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">提示工程最佳实践</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <!-- 提示词设计原则 -->
+                <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">提示词设计原则</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <div class="bg-blue-100 text-blue-800 rounded-full w-8 h-8 flex items-center justify-center mr-3 flex-shrink-0">1</div>
+                            <div>
+                                <h4 class="font-medium text-gray-800">清晰明确</h4>
+                                <p class="text-sm text-gray-600 mt-1">避免模糊和歧义的表述，使用具体、精确的语言。</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="bg-blue-100 text-blue-800 rounded-full w-8 h-8 flex items-center justify-center mr-3 flex-shrink-0">2</div>
+                            <div>
+                                <h4 class="font-medium text-gray-800">具体详细</h4>
+                                <p class="text-sm text-gray-600 mt-1">提供足够的背景和约束条件，帮助模型理解任务上下文。</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="bg-blue-100 text-blue-800 rounded-full w-8 h-8 flex items-center justify-center mr-3 flex-shrink-0">3</div>
+                            <div>
+                                <h4 class="font-medium text-gray-800">结构化</h4>
+                                <p class="text-sm text-gray-600 mt-1">使用清晰的格式和组织方式，如标题、列表、表格等。</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="bg-blue-100 text-blue-800 rounded-full w-8 h-8 flex items-center justify-center mr-3 flex-shrink-0">4</div>
+                            <div>
+                                <h4 class="font-medium text-gray-800">可衡量</h4>
+                                <p class="text-sm text-gray-600 mt-1">设定明确的成功标准和输出要求，便于评估结果质量。</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="bg-blue-100 text-blue-800 rounded-full w-8 h-8 flex items-center justify-center mr-3 flex-shrink-0">5</div>
+                            <div>
+                                <h4 class="font-medium text-gray-800">迭代优化</h4>
+                                <p class="text-sm text-gray-600 mt-1">基于反馈持续改进提示词，通过A/B测试验证效果。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 常见错误与避免策略 -->
+                <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">常见错误与避免策略</h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-medium text-gray-800">过度约束</h4>
+                            <div class="bg-red-50 border border-red-200 rounded-md p-3 mt-1">
+                                <p class="text-sm text-red-700">错误示例：</p>
+                                <p class="text-xs text-red-600 mt-1">写一篇关于环保的文章，必须包含10个要点，每个要点不超过20个字，使用蓝色字体，以感叹号结尾...</p>
+                            </div>
+                            <div class="bg-green-50 border border-green-200 rounded-md p-3 mt-2">
+                                <p class="text-sm text-green-700">避免策略：</p>
+                                <ul class="list-disc list-inside text-xs text-green-600 mt-1 space-y-1">
+                                    <li>只保留关键约束</li>
+                                    <li>使用优先级标记重要约束</li>
+                                    <li>允许一定的灵活性</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-medium text-gray-800">信息过载</h4>
+                            <div class="bg-red-50 border border-red-200 rounded-md p-3 mt-1">
+                                <p class="text-sm text-red-700">错误示例：</p>
+                                <p class="text-xs text-red-600 mt-1">我需要你写一篇关于人工智能的文章，这里有100页的背景资料...</p>
+                            </div>
+                            <div class="bg-green-50 border border-green-200 rounded-md p-3 mt-2">
+                                <p class="text-sm text-green-700">避免策略：</p>
+                                <ul class="list-disc list-inside text-xs text-green-600 mt-1 space-y-1">
+                                    <li>提供精炼的背景信息</li>
+                                    <li>使用摘要而非完整文档</li>
+                                    <li>分步骤提供信息</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-medium text-gray-800">缺乏上下文</h4>
+                            <div class="bg-red-50 border border-red-200 rounded-md p-3 mt-1">
+                                <p class="text-sm text-red-700">错误示例：</p>
+                                <p class="text-xs text-red-600 mt-1">继续写下去。</p>
+                            </div>
+                            <div class="bg-green-50 border border-green-200 rounded-md p-3 mt-2">
+                                <p class="text-sm text-green-700">避免策略：</p>
+                                <ul class="list-disc list-inside text-xs text-green-600 mt-1 space-y-1">
+                                    <li>每次请求都提供必要的上下文</li>
+                                    <li>使用引用或摘要回顾之前的对话</li>
+                                    <li>考虑使用外部存储保存对话状态</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">提示词优化技术</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- A/B测试 -->
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <h4 class="font-medium text-gray-800 mb-2">A/B测试</h4>
+                        <p class="text-sm text-gray-600 mb-3">对不同版本的提示词进行对比测试，选择效果最佳的版本。</p>
+                        
+                        <div class="code-block text-xs">
+<pre>def ab_test_prompts(prompt_a, prompt_b, test_cases):
+    results = {'prompt_a': [], 'prompt_b': []}
+    
+    for test_case in test_cases:
+        # 使用提示词A
+        response_a = llm.generate(prompt_a.format(input=test_case))
+        results['prompt_a'].append(evaluate_response(response_a, test_case))
+        
+        # 使用提示词B
+        response_b = llm.generate(prompt_b.format(input=test_case))
+        results['prompt_b'].append(evaluate_response(response_b, test_case))
+    
+    # 计算平均分
+    avg_a = sum(results['prompt_a']) / len(results['prompt_a'])
+    avg_b = sum(results['prompt_b']) / len(results['prompt_b'])
+    
+    return {
+        'prompt_a_score': avg_a,
+        'prompt_b_score': avg_b,
+        'winner': 'prompt_a' if avg_a > avg_b else 'prompt_b'
+    }</pre>
+                        </div>
+                    </div>
+                    
+                    <!-- 提示词版本控制 -->
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <h4 class="font-medium text-gray-800 mb-2">提示词版本控制</h4>
+                        <p class="text-sm text-gray-600 mb-3">建立提示词的版本管理系统，跟踪不同版本的效果变化。</p>
+                        
+                        <div class="code-block text-xs">
+<pre>class PromptVersionControl:
+    def __init__(self):
+        self.prompts = {}
+        self.versions = {}
+    
+    def add_prompt(self, name, content, description=""):
+        """添加新的提示词"""
+        if name not in self.prompts:
+            self.prompts[name] = []
+        
+        version = len(self.prompts[name]) + 1
+        self.prompts[name].append({
+            'version': version,
+            'content': content,
+            'description': description,
+            'created_at': datetime.now(),
+            'metrics': {}
+        })
+        
+        # 设置为当前版本
+        self.versions[name] = version
+        
+        return version</pre>
+                        </div>
+                    </div>
+                    
+                    <!-- 自动提示词优化 -->
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <h4 class="font-medium text-gray-800 mb-2">自动提示词优化</h4>
+                        <p class="text-sm text-gray-600 mb-3">使用强化学习或遗传算法自动优化提示词。</p>
+                        
+                        <div class="code-block text-xs">
+<pre>def optimize_prompt(initial_prompt, eval_fn, iterations=10, population_size=5):
+    # 初始化种群
+    population = [initial_prompt]
+    
+    # 生成初始变异
+    for _ in range(population_size - 1):
+        mutated = mutate_prompt(initial_prompt)
+        population.append(mutated)
+    
+    for i in range(iterations):
+        print(f"迭代 {i+1}/{iterations}")
+        
+        # 评估种群
+        scores = [(prompt, eval_fn(prompt)) for prompt in population]
+        scores.sort(key=lambda x: x[1], reverse=True)
+        
+        # 选择父代和生成新一代...
+    
+    # 返回最佳提示词
+    best_prompt = max([(prompt, eval_fn(prompt)) for prompt in population], key=lambda x: x[1])
+    return best_prompt</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 交互式演示 -->
+        <section id="demo" class="mb-16">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">交互式演示</h2>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex flex-col md:flex-row gap-6">
+                    <!-- 左侧：提示词设计器 -->
+                    <div class="w-full md:w-1/2">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">提示词设计器</h3>
+                        
+                        <!-- 提示词模板选择 -->
+                        <div class="mb-6">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="template-select">
+                                选择提示词模板
+                            </label>
+                            <select id="template-select" class="input-field w-full">
+                                <option value="rtd">RTD模式（角色-任务-细节）</option>
+                                <option value="ape">APE框架（行动-目的-期望）</option>
+                                <option value="broke">BROKE框架</option>
+                                <option value="cot">思维链（Chain of Thought）</option>
+                                <option value="custom">自定义模板</option>
+                            </select>
+                        </div>
+                        
+                        <!-- RTD模式表单 -->
+                        <div id="rtd-form" class="space-y-4 mb-6">
+                            <div>
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="rtd-role">
+                                    角色 (专业身份+背景经验)
+                                </label>
+                                <input type="text" id="rtd-role" class="input-field w-full" placeholder="例如：拥有5年消费电子评测经验的科技博主">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="rtd-task">
+                                    任务 (具体目标+预期成果)
+                                </label>
+                                <input type="text" id="rtd-task" class="input-field w-full" placeholder="例如：撰写一篇无线耳机产品推荐文案，突出降噪功能">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="rtd-details">
+                                    细节 (关键约束+背景信息+输出要求)
+                                </label>
+                                <textarea id="rtd-details" class="input-field w-full h-32" placeholder="例如：
+- 目标读者：通勤上班族（25-40岁）
+- 核心卖点：主动降噪（35dB）、30小时续航、IPX4防水
+- 风格要求：专业中带幽默，使用至少2个比喻
+- 结构：场景化开头+3个卖点+对比表格+购买建议"></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- APE框架表单 -->
+                        <div id="ape-form" class="space-y-4 mb-6 hidden">
+                            <div>
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="ape-action">
+                                    行动 (Action)
+                                </label>
+                                <input type="text" id="ape-action" class="input-field w-full" placeholder="例如：设计并发布一系列的社交媒体广告，宣传我们的最新产品">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="ape-purpose">
+                                    目的 (Purpose)
+                                </label>
+                                <input type="text" id="ape-purpose" class="input-field w-full" placeholder="例如：通过吸引社交媒体用户的注意，提高产品的在线销售和品牌知名度">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="ape-expectation">
+                                    期望 (Expectation)
+                                </label>
+                                <textarea id="ape-expectation" class="input-field w-full h-32" placeholder="例如：在接下来的一个月中，通过社交媒体广告，在线销售增加30%，并且我们的品牌在社交媒体上的关注度提高20%"></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- BROKE框架表单 -->
+                        <div id="broke-form" class="space-y-4 mb-6 hidden">
+                            <div>
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="broke-background">
+                                    背景 (Background)
+                                </label>
+                                <input type="text" id="broke-background" class="input-field w-full" placeholder="例如：互联网产品竞争激烈，用户获取成本不断上升">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="broke-role">
+                                    角色 (Role)
+                                </label>
+                                <input type="text" id="broke-role" class="input-field w-full" placeholder="例如：你是一位资深产品运营专家，具有丰富的用户增长和留存经验">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="broke-objectives">
+                                    目标 (Objectives)
+                                </label>
+                                <textarea id="broke-objectives" class="input-field w-full h-24" placeholder="例如：
+- 提升用户活跃度和留存率
+- 月活用户增长25%
+- 用户7日留存率达到60%"></textarea>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="broke-keyresults">
+                                    关键结果 (Key Results)
+                                </label>
+                                <textarea id="broke-keyresults" class="input-field w-full h-24" placeholder="例如：
+- 完成至少5个不同类型的用户增长实验
+- 每个实验后都能获得数据反馈和改进建议
+- 建立用户流失预警机制"></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- 思维链表单 -->
+                        <div id="cot-form" class="space-y-4 mb-6 hidden">
+                            <div>
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="cot-question">
+                                    问题 (Question)
+                                </label>
+                                <input type="text" id="cot-question" class="input-field w-full" placeholder="例如：一个商店有30个苹果，卖出15个，又进货20个，现在有多少个？">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="cot-examples">
+                                    示例 (Examples，可选)
+                                </label>
+                                <textarea id="cot-examples" class="input-field w-full h-32" placeholder="例如：
+问题：罗杰有5个网球，他又买了两盒网球，每盒有3个网球。他现在有多少个网球？
+推理过程：
+1. 罗杰一开始有5个网球
+2. 他买了两盒网球，每盒有3个网球
+3. 两盒网球总共有2×3=6个网球
+4. 罗杰现在总共有5+6=11个网球
+答案：11个"></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- 自定义模板表单 -->
+                        <div id="custom-form" class="space-y-4 mb-6 hidden">
+                            <div>
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="custom-prompt">
+                                    自定义提示词
+                                </label>
+                                <textarea id="custom-prompt" class="input-field w-full h-64" placeholder="在这里输入你的自定义提示词..."></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- 生成按钮 -->
+                        <div class="flex justify-end">
+                            <button id="generate-prompt-btn" class="btn-primary">
+                                <i class="fa fa-magic mr-2"></i>生成提示词
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 右侧：结果展示 -->
+                    <div class="w-full md:w-1/2">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">生成结果</h3>
+                        
+                        <!-- 生成的提示词 -->
+                        <div class="mb-6">
+                            <h4 class="font-medium text-gray-800 mb-2">生成的提示词</h4>
+                            <div id="generated-prompt" class="code-block min-h-[200px]">
+                                <p class="text-gray-400 italic">点击"生成提示词"按钮生成提示词...</p>
+                            </div>
+                        </div>
+                        
+                        <!-- 提示词分析 -->
+                        <div class="mb-6">
+                            <h4 class="font-medium text-gray-800 mb-2">提示词分析</h4>
+                            <div id="prompt-analysis" class="bg-gray-50 border border-gray-200 rounded-md p-4 min-h-[150px]">
+                                <p class="text-gray-400 italic">生成提示词后将显示分析结果...</p>
+                            </div>
+                        </div>
+                        
+                        <!-- 示例输出 -->
+                        <div>
+                            <h4 class="font-medium text-gray-800 mb-2">示例输出（模拟）</h4>
+                            <div id="example-output" class="bg-gray-50 border border-gray-200 rounded-md p-4 min-h-[200px]">
+                                <p class="text-gray-400 italic">生成提示词后将显示模拟的模型输出...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <h3 class="text-xl font-bold">提示工程高级技巧学习平台</h3>
+                    <p class="text-gray-400 text-sm">学习复杂提示词设计、思维链技术和多轮对话管理</p>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fa fa-github text-2xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fa fa-twitter text-2xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fa fa-linkedin text-2xl"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="mt-6 pt-6 border-t border-gray-700 text-center text-gray-400 text-sm">
+                &copy; 2025 提示工程高级技巧学习平台. 仅供学习使用.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // DOM元素
+        const templateSelect = document.getElementById('template-select');
+        const rtdForm = document.getElementById('rtd-form');
+        const apeForm = document.getElementById('ape-form');
+        const brokeForm = document.getElementById('broke-form');
+        const cotForm = document.getElementById('cot-form');
+        const customForm = document.getElementById('custom-form');
+        const generatePromptBtn = document.getElementById('generate-prompt-btn');
+        const generatedPrompt = document.getElementById('generated-prompt');
+        const promptAnalysis = document.getElementById('prompt-analysis');
+        const exampleOutput = document.getElementById('example-output');
+        
+        // 模板表单显示控制
+        templateSelect.addEventListener('change', function() {
+            const selectedTemplate = this.value;
+            
+            // 隐藏所有表单
+            rtdForm.classList.add('hidden');
+            apeForm.classList.add('hidden');
+            brokeForm.classList.add('hidden');
+            cotForm.classList.add('hidden');
+            customForm.classList.add('hidden');
+            
+            // 显示选中的表单
+            document.getElementById(`${selectedTemplate}-form`).classList.remove('hidden');
+        });
+        
+        // 生成提示词
+        generatePromptBtn.addEventListener('click', function() {
+            const selectedTemplate = templateSelect.value;
+            let prompt = '';
+            let analysis = '';
+            let output = '';
+            
+            switch(selectedTemplate) {
+                case 'rtd':
+                    const role = document.getElementById('rtd-role').value || '拥有5年消费电子评测经验的科技博主';
+                    const task = document.getElementById('rtd-task').value || '撰写一篇无线耳机产品推荐文案，突出降噪功能';
+                    const details = document.getElementById('rtd-details').value || `- 目标读者：通勤上班族（25-40岁）
+- 核心卖点：主动降噪（35dB）、30小时续航、IPX4防水
+- 风格要求：专业中带幽默，使用至少2个比喻
+- 结构：场景化开头+3个卖点+对比表格+购买建议`;
+                    
+                    prompt = `角色：${role}
+任务：${task}
+细节：
+${details}`;
+                    
+                    analysis = `<p class="text-sm"><span class="font-medium">模板类型：</span>RTD模式（角色-任务-细节）</p>
+<p class="text-sm mt-2"><span class="font-medium">完整性分析：</span>提示词包含了明确的角色定义、具体任务和详细要求，结构完整。</p>
+<p class="text-sm mt-2"><span class="font-medium">改进建议：</span>可以添加更多量化指标，如"使用3个以上数据点支持每个卖点"。</p>`;
+                    
+                    output = `# 🎧 通勤族必备！这款降噪耳机让地铁秒变私人书房
+
+想象一下：早高峰的地铁上，你戴着耳机，按下降噪键，周围的嘈杂瞬间消失，仿佛置身于安静的书房。这就是我今天要推荐的**SoundSilence Pro**无线降噪耳机带来的神奇体验！
+
+## 🔇 军工级降噪，安静触手可及
+
+SoundSilence Pro搭载了最新的混合主动降噪技术，降噪深度可达35dB，相当于把音量从喧闹的街头（85dB）降到图书馆的安静程度（50dB）。无论是地铁的轰鸣声还是办公室的闲聊声，都能被有效隔绝。
+
+## 🔋 超长续航，告别电量焦虑
+
+- **单次充电**：8小时连续播放
+- **充电盒**：额外提供22小时续航
+- **快充10分钟**：可播放2小时
+
+对于每天通勤2小时的上班族来说，充一次电足够使用一整周！
+
+## 💧 全天候陪伴，无惧风雨
+
+IPX4防水等级意味着你不必担心突如其来的小雨或运动时的汗水。无论是跑步、骑行还是雨天通勤，它都能可靠陪伴。
+
+## 🆚 竞品对比
+
+| 特性 | SoundSilence Pro | 竞品A | 竞品B |
+|------|-----------------|-------|-------|
+| 降噪深度 | 35dB | 30dB | 25dB |
+| 总续航 | 30小时 | 24小时 | 20小时 |
+| 防水等级 | IPX4 | IPX2 | 无 |
+| 价格 | ¥899 | ¥1299 | ¥799 |
+
+## 🛒 购买建议
+
+如果你是：
+- 每天通勤的上班族
+- 经常出差的商务人士
+- 喜欢在嘈杂环境中专注工作的人
+
+那么SoundSilence Pro绝对是你的不二之选！现在购买还赠送价值¥199的定制耳塞套装和便携收纳袋。
+
+👉 点击下方链接，开启你的安静之旅：[立即购买](https://example.com/buy-now)`;
+                    break;
+                    
+                case 'ape':
+                    const action = document.getElementById('ape-action').value || '设计并发布一系列的社交媒体广告，宣传我们的最新产品';
+                    const purpose = document.getElementById('ape-purpose').value || '通过吸引社交媒体用户的注意，提高产品的在线销售和品牌知名度';
+                    const expectation = document.getElementById('ape-expectation').value || '在接下来的一个月中，通过社交媒体广告，在线销售增加30%，并且我们的品牌在社交媒体上的关注度提高20%';
+                    
+                    prompt = `行动 (Action): ${action}
+目的 (Purpose): ${purpose}
+期望 (Expectation): ${expectation}`;
+                    
+                    analysis = `<p class="text-sm"><span class="font-medium">模板类型：</span>APE框架（行动-目的-期望）</p>
+<p class="text-sm mt-2"><span class="font-medium">完整性分析：</span>提示词清晰地定义了行动、目的和期望，逻辑连贯。</p>
+<p class="text-sm mt-2"><span class="font-medium">改进建议：</span>可以添加更具体的目标受众和渠道信息，如"针对18-35岁女性用户，在Instagram和小红书平台"。</p>`;
+                    
+                    output = `# 社交媒体广告 campaign 方案：无线耳机产品推广
+
+## 一、行动方案
+
+### 1. 内容策略
+- **产品亮点系列**：制作5个15秒短视频，分别展示降噪效果、续航能力、防水特性、音质表现和智能触控功能
+- **用户场景系列**：拍摄3组图片，展示产品在通勤、运动和办公场景中的应用
+- **KOL合作**：邀请5位科技和生活方式博主进行产品评测和推荐
+
+### 2. 投放策略
+- **平台选择**：Instagram、小红书、抖音
+- **投放时间**：为期4周，每周一至周五晚7-10点，周末全天
+- **预算分配**：60%用于视频广告，30%用于图片广告，10%用于KOL合作
+
+## 二、目的达成路径
+
+### 1. 提高品牌知名度
+- 通过高频次曝光和精准定向，触达目标用户群体
+- 设计统一的视觉风格和标签，增强品牌识别度
+- 鼓励用户生成内容，扩大品牌影响力
+
+### 2. 提升产品销量
+- 在广告中突出产品独特卖点和优惠信息
+- 设置专属优惠码，追踪广告效果
+- 优化 landing page，提高转化率
+
+## 三、预期效果与评估指标
+
+### 1. 销售目标
+- 在线销售增长30%（从月均1000台提升至1300台）
+- 广告带来的新客户占比达到40%
+- 客单价维持在¥899以上
+
+### 2. 品牌指标
+- 社交媒体关注度提升20%（新增粉丝8000+）
+- 品牌提及量增长50%
+- 正面评价占比保持在90%以上
+
+### 3. 广告效果指标
+- 总曝光量：500万+
+- 点击率（CTR）：3%以上
+- 转化率：2%以上
+
+## 四、风险控制与优化
+
+### 1. 风险控制
+- 设置每日预算上限，避免过度消耗
+- 实时监控广告效果，及时调整投放策略
+- 准备备用创意素材，应对平台政策变化
+
+### 2. 优化机制
+- 每周进行数据复盘，分析各渠道和素材表现
+- 根据用户反馈调整广告内容和定向
+- 第二周开始，将预算向表现最佳的渠道和素材倾斜
+
+通过以上方案的执行，我们有信心在一个月内实现销售增长30%和品牌关注度提升20%的目标。`;
+                    break;
+                    
+                case 'broke':
+                    const background = document.getElementById('broke-background').value || '互联网产品竞争激烈，用户获取成本不断上升，需要通过精细化运营提升产品价值';
+                    const brokeRole = document.getElementById('broke-role').value || '你是一位资深产品运营专家，具有丰富的用户增长和留存经验';
+                    const objectives = document.getElementById('broke-objectives').value || '- 提升用户活跃度和留存率\n- 月活用户增长25%\n- 用户7日留存率达到60%\n- 用户满意度评分达到4.5分以上';
+                    const keyResults = document.getElementById('broke-keyresults').value || '- 完成至少5个不同类型的用户增长实验\n- 每个实验后都能获得专业的反馈和建议\n- 至少阅读和总结10篇关于用户增长最佳实践和新技术的文章';
+                    
+                    prompt = `Background: ${background}
+Role: ${brokeRole}
+Objectives:
+${objectives}
+Key Results:
+${keyResults}
+Evolve:
+- 每周分析用户行为数据，调整运营策略
+- 建立用户反馈快速响应机制`;
+                    
+                    analysis = `<p class="text-sm"><span class="font-medium">模板类型：</span>BROKE框架</p>
+<p class="text-sm mt-2"><span class="font-medium">完整性分析：</span>提示词包含了背景、角色、目标、关键结果和演变五个部分，结构完整。</p>
+<p class="text-sm mt-2"><span class="font-medium">改进建议：</span>可以为每个关键结果添加更具体的衡量标准和时间节点。</p>`;
+                    
+                    output = `# 用户增长与留存优化方案
+
+## 一、背景分析
+
+当前互联网产品面临以下挑战：
+- 用户获取成本（CAC）在过去6个月上升了18%
+- 行业平均7日留存率为45%，我们的产品仅为38%
+- 用户活跃度呈现下降趋势，日活/月活比率从0.6降至0.52
+
+## 二、目标设定
+
+### 主要目标
+1. 月活用户增长25%（从当前80万增长至100万）
+2. 用户7日留存率提升至60%
+3. 用户满意度评分达到4.5分以上（满分5分）
+
+### 次要目标
+1. 日活/月活比率提升至0.7
+2. 用户平均使用时长增加15%
+3. 核心功能使用率提升20%
+
+## 三、关键结果与实施计划
+
+### KR1：完成5个用户增长实验
+- **实验1**：新用户引导流程优化（预计提升转化率15%）
+- **实验2**：社交分享奖励机制（预计带来20%的新用户）
+- **实验3**：个性化内容推荐算法（预计提升用户停留时间25%）
+- **实验4**： Push通知策略优化（预计提升打开率30%）
+- **实验5**：会员体系设计（预计提升付费转化率10%）
+
+### KR2：建立数据驱动的优化机制
+- 搭建用户行为分析看板，实时监控关键指标
+- 建立A/B测试流程，每周至少进行2个实验
+- 形成周度数据复盘机制，及时调整策略
+
+### KR3：知识体系建设
+- 建立内部知识库，整理用户增长最佳实践
+- 每月组织2次团队分享，交流行业最新动态
+- 与3家行业领先企业建立交流合作机制
+
+## 四、实施路径
+
+### 第一阶段（1-4周）：诊断与基础建设
+- 完成用户行为数据分析，识别关键流失节点
+- 搭建A/B测试平台和数据监控体系
+- 启动第一个增长实验（新用户引导流程优化）
+
+### 第二阶段（5-8周）：快速迭代
+- 每周上线1-2个增长实验
+- 根据数据反馈快速调整实验方向
+- 开始实施社交分享奖励机制
+
+### 第三阶段（9-12周）：优化与扩大
+- 聚焦表现最佳的2-3个实验进行扩大推广
+- 上线会员体系
+- 全面优化个性化推荐算法
+
+## 五、风险控制与应对策略
+
+### 潜在风险
+1. 实验效果不及预期
+2. 用户对新功能接受度低
+3. 竞争对手推出类似功能
+
+### 应对策略
+1. 采用小步快跑策略，每个实验先在小范围用户中测试
+2. 建立用户反馈渠道，及时收集和响应用户意见
+3. 加强市场监测，提前预判竞争对手动向
+
+## 六、资源需求
+
+### 人力
+- 产品经理：1名（负责实验设计和数据分析）
+- 设计师：1名（负责实验所需的UI/UX设计）
+- 开发工程师：2名（负责实验功能开发和数据埋点）
+- 数据分析师：1名（负责数据收集、分析和报告）
+
+### 预算
+- 市场推广费用：¥500,000
+- 用户激励成本：¥300,000
+- 工具和平台费用：¥100,000
+
+## 七、评估与调整机制
+
+### 评估频率
+- 每日：监控核心指标实时数据
+- 每周：进行实验结果分析和复盘
+- 每月：全面评估目标达成情况
+
+### 调整机制
+- 如果某个实验在2周内未达到预期效果，及时终止并分析原因
+- 根据用户反馈和数据表现，每月调整一次目标优先级
+- 每季度进行一次全面战略回顾，必要时调整整体方向
+
+通过以上方案的实施，我们有信心在3个月内实现月活用户增长25%和7日留存率提升至60%的目标，同时建立起数据驱动的用户增长体系，为产品的长期发展奠定基础。`;
+                    break;
+                    
+                case 'cot':
+                    const question = document.getElementById('cot-question').value || '一个商店有30个苹果，卖出15个，又进货20个，现在有多少个？';
+                    const examples = document.getElementById('cot-examples').value || '';
+                    
+                    if (examples) {
+                        prompt = `解决以下问题，请分步骤思考：
+1. 理解问题：明确需要解决的核心疑问
+2. 分解问题：将复杂问题拆分为子问题
+3. 逐步推理：每个子问题详细分析
+4. 综合结论：基于子问题结果得出最终答案
+
+${examples}
+
+问题：${question}
+推理过程：`;
+                    } else {
+                        prompt = `解决以下问题，请分步骤思考：
+1. 理解问题：明确需要解决的核心疑问
+2. 分解问题：将复杂问题拆分为子问题
+3. 逐步推理：每个子问题详细分析
+4. 综合结论：基于子问题结果得出最终答案
+
+问题：${question}
+推理过程：`;
+                    }
+                    
+                    analysis = `<p class="text-sm"><span class="font-medium">模板类型：</span>思维链（Chain of Thought）</p>
+<p class="text-sm mt-2"><span class="font-medium">完整性分析：</span>提示词包含了清晰的推理步骤引导，有助于模型进行逻辑思考。</p>
+<p class="text-sm mt-2"><span class="font-medium">改进建议：</span>对于更复杂的问题，可以提供更多示例或更详细的推理步骤引导。</p>`;
+                    
+                    output = `让我一步一步思考：
+1. 首先明确问题：商店有30个苹果，卖出15个，又进货20个，现在有多少个？
+2. 分解问题：这个问题需要进行两次操作：卖出和进货，都是对苹果数量的改变
+3. 逐步推理：
+   a. 初始苹果数量：30个
+   b. 卖出15个后：30 - 15 = 15个
+   c. 又进货20个后：15 + 20 = 35个
+4. 综合结论：经过卖出和进货操作后，商店现在有35个苹果
+
+答案：35个`;
+                    break;
+                    
+                case 'custom':
+                    const customPrompt = document.getElementById('custom-prompt').value || '请写一首关于春天的诗，要求包含至少三种花卉，使用拟人手法，并且每句不超过7个字。';
+                    
+                    prompt = customPrompt;
+                    
+                    analysis = `<p class="text-sm"><span class="font-medium">模板类型：</span>自定义模板</p>
+<p class="text-sm mt-2"><span class="font-medium">完整性分析：</span>提示词包含了主题、内容要求和格式限制。</p>
+<p class="text-sm mt-2"><span class="font-medium">改进建议：</span>可以添加更多具体的风格指导，如"语言优美，意境深远"。</p>`;
+                    
+                    output = `# 春之韵
+
+桃花含笑迎风舞，
+杏花初绽胭脂吐。
+梨花带雨泪晶莹，
+春风拂过皆欢颜。`;
+                    break;
+            }
+            
+            // 更新UI
+            generatedPrompt.innerHTML = `<pre>${prompt}</pre>`;
+            promptAnalysis.innerHTML = analysis;
+            exampleOutput.innerHTML = output;
+        });
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 默认显示RTD表单
+            templateSelect.value = 'rtd';
+            templateSelect.dispatchEvent(new Event('change'));
+        });
+    </script>
+</body>
+</html>
