@@ -33,7 +33,7 @@ const projects = [
   },
   {
     title: '韭菜盒子',
-    description: '韭菜盒子——VSCode 里也可以看股票 & 基金 & 期货实时数据，做最好用的投资插件（13k+下载量）',
+    description: '韭菜盒子——VSCode 里也可以看股票 & 基金 & 期货实时数据，做最好用的投资插件（23k+下载量）',
     link: 'leek.fund',
     github: 'github.com/LeekHub/leek-fund',
     image: leekFundImg,
