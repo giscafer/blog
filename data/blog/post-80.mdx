@@ -7,7 +7,7 @@
 
 2025年了，还有产品没有集成AI能力的就是落伍了
 
-<img width="1872" height="932" alt="Image" src="https://github.com/user-attachments/assets/3b8c40c7-f5e3-4023-9318-9145a6732f23" />
+![组态可视化编辑器](https://github.com/user-attachments/assets/3b8c40c7-f5e3-4023-9318-9145a6732f23)
 
 以下几个场景能力可实现组态平台的智能化升级：
 
@@ -58,7 +58,7 @@
 
 ### 2.1、腾讯云的VDB
 
-<img width="970" height="281" alt="Image" src="https://github.com/user-attachments/assets/02826bb0-9f5b-4bf9-8721-1e120edb2957" />
+![VDB](https://github.com/user-attachments/assets/02826bb0-9f5b-4bf9-8721-1e120edb2957)
 
 详情可以去腾讯[官方文档](https://cloud.tencent.cn/product/vdb?from=21325&from_column=21325)了解。
 
@@ -105,7 +105,7 @@
 
 1. 用户在代码编辑区点击 “AI 生成”，输入需求描述（如 “当按钮点击时，过滤表格中温度大于 30 的数据”、再如：“帮我处理这个xx数据源的接口返回结构为表格的格式”）；
 2. 前端自动补充上下文信息（如当前可用的 API 列表、变量类型，通过后端接口获取），一并发送至后端；
-3. 后端通过 LangChain 构建 prompt（格式：需求：${userInput}\n约束：${apiRules}\n生成JS代码：），调用代码生成模型；
+3. 后端通过 LangChain 构建 prompt（格式：需求：" ${userInput}\n约束：${apiRules}\n生成JS代码："），调用代码生成模型；
 4. 模型返回代码后，后端进行语法校验（使用 “ESLint”）和安全性过滤（禁止 eval、document.write 等危险操作）；
 5. 前端将校验后的代码填充至编辑区，支持 “一键替换”“二次编辑”。
 
