@@ -48,3 +48,36 @@
   display: flex;
   flex-wrap: wrap;
 }
+
+.backToTop {
+  position: fixed;
+  right: 32px;
+  bottom: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 44px;
+  height: 44px;
+  color: var(--background);
+  font-size: 18px;
+  background: var(--brand);
+  border: none;
+  border-radius: 9999px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15);
+  transform: translateY(12px);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 150ms ease, transform 150ms ease;
+  pointer-events: none;
+}
+
+.backToTopVisible {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.backToTop:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 3px;
+}

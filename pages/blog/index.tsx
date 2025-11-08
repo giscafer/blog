@@ -13,7 +13,7 @@ import debounce from 'lodash.debounce'
 import { GetStaticProps } from 'next'
 import Link from 'next/link'
 import { NextSeo } from 'next-seo'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Search } from 'react-feather'
 import PostListSwitch from 'components/postswitch'
 import type { Post } from '.contentlayer/types'
@@ -28,6 +28,7 @@ type BlogProps = {
 const Blog = ({ posts, tagList }: BlogProps): JSX.Element => {
   const [currentSearch, setCurrentSearch] = useState('')
   const [hideCoverMode, setHideCoverMode] = useState(false)
+  const [showBackToTop, setShowBackToTop] = useState(false)
   const trackSearch = useCallback(
     debounce((value: string) => gtag.search(value), 500),
     [],
@@ -46,7 +47,22 @@ const Blog = ({ posts, tagList }: BlogProps): JSX.Element => {
     if (searchString !== '') {
       trackSearch(searchString) // Save what people are interested in reading
     }
-    return setCurrentSearch(searchString)
+    setCurrentSearch(searchString)
+  }
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 200)
+    }
+    window.addEventListener('scroll', handleScroll)
+    handleScroll()
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
+
+  const handleBackToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return (
@@ -74,7 +90,7 @@ const Blog = ({ posts, tagList }: BlogProps): JSX.Element => {
             <Section.Title>Tags</Section.Title>
             <Section.Content>
               <div className={styles.tagList}>
-                {tagList.map(tag => (
+                {tagList.sort().map(tag => (
                   <Link href={`/blog/tag/${tag}`}>
                     <Badge key={tag} className="cursor-pointer">
                       #{tag}
@@ -93,6 +109,14 @@ const Blog = ({ posts, tagList }: BlogProps): JSX.Element => {
         }}
       />
       <PostList posts={filteredPosts} hideImage={!hideCoverMode} />
+      <button
+        type="button"
+        aria-label="回到顶部"
+        className={`${styles.backToTop} ${showBackToTop ? styles.backToTopVisible : ''}`}
+        onClick={handleBackToTop}
+      >
+        ↑
+      </button>
     </Page>
   )
 }
