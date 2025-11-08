@@ -9,13 +9,13 @@
 ## Features
 
 - Github Issues 自动同步（见[实现文章介绍](https://mp.weixin.qq.com/s/sMNC20ei_J0XcVdJ0v3Fjw)）
-- 使用[faunadb](https://fauna.com/)云端数据库存储
   <!-- - [Linear](https://linear.app/)  -->
   <!-- - [Webmention](https://webmention.io/) -->
 
 ## TODO
 
-- [x] like post 功能
+<!-- - [x] like post 功能 -->
+
 - [x] 文章浏览量统计
 - [x] Tags 分类
 - [x] 评论功能

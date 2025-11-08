@@ -8,8 +8,89 @@
   }
 }
 
+.trigger {
+  display: inline-block;
+  padding: 0;
+  line-height: 0;
+  background: transparent;
+  border: 0;
+  cursor: zoom-in;
+
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 4px;
+  }
+}
+
+.imgTag {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.previewImgTag {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+
 .caption {
   padding-top: 5px;
   font-size: 0.8em;
   opacity: 0.6;
+}
+
+.overlay {
+  position: fixed;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  background: rgba(0, 0, 0, 0.85);
+  inset: 0;
+}
+
+.overlayContent {
+  position: relative;
+  width: 100%;
+  max-width: min(90vw, 1200px);
+  max-height: 90vh;
+  color: #fff;
+  text-align: center;
+}
+
+.previewImage {
+  position: relative;
+  width: 100%;
+  height: auto;
+
+  :global(img) {
+    border-radius: 12px;
+  }
+}
+
+.close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.25rem 0.75rem;
+  color: #fff;
+  font-size: 1.5rem;
+  line-height: 1;
+  background: rgba(0, 0, 0, 0.5);
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
+
+.previewCaption {
+  margin-top: 0.75rem;
+  font-size: 0.85em;
+  opacity: 0.85;
 }

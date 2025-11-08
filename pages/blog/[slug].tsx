@@ -2,7 +2,6 @@ import { GetStaticPaths, GetStaticProps } from 'next'
 import { useMDXComponent } from 'next-contentlayer/hooks' // eslint-disable-line
 import { NextSeo } from 'next-seo'
 import { useTheme } from 'next-themes'
-import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import Link from 'next/link'
 import { pick } from '@contentlayer/client'
@@ -10,7 +9,7 @@ import { pick } from '@contentlayer/client'
 // Components
 import HitCounter from 'components/hitcounter'
 import CustomImage from 'components/image'
-import LikeButton from 'components/likebutton'
+// import LikeButton from 'components/likebutton'
 import Page from 'components/page'
 import PageHeader from 'components/pageheader'
 import Warning from 'components/warning'
@@ -19,7 +18,6 @@ import Warning from 'components/warning'
 import Giscus from '@giscus/react'
 import AnimatedMessages from 'components/animatedmessages'
 import { RatingPlayground } from 'components/blog/rating'
-import BlogImage from 'components/blogimage'
 import Button from 'components/button'
 import Messages, { TailBreakdown } from 'components/messages'
 import Parallax from 'components/parallax'
@@ -32,8 +30,6 @@ import { allPosts } from '.contentlayer/data'
 import type { Post as PostType } from '.contentlayer/types'
 
 import styles from './post.module.scss'
-
-const ParallaxCover = dynamic(() => import('components/blog/parallaxcover'))
 
 const CustomLink = (props: { href: string }) => {
   const { href } = props
@@ -59,6 +55,7 @@ const components = {
   Head,
   a: CustomLink,
   Image: CustomImage,
+  img: CustomImage,
   Warning,
   Link: CustomLink,
   // NowPlayingIcon,
@@ -129,12 +126,11 @@ const Post = ({ post, related, githubUser, githubProject }: PostProps): JSX.Elem
           cardType: 'summary_large_image',
         }}
       />
-
-      {post.slug === 'post-22' ? (
+      {/*   {post.slug === 'post-22' ? (
         <ParallaxCover />
       ) : (
         <>{post.image && <BlogImage src={post.image} alt={post.title} className={styles.image} />}</>
-      )}
+      )} */}
       <PageHeader title={post.title} compact>
         <p className={styles.meta}>
           发布于 <time dateTime={post.publishedAt}>{formattedPublishDate}</time>
@@ -146,9 +142,9 @@ const Post = ({ post, related, githubUser, githubProject }: PostProps): JSX.Elem
       <article className={styles.article}>
         <Component components={components} />
       </article>
-      <div className={styles.buttons}>
+      {/* <div className={styles.buttons}>
         <LikeButton slug={post.slug} />
-      </div>
+      </div> */}
       <Tags tags={post.tags} />
       {/* <Subscribe className={styles.subscribe} /> */}
       {related.length > 0 && (
