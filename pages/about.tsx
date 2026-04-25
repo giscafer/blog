@@ -52,8 +52,8 @@ const About = (): JSX.Element => {
               </a>
             </li>
             <li>
-              <a href="https://www.twitter.com/nickbinglao/" {...linkProps}>
-                Twitter
+              <a href="https://www.x.com/nicky_lao" {...linkProps}>
+                X
               </a>
             </li>
           </ul>

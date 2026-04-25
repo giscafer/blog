@@ -44,4 +44,4 @@
 
 > [giscafer.com](http://giscafer.com) &nbsp;&middot;&nbsp;
 > GitHub [@giscafer](https://github.com/giscafer) &nbsp;&middot;&nbsp;
-> Twitter [@Nicky Lao](https://twitter.com/nicky_lao)
+> X [@Nicky Lao](https://twitter.com/nicky_lao)
