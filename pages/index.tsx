@@ -11,7 +11,7 @@ import cleanAiImg from 'public/projects/cleanai.png'
 const projects: any[] = [
   {
     title: 'LeekFund',
-    description: 'VSCode 无缝融合的跟盘体验（25k+下载量）',
+    description: 'VSCode 里无缝融合的跟盘体验（25k+下载量）',
     linkText: '网址',
     link: 'leek.fund',
     github: 'github.com/LeekHub/leek-fund',
