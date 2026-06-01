@@ -11,9 +11,9 @@ import cleanAiImg from 'public/projects/cleanai.png'
 const projects: any[] = [
   {
     title: 'LeekFund',
-    description: '韭菜盒子——VSCode 里也可以看股票 & 基金 & 期货实时数据，做最好用的投资插件（23k+下载量）',
-    linkText: '插件安装',
-    link: 'marketplace.visualstudio.com/items?itemName=giscafer.leek-fund',
+    description: 'VSCode 无缝融合的跟盘体验（25k+下载量）',
+    linkText: '网址',
+    link: 'https://leek.fund/',
     github: 'github.com/LeekHub/leek-fund',
     image: leekFundImg,
   },
