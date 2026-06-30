@@ -91,10 +91,8 @@ const Blog = ({ posts, tagList }: BlogProps): JSX.Element => {
             <Section.Content>
               <div className={styles.tagList}>
                 {tagList.sort().map(tag => (
-                  <Link href={`/blog/tag/${tag}`}>
-                    <Badge key={tag} className="cursor-pointer">
-                      #{tag}
-                    </Badge>
+                  <Link key={tag} href={`/blog/tag/${tag}`}>
+                    <Badge className="cursor-pointer">#{tag}</Badge>
                   </Link>
                 ))}
               </div>

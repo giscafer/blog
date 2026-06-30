@@ -32,13 +32,13 @@ const About = (): JSX.Element => {
           资深前端工程师，具备全栈开发能力，9年多大型复杂产品开发经验，4年前端团队管理经验。熟悉React/Vue/Angular/小程序等前端框架，跨端APP
           Native、Ionic开发，熟悉微前端、DevOps 等。
         </p>
-        <p>
+        {/* <p>
           对我感兴趣 (可查看{' '}
           <a href="https://visiky.github.io/resume/?lang=zh-CN&template=template1&user=giscafer" {...linkProps}>
             在线简历
           </a>{' '}
           ).
-        </p>
+        </p> */}
         <p>
           <ul>
             <li>

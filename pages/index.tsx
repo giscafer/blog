@@ -7,8 +7,16 @@ import codegenImg from 'public/projects/vscode-codegen.png'
 import roothubImg from 'public/projects/roothub.png'
 import leekFundImg from 'public/projects/leekfund.png'
 import cleanAiImg from 'public/projects/cleanai.png'
+import atelierImg from 'public/projects/atelier.png'
 
 const projects: any[] = [
+  {
+    title: 'Atelier AI',
+    description: '智能服饰共创平台，多 Agent 协同将设计灵感到成衣对齐压缩到小时级',
+    linkText: '在线体验',
+    link: 'atelier.leekhub.com',
+    image: atelierImg,
+  },
   {
     title: 'LeekFund',
     description: 'VSCode 里无缝融合的跟盘体验（25k+下载量）',
