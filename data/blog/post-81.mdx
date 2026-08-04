@@ -1,0 +1,206 @@
+---
+  title: Vibe Coding团队最佳实践：让 AI 编程代理真正高效起来
+  publishedAt: 2026-08-04T10:55:02Z
+  summary: 查看全文>>
+  tags: ["Team","AI"]
+---
+
+在 AI 编程工具爆发的今天，Cursor 已经从“智能补全编辑器”进化成真正的“编程代理平台”。很多人用了很久 Cursor，却依然觉得 Agent 时而聪明、时而跑偏。真正拉开差距的，往往不是模型本身，而是它背后的**Agent Harness（代理驾驭层）**。
+
+简单来说，Agent Harness 就是把原始大模型变成“能动手干活的程序员”的那层系统：它包含指令（Instructions）、工具（Tools）和模型（Model）三大部分。Cursor 为每个主流模型都做了深度调优，所以同一个 Claude 或 GPT，在 Cursor 里比在纯聊天窗口里表现好得多。
+
+下面，我们结合 Cursor 官方最佳实践，用图文的方式系统梳理如何真正用好这套 Harness。
+
+### 一、先理解：Agent Harness 到底是什么？
+
+一个完整的 Agent Harness 由三部分组成：
+
+1. **Instructions（指令）**：系统提示词 + 项目 Rules，决定代理的行为边界和风格。
+2. **Tools（工具）**：文件编辑、代码搜索、终端执行、浏览器控制等。
+3. **Model（模型）**：你选择的具体大模型。
+
+Cursor 的核心竞争力，就是它会根据不同模型的性格（有的更喜欢 shell 命令，有的更依赖专用搜索工具），自动调整指令和工具调用方式。用户只需要专注业务，而不必自己做复杂的 prompt engineering。
+
+<img width="1080" height="589" alt="Image" src="https://github.com/user-attachments/assets/86ed0bbc-0948-4bf8-bec4-41ea20f0f146" />
+
+*示意图：Agent Harness 就像操作系统，模型是 CPU，上下文是内存，工具和规则是外设与驱动。*
+
+### 二、最重要的习惯：先规划，再动手（Plan Mode）
+
+经验丰富的开发者都知道：先想清楚再写代码，效率最高。Cursor 官方研究也发现，会规划的人用 Agent 效果明显更好。
+
+**怎么用 Plan Mode？**
+
+在 Agent 输入框按 `Shift + Tab`，进入规划模式。代理会：
+
+- 先搜索相关代码文件
+- 向你提问澄清需求
+- 输出一份可编辑的 Markdown 计划（含文件路径和关键代码引用）
+- 等你确认后再开始写代码
+
+计划可以直接编辑，也可以点击“Save to workspace”保存到 `.cursor/plans/`，方便团队复用或中断后继续。
+
+如果代理做出来的结果不符合预期，**不要继续追问修改**，而是回到计划、修改计划、重新跑一次。这往往比“修修补补”干净得多。
+
+<img width="1080" height="608" alt="Image" src="https://github.com/user-attachments/assets/d7e57791-63e7-43b2-a365-70a748056683" />
+
+*Plan Mode 实际界面示意：代理会先问清楚再动手。*
+
+### 三、管理上下文：少喂、多让它自己找
+
+很多人习惯把所有相关文件都 @ 进去，结果反而把代理搞晕。
+
+**正确做法：**
+
+- 只 @ 你明确知道的文件。
+- 其他让它自己用 grep 和语义搜索去找。
+- 用 `@Branch` 快速告诉它“当前分支在做什么”。
+- 对话太长、代理开始跑偏时，果断开新对话。
+- 需要引用历史时，用 `@Past Chats`，而不是整段复制。
+
+长对话会积累噪音，导致代理注意力分散。及时开新对话，是保持高效的关键。
+
+### 四、用 Rules 和 Skills 把代理“驯化”成团队成员
+
+**Rules（规则）**：放在 `.cursor/rules/` 下的 Markdown 文件，是每次对话都会注入的静态上下文。
+
+好的 Rules 应该简洁：
+
+- 常用命令（`npm run test`、`pnpm typecheck` 等）
+- 代码风格要点（不要抄完整 style guide）
+- 项目约定（API 放在哪里、组件参考哪个文件）
+
+**Skills（技能）**：动态能力，代理需要时才加载。可以定义自定义命令（用 `/` 触发）、Hooks（前后置脚本）、领域知识等。
+
+最实用的一个模式是“长跑循环”：写一个 stop hook，让代理在测试没全部通过前持续迭代，直到成功或达到最大次数。
+
+<img width="800" height="450" alt="Image" src="https://github.com/user-attachments/assets/2321c764-b5bd-433b-8578-e917d70fc012" />
+
+*Rules、Skills、Commands 是扩展 Cursor Agent 的三大武器。*
+
+### 五、高效工作流推荐
+
+**1. 测试驱动开发（TDD）**
+先让代理写测试并确认失败 → 提交测试 → 再让它实现代码直到通过。明确“可验证目标”能大幅提升成功率。
+
+**2. 并行多代理**
+同一需求同时跑多个模型，或用 git worktree 隔离多个 Agent，最后挑最好的结果合并。
+
+**3. 云端 Agent**
+把耗时的重构、修 bug、写文档交给云端 Agent，它会自动开分支、写 PR，你甚至可以用手机盯进度。
+
+**4. 视觉调试**
+直接把设计稿或报错截图丢给 Agent，它能看图理解。配合 Figma MCP 更是设计到代码的神器。
+
+<img width="1080" height="698" alt="Image" src="https://github.com/user-attachments/assets/adf1b773-15ac-4387-b720-fcd4cbad7e57" />
+
+*Cursor 真实工作界面：左侧任务列表、中间 diff、右侧 Agent 对话，多文件协作一目了然。*
+
+### 六、把 Agent 当同事，而不是工具
+
+真正用得好的人，有几个共同特征：
+
+- 提示词尽量具体（边界条件、参考模式都写清楚）
+- 只在重复犯错时才加 Rules
+- 认真审查 diff，不盲目“Keep All”
+- 给代理可验证的目标（测试、类型检查、linter）
+- 把 Agent 当成会犯错但能快速迭代的同事
+
+Cursor 的 Agent Harness 已经把模型能力榨到很高水平。剩下的，就是你如何用好规划、上下文、规则和工具这四板斧。
+
+
+
+---
+
+### 七、你用 Cursor，别人用 Codex 或 Claude Code也可以很好协作
+
+#### 1. 核心原则：AGENTS.md 作为团队唯一真实来源
+
+目前业界已经形成共识：
+
+- **AGENTS.md** 是跨工具的开放标准（Cursor、OpenAI Codex、Aider、Jules 等都原生支持）。
+- Claude Code 虽然主要用 `CLAUDE.md`，但可以通过 `@AGENTS.md` 引用，或者直接做成薄包装。
+
+**推荐做法**：
+
+```text
+项目根目录/
+├── AGENTS.md              ← 团队共同维护的「Agent 说明书」
+├── CLAUDE.md              ← Claude Code 用户用（引用 AGENTS.md + 自己的补充）
+├── .cursor/rules/         ← 你（Cursor）的专属规则（尽量薄）
+└── docs/                  ← 详细架构、规范文档
+```
+
+**AGENTS.md 建议写这些内容**（所有工具都能读）：
+
+- 项目是做什么的、技术栈
+- 如何安装、启动、跑测试、类型检查
+- 代码风格与架构约定（简要即可，详细的链到 docs）
+- 重要目录说明、禁止事项
+- 提交 / PR 规范
+- 常用命令（最好直接指向 `package.json` 或 Makefile）
+
+这样无论对方用 Codex 还是 Claude Code，读到的核心指令是一样的。
+
+#### 2. 工具专属文件只做「薄适配层」
+
+| 工具 | 建议用法 |
+|------|----------|
+| **Cursor（你）** | `.cursor/rules/*.mdc` 只放 Cursor 特有的东西（glob 作用域、alwaysApply、特定工作流）。核心规范尽量指向 AGENTS.md 或 docs |
+| **Claude Code** | `CLAUDE.md` 开头写 `@AGENTS.md`，然后补充 Claude 特有的习惯或 hooks |
+| **Codex** | 直接读 AGENTS.md，几乎不需要额外文件 |
+
+**原则**：  
+共享的、重要的规则 → 写在 AGENTS.md 或普通 Markdown 文档里。  
+工具特有的行为 → 才写进各自的配置文件。
+
+#### 3. 实际协作工作流建议
+
+1. **所有重要约定都进 Git**  
+   AGENTS.md、docs、关键脚本全部版本控制。不要把关键知识只存在某个工具的「记忆」或本地规则里。
+
+2. **命令和脚本统一**  
+   把 `build`、`test`、`lint`、`typecheck` 等写在 `package.json` / `Makefile` / `justfile` 里，AGENTS.md 只负责引用它们。避免各工具写死不同命令导致漂移。
+
+3. **PR 成为协作接口**  
+   - 用 Agent 改完代码后，写清楚「改了什么 + 为什么」。
+   - 对方用不同工具打开 PR 时，他们的 Agent 也能通过 diff + PR 描述理解意图。
+   - 鼓励用 Bugbot / 代码审查工具，而不是依赖某个工具的内部状态。
+
+4. **计划与决策也沉淀下来**  
+   重要功能用 Plan 时，把最终确认的计划保存到 `.cursor/plans/` 或 `docs/plans/`，方便其他人（和他们的 Agent）继续。
+
+5. **定期检查漂移**  
+   有人会写简单脚本检查 AGENTS.md 里的命令是否还存在、路径是否有效。可以放在 CI 里防过时。
+
+#### 4. Claude Code 特殊处理（最常见摩擦点）
+
+Claude Code 用户可以这样写 `CLAUDE.md`：
+
+```markdown
+@AGENTS.md
+
+# Claude Code 补充
+- 优先使用 xxx 工作流
+- 关于 git 分支的额外约定...
+```
+
+或者团队约定用 symlink / 复制同步，但**以 AGENTS.md 为主**最稳。
+
+#### 5. 可选进阶（团队成熟后再做）
+
+- 把规则统一放在 `.ai/rules/` 或 `docs/llm/`，然后用 symlink 指向 `.cursor/rules` 和 Claude 的目录。
+- 用 pre-commit 或 CI 做规则漂移检测。
+- 实验性：用 MCP 做跨 Agent 通信（目前还不够成熟，不建议作为基础依赖）。
+
+---
+
+**总结**：
+
+> 把「团队共识」写进 **AGENTS.md + 普通文档 + 脚本**，把「工具特性」留在各自配置文件里。  
+> 这样你用 Cursor，别人用 Codex 或 Claude Code，大家看到的核心指令是同一套，协作摩擦会小很多。
+
+
+
+---
+本人自动发布于：[https://github.com/giscafer/blog/issues/81](https://github.com/giscafer/blog/issues/81)
