@@ -30,7 +30,7 @@ const About = (): JSX.Element => {
 
         <p>
           资深前端工程师，具备全栈开发能力，12年+大型复杂产品开发经验，5年大前端团队管理经验。熟悉React/Vue/Angular/小程序等前端框架，跨端APP
-          Native、Electron、Ionic开发，熟悉Node.js、DevOps 等。我的优势：AI Vibe Coding 出来就具备手撸这些方向的代码能力！
+          Native、Electron、Ionic开发，熟悉Node.js、DevOps 等。我的优势：AI Vibe Coding 出来之前就具备手撸这些方向的代码能力！
         </p>
         <p>目前从事全栈开发& Agent 开发，最近在探索 AI、本体赋能开发和业务，欢迎交流！</p>
         {/* <p>
