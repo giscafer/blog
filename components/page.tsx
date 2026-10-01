@@ -9,15 +9,15 @@ type PageProps = {
 }
 
 const footerLinks = [
-  { name: 'Home', url: '/' },
+  { name: '首页', url: '/' },
   { name: 'GitHub', url: 'https://github.com/giscafer', target: '_blank' },
   { name: 'YouTube', url: 'https://www.youtube.com/@LeekHuber', target: '_blank' },
 
-  { name: 'Blog', url: '/blog' },
+  { name: '博客', url: '/blog' },
   { name: 'FDE日报', url: 'https://fde-news.surge.sh/', target: '_blank' },
   { name: 'Twitter', url: 'https://twitter.com/nicky_lao', target: '_blank' },
   { name: '知乎', url: 'https://www.zhihu.com/people/giscafer', target: '_blank' },
-  { name: 'About', url: '/about' },
+  { name: '关于', url: '/about' },
   { name: '公众号', url: 'https://giscafer.com/qrcode_for_giscafer.jpg', target: '_blank' },
   { name: 'RSS', url: '/feed.xml', target: '_blank' },
 ]
