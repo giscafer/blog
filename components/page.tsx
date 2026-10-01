@@ -15,6 +15,7 @@ const footerLinks = [
 
   { name: '博客', url: '/blog' },
   { name: 'FDE日报', url: 'https://fde-news.surge.sh/', target: '_blank' },
+  { name: '地图足迹', url: 'https://map.giscafer.com/', target: '_blank' },
   { name: 'Twitter', url: 'https://twitter.com/nicky_lao', target: '_blank' },
   { name: '知乎', url: 'https://www.zhihu.com/people/giscafer', target: '_blank' },
   { name: '关于', url: '/about' },
