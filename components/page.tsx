@@ -14,6 +14,7 @@ const footerLinks = [
   { name: 'YouTube', url: 'https://www.youtube.com/@LeekHuber', target: '_blank' },
 
   { name: 'Blog', url: '/blog' },
+  { name: 'FDE日报', url: 'https://fde-news.surge.sh/', target: '_blank' },
   { name: 'Twitter', url: 'https://twitter.com/nicky_lao', target: '_blank' },
   { name: '知乎', url: 'https://www.zhihu.com/people/giscafer', target: '_blank' },
   { name: 'About', url: '/about' },

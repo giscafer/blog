@@ -9,6 +9,7 @@ const links = [
   { name: 'Home', path: '/' },
   { name: 'About', path: '/about' },
   { name: 'Blog', path: '/blog' },
+  { name: 'FDE日报', path: 'https://fde-news.surge.sh/', target: '_blank' },
   { name: 'Map', path: 'http://map.giscafer.com', target: '_blank' },
 ]
 
