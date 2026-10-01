@@ -6,9 +6,9 @@ import avatar from 'public/avatar.png'
 import styles from './header.module.scss'
 
 const links = [
-  { name: 'Home', path: '/' },
-  { name: 'About', path: '/about' },
-  { name: 'Blog', path: '/blog' },
+  { name: '首页', path: '/' },
+  { name: '关于', path: '/about' },
+  { name: '博客', path: '/blog' },
   { name: 'FDE日报', path: 'https://fde-news.surge.sh/', target: '_blank' },
 ]
 
