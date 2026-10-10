@@ -1,24 +1,564 @@
-.image {
-  width: 600px !important;
-  height: 800px !important;
-  border-radius: 13px;
+.page {
+  position: relative;
+  min-height: 100vh;
+  color: #2d2a24;
+  background: #f5efe6;
 }
 
-.text {
-  margin-bottom: 30px;
-  padding-top: 30px;
-  p {
-    font-weight: 400;
-    font-size: 17px;
-    line-height: 27px;
+.brand {
+  position: fixed;
+  top: 22px;
+  left: 20px;
+  z-index: 30;
+  display: block;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  outline: none;
+
+  img {
+    border-radius: 50%;
   }
+
+  &:hover,
+  &:focus {
+    opacity: 0.8;
+  }
+}
+
+.blogLink {
+  position: fixed;
+  top: 30px;
+  left: 74px;
+  z-index: 30;
+  color: #2d2a24;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+
+  &:hover,
+  &:focus {
+    color: #052e87;
+  }
+}
+
+.nav,
+.navDark {
+  position: fixed;
+  top: 18px;
+  left: 50%;
+  z-index: 30;
+  display: flex;
+  padding: 3px;
+  color: #2d2a24;
+  background: #f1e5d5;
+  border-radius: 999px;
+  transform: translateX(-50%);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.navDark {
+  color: #fff;
+  background: #052e87;
+}
+
+.navBar,
+.navBarOn {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  z-index: 0;
+  width: calc((100% - 6px) / 3);
+  height: calc(100% - 6px);
+  background: #0086bb;
+  border-radius: 999px;
+  opacity: 0;
+  transition: transform 0.35s cubic-bezier(0.6, 0, 0.25, 1), opacity 0.15s ease;
+}
+
+.navBarOn {
+  opacity: 1;
+}
+
+.navLink,
+.navLinkActive {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 96px;
+  height: 40px;
+  color: inherit;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+
+  &:hover,
+  &:focus {
+    color: inherit;
+  }
+}
+
+.navLinkActive {
+  color: #fff;
+}
+
+.hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+  min-height: 640px;
+  overflow: hidden;
+}
+
+.heroCopy {
+  position: relative;
+  width: fit-content;
+  margin-left: 8vw;
+}
+
+.heroTitle {
+  position: relative;
+  margin: 0;
+  color: #2d2a24;
+  font-weight: 500;
+  font-size: clamp(64px, 8vw, 108px);
+  font-style: oblique;
+  line-height: 1.08;
+  letter-spacing: 0.04em;
+}
+
+.badge {
+  position: absolute;
+  right: -8px;
+  bottom: 0;
+  z-index: 2;
+  padding: 8px 14px;
+  color: #fff;
+  font-weight: 500;
+  font-size: clamp(16px, 2vw, 22px);
+  font-style: oblique;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  background: #263c70;
+  border-radius: 2px;
+  outline: 4px solid #f5efe6;
+  transform: rotate(-6deg) translateY(62%);
+}
+
+.scrollHint,
+.scrollHintHidden {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateX(-50%);
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.scrollHintHidden {
+  opacity: 0;
+}
+
+.mouse {
+  display: flex;
+  justify-content: center;
+  width: 26px;
+  height: 40px;
+  border: 2px solid #2d2a24;
+  border-radius: 14px;
+}
+
+.mouseDot {
+  width: 4px;
+  height: 8px;
+  margin-top: 8px;
+  background: #2d2a24;
+  border-radius: 4px;
+  animation: wheel 1.1s ease-in-out infinite alternate;
+}
+
+.chevron {
+  width: 10px;
+  height: 10px;
+  margin-top: 8px;
+  border-right: 2px solid #2d2a24;
+  border-bottom: 2px solid #2d2a24;
+  transform: rotate(45deg);
+}
+
+.stage {
+  position: relative;
+  height: 220vh;
+}
+
+.stageSticky {
+  --reach: calc(50% + min(170px, 14vw) + 18px);
+
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.portrait {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: min(340px, 28vw);
+  height: min(520px, 68vh);
+  overflow: hidden;
+  border-radius: 28px;
+  box-shadow: 0 24px 60px rgba(45, 42, 36, 0.16);
+  transform: translate(-50%, -52%);
+}
+
+.card {
+  position: absolute;
+  z-index: 2;
+  transform: translateY(18px);
+  opacity: 0;
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+
+.cardBody {
+  color: #e1f5ff;
+  background: linear-gradient(to bottom, rgb(0, 53, 133) 0%, rgba(0, 82, 145, 0.72) 100%);
+  border: 1px solid #34bfff;
+  border-radius: 12px;
+
+  h2 {
+    margin: 0 0 8px;
+    color: #e1f5ff;
+    font-weight: 500;
+    font-size: 22px;
+    letter-spacing: 0.03em;
+  }
+
+  p {
+    margin: 0 0 10px;
+    font-size: 15px;
+    line-height: 1.45;
+    letter-spacing: 0.02em;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    position: relative;
+    margin: 0 0 8px;
+    padding-left: 16px;
+    font-size: 16px;
+    letter-spacing: 0.03em;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    &:before {
+      position: absolute;
+      top: 0.55em;
+      left: 0;
+      width: 4px;
+      height: 4px;
+      background: #e1f5ff;
+      border-radius: 50%;
+      content: '';
+    }
+  }
+}
+
+.nameCard,
+.bioCard,
+.skillsCard {
+  &:before,
+  &:after {
+    position: absolute;
+    top: 50%;
+    content: '';
+  }
+
+  &:before {
+    height: 0;
+    border-top: 1px solid #34bfff;
+    transform: translateY(-50%);
+  }
+
+  &:after {
+    width: 11px;
+    height: 11px;
+    background: #34bfff;
+    border-radius: 50%;
+    transform: translateY(-50%);
+  }
+}
+
+.nameCard,
+.bioCard {
+  padding-right: 56px;
+
+  &:before,
+  &:after {
+    right: 0;
+  }
+
+  &:before {
+    width: 48px;
+  }
+}
+
+.nameCard {
+  top: 16%;
+  right: var(--reach);
+  left: auto;
+  width: min(280px, 24vw);
+
+  .cardBody {
+    padding: 16px 18px;
+  }
+}
+
+.bioCard {
+  right: var(--reach);
+  bottom: 9%;
+  left: auto;
+  width: min(420px, 32vw);
+
+  .cardBody {
+    padding: 16px 18px;
+  }
+}
+
+.skillsCard {
+  top: 22%;
+  right: auto;
+  left: var(--reach);
+  width: min(320px, 26vw);
+  padding-left: 56px;
+
+  .cardBody {
+    padding: 18px 20px 18px 18px;
+  }
+
+  &:before,
+  &:after {
+    left: 0;
+  }
+
+  &:before {
+    width: 48px;
+  }
+}
+
+.stage[data-step='1'] .nameCard,
+.stage[data-step='2'] .nameCard,
+.stage[data-step='3'] .nameCard,
+.stage[data-step='2'] .bioCard,
+.stage[data-step='3'] .bioCard,
+.stage[data-step='3'] .skillsCard {
+  transform: none;
+  opacity: 1;
+}
+
+.location {
+  display: flex;
+  align-items: center;
+  margin: 0;
+}
+
+.pin {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 8px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2);
+}
+
+.contact {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 140px 8vw 160px;
+  scroll-margin-top: 24px;
+
+  h2 {
+    margin: 0 0 24px;
+    color: #2d2a24;
+    font-weight: 500;
+    font-size: clamp(56px, 8vw, 96px);
+    font-style: oblique;
+    line-height: 1.05;
+    letter-spacing: 0.03em;
+  }
+}
+
+.contactLead {
+  max-width: 36em;
+  margin: 0 0 28px;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.socials {
+  display: flex;
+  margin: 0 0 28px;
+  padding: 0;
+  list-style: none;
+
+  li {
+    margin-right: 28px;
+  }
+
   a {
-    color: var(--brand);
-    transition: color 200ms ease-out;
+    color: #052e87;
+    font-weight: 700;
+    font-size: 18px;
+    text-decoration: none;
 
     &:hover,
     &:focus {
-      color: var(--brandActive);
+      color: #0086bb;
     }
+  }
+}
+
+.mail {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 22px;
+  color: #fff;
+  font-weight: 700;
+  font-size: 16px;
+  text-decoration: none;
+  background: #052e87;
+  border-radius: 999px;
+
+  &:hover,
+  &:focus {
+    background: #0086bb;
+  }
+}
+
+@media (max-width: 1023px) {
+  .navLink,
+  .navLinkActive {
+    width: 76px;
+    font-size: 14px;
+  }
+
+  .blogLink {
+    display: none;
+  }
+
+  .heroCopy {
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .badge {
+    right: 0;
+  }
+
+  .stage {
+    height: auto;
+  }
+
+  .stageSticky {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    padding: 132px 20px 48px;
+    overflow: visible;
+  }
+
+  .portrait {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: min(100%, 420px);
+    height: 0;
+    margin: 0 auto 24px;
+    padding-bottom: 133%;
+    transform: none;
+  }
+
+  .card,
+  .nameCard,
+  .bioCard,
+  .skillsCard {
+    position: relative;
+    top: auto;
+    right: auto;
+    bottom: auto;
+    left: auto;
+    width: 100%;
+    margin-bottom: 16px;
+    padding: 0;
+    transform: none;
+    opacity: 1;
+
+    &:before,
+    &:after {
+      display: none;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage {
+    height: auto;
+  }
+
+  .stageSticky {
+    position: relative;
+    height: auto;
+  }
+
+  .card,
+  .nameCard,
+  .bioCard,
+  .skillsCard {
+    transform: none;
+    opacity: 1;
+  }
+
+  .mouseDot {
+    animation: none;
+  }
+}
+
+@keyframes wheel {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  to {
+    transform: translateY(8px);
+    opacity: 0.2;
   }
 }
